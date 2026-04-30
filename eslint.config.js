@@ -1,3 +1,3 @@
-import sharedConfig from "./packages/config/eslint/eslint.config.js";
-
-export default sharedConfig;
+module.exports = {
+  extends: ["next/core-web-vitals"],
+};
