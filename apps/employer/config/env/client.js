@@ -14,13 +14,11 @@ const clientSchema = z
   })
   .strict();
 
-export type ClientEnv = z.infer<typeof clientSchema>;
-
 // ---------------------------------------------------------------------------
 // Parser
 // ---------------------------------------------------------------------------
 
-function parseClientEnv(env: unknown): ClientEnv {
+function parseClientEnv(env) {
   const result = clientSchema.safeParse(env);
 
   if (!result.success) {
@@ -48,7 +46,7 @@ function parseClientEnv(env: unknown): ClientEnv {
   return result.data;
 }
 
-export const clientEnv: ClientEnv = parseClientEnv({
+export const clientEnv = parseClientEnv({
   NEXT_PUBLIC_EMPLOYER_URL: process.env["NEXT_PUBLIC_EMPLOYER_URL"],
   NEXT_PUBLIC_PROVIDER_URL: process.env["NEXT_PUBLIC_PROVIDER_URL"],
   NEXT_PUBLIC_APPRENTICE_URL: process.env["NEXT_PUBLIC_APPRENTICE_URL"],

@@ -3,11 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./src/index.js",
+  "types": "./src/index.js",
   "exports": {
-    ".": "./src/index.ts",
-    "./metadata": "./src/metadata/index.ts"
+    ".": "./src/index.js",
+    "./metadata": "./src/metadata/index.js"
   },
   "peerDependencies": {
     "next": "16.2.3"

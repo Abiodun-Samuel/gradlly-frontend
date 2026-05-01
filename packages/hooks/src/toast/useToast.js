@@ -2,21 +2,19 @@ import toast from "react-hot-toast";
 
 import { DEFAULT_TOAST_DURATION } from "./toast.config";
 
-import type { AppToastOptions } from "./toast.types";
-
-const withDefaults = (options?: AppToastOptions): AppToastOptions => ({
+const withDefaults = (options) => ({
   duration: DEFAULT_TOAST_DURATION,
   ...options,
 });
 
-export const toastSuccess = (message: string, options?: AppToastOptions) =>
+export const toastSuccess = (message, options) =>
   toast.success(message, withDefaults(options));
 
-export const toastError = (message: string, options?: AppToastOptions) =>
+export const toastError = (message, options) =>
   toast.error(message, withDefaults(options));
 
-export const toastLoading = (message: string, options?: AppToastOptions) =>
+export const toastLoading = (message, options) =>
   toast.loading(message, withDefaults(options));
 
-export const toastDefault = (message: string, options?: AppToastOptions) =>
+export const toastDefault = (message, options) =>
   toast(message, withDefaults(options));

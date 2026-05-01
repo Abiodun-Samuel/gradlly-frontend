@@ -24,13 +24,11 @@ const serverSchema = z
   })
   .strict();
 
-export type ServerEnv = z.infer<typeof serverSchema>;
-
 // ---------------------------------------------------------------------------
 // Parser
 // ---------------------------------------------------------------------------
 
-function parseServerEnv(env: unknown): ServerEnv {
+function parseServerEnv(env) {
   const result = serverSchema.safeParse(env);
 
   if (!result.success) {
@@ -59,6 +57,6 @@ function parseServerEnv(env: unknown): ServerEnv {
 // Validated export
 // ---------------------------------------------------------------------------
 
-export const serverEnv: ServerEnv = parseServerEnv({
+export const serverEnv = parseServerEnv({
   API_BASE_URL: process.env["API_BASE_URL"],
 });

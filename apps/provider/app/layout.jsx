@@ -1,24 +1,18 @@
 import { createPageMetadata, createViewport } from "@gradlly/utils";
 
-import type { Viewport } from "next";
-
 import "@/styles/globals.css";
 import { AppProvider } from "@/providers";
 
 export const metadata = createPageMetadata({
   description:
-    "Gradlly provider portal for programme operations and compliance.",
+    "Gradlly provider portal for managing courses, learners, and programme delivery.",
   portalName: "Provider Portal",
   baseUrl: process.env["NEXT_PUBLIC_APP_URL"] ?? "https://provider.gradlly.com",
 });
 
-export const viewport: Viewport = createViewport({ themeColor: "#2563eb" });
+export const viewport = createViewport({ themeColor: "#06b6d4" });
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }) {
   return (
     <html lang="en" className="h-full antialiased">
       <body>

@@ -1,10 +1,8 @@
-import type { DefaultToastOptions, ToasterProps } from "react-hot-toast";
-
 export const DEFAULT_TOAST_DURATION = 3500;
 
-export const TOAST_POSITION: ToasterProps["position"] = "top-center";
+export const TOAST_POSITION = "top-center";
 
-export const toastOptions: DefaultToastOptions = {
+export const toastOptions = {
   duration: DEFAULT_TOAST_DURATION,
   style: {
     borderRadius: "10px",
@@ -31,7 +29,7 @@ export const toastOptions: DefaultToastOptions = {
   },
 };
 
-export const toasterConfig: ToasterProps = {
+export const toasterConfig = {
   position: TOAST_POSITION,
   toastOptions,
 };

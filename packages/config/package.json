@@ -4,11 +4,9 @@
   "private": true,
   "main": "./index.js",
   "files": [
-    "eslint.config.js",
     "prettier.js",
     "index.js",
     "tailwind",
-    "typescript",
     "next"
   ],
   "devDependencies": {
@@ -24,9 +22,8 @@
   "type": "module",
   "exports": {
     ".": "./index.js",
-    "./eslint": "./eslint/eslint.config.js",
-    "./next/base": "./next/base.ts",
-    "./next/proxy": "./next/proxy.ts",
+    "./next/base": "./next/base.js",
+    "./next/proxy": "./next/proxy.js",
     "./tailwind/base.css": "./tailwind/base.css",
     "./typescript/base.json": "./typescript/base.json",
     "./typescript/next.json": "./typescript/next.json"

@@ -3,8 +3,6 @@ import { fileURLToPath } from "node:url";
 
 import { loadEnvConfig } from "@next/env";
 
-import type { NextConfig } from "next";
-
 // ─── Constants live here — next.config runs before transpilation,
 //     so it cannot import from workspace packages at all. ──────────
 const WORKSPACE_PACKAGES = [
@@ -12,7 +10,7 @@ const WORKSPACE_PACKAGES = [
   "@gradlly/utils",
   "@gradlly/hooks",
   "@gradlly/config",
-] as const;
+];
 
 const DEV_ORIGINS = [
   "*.gradlly.local",
@@ -21,22 +19,19 @@ const DEV_ORIGINS = [
   "apprentice.gradlly.local",
   "flow.gradlly.local",
   "main.gradlly.local",
-] as const;
+];
 
-const IMAGE_HOSTS = ["**.gradlly.com"] as const;
+const IMAGE_HOSTS = ["**.gradlly.com"];
 
 // ─────────────────────────────────────────────────────────────────
 
 const isProd = process.env.NODE_ENV === "production";
 
-export function createNextConfig(
-  appDir: string,
-  overrides: Partial<NextConfig> = {},
-): NextConfig {
+export function createNextConfig(appDir, overrides = {}) {
   const workspaceRoot = join(dirname(fileURLToPath(appDir)), "../..");
   loadEnvConfig(workspaceRoot);
 
-  const base: NextConfig = {
+  const base = {
     reactStrictMode: true,
     poweredByHeader: false,
     compress: true,
@@ -47,7 +42,7 @@ export function createNextConfig(
 
     images: {
       remotePatterns: IMAGE_HOSTS.map((hostname) => ({
-        protocol: "https" as const,
+        protocol: "https",
         hostname,
       })),
     },

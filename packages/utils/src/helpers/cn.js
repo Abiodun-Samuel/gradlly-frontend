@@ -1,3 +1,1 @@
-export const cn = (
-  ...values: Array<string | false | null | undefined>
-): string => values.filter(Boolean).join(" ");
+export const cn = (...values) => values.filter(Boolean).join(" ");

@@ -1,15 +1,3 @@
-import type { Metadata } from "next";
-
-interface CreatePageMetadataOptions {
-  title?: string;
-  description: string;
-  portalName: string;
-  baseUrl?: string;
-  path?: string;
-  noIndex?: boolean;
-  portalSuffix?: string;
-}
-
 export function createPageMetadata({
   title,
   description,
@@ -18,7 +6,7 @@ export function createPageMetadata({
   path = "/",
   noIndex = true,
   portalSuffix = "Gradlly",
-}: CreatePageMetadataOptions): Metadata {
+}) {
   const resolvedBaseUrl =
     baseUrl ?? process.env["NEXT_PUBLIC_APP_URL"] ?? "https://www.gradlly.com";
   const metadataBase = new URL(resolvedBaseUrl);

@@ -2,26 +2,7 @@
 
 import { cn } from "@gradlly/utils";
 
-import type { PropsWithChildren } from "react";
-
-type AnimationVariant =
-  | "fade"
-  | "slideUp"
-  | "slideDown"
-  | "slideLeft"
-  | "slideRight"
-  | "scale"
-  | "stagger";
-
-interface AnimatedContainerProps extends PropsWithChildren {
-  variant?: AnimationVariant;
-  duration?: number;
-  delay?: number;
-  easing?: string;
-  className?: string;
-}
-
-const initialStyles: Record<AnimationVariant, string> = {
+const initialStyles = {
   fade: "opacity-0",
   slideUp: "opacity-0 translate-y-2",
   slideDown: "opacity-0 -translate-y-2",
@@ -38,7 +19,7 @@ export function AnimatedContainer({
   delay = 0,
   easing = "cubic-bezier(0.4, 0, 0.2, 1)",
   className,
-}: AnimatedContainerProps) {
+}) {
   return (
     <div
       className={cn(

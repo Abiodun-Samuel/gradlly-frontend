@@ -1,6 +1,4 @@
-import type { AppLink, DocsPage } from "@/types/docs";
-
-export const docsNavigation: AppLink[] = [
+export const docsNavigation = [
   { id: "toast", label: "Toast", href: "#toast" },
   { id: "forms", label: "Forms", href: "#forms" },
   { id: "zod", label: "Zod", href: "#zod" },
@@ -9,11 +7,12 @@ export const docsNavigation: AppLink[] = [
   { id: "architecture", label: "Project architecture", href: "#architecture" },
 ];
 
-export const docsPages: DocsPage[] = [
+export const docsPages = [
   {
     id: "toast",
     title: "Toast (react-hot-toast)",
-    summary: "Shared, typed toast API from @gradlly/hooks used across applications.",
+    summary:
+      "Shared, typed toast API from @gradlly/hooks used across applications.",
     sections: [
       {
         id: "toast-usage",

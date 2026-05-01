@@ -1,7 +1,5 @@
 import { createPageMetadata, createViewport } from "@gradlly/utils";
 
-import type { Viewport } from "next";
-
 import "@/styles/globals.css";
 import { AppProvider } from "@/providers";
 
@@ -12,13 +10,9 @@ export const metadata = createPageMetadata({
   baseUrl: process.env["NEXT_PUBLIC_APP_URL"] ?? "https://gradlly.com",
 });
 
-export const viewport: Viewport = createViewport({ themeColor: "#1d4ed8" });
+export const viewport = createViewport({ themeColor: "#1d4ed8" });
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }) {
   return (
     <html lang="en" className="h-full antialiased">
       <body>

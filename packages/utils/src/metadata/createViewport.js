@@ -1,12 +1,4 @@
-import type { Viewport } from "next";
-
-interface CreateViewportOptions {
-  themeColor?: string;
-}
-
-export function createViewport({
-  themeColor = "#3b62f6",
-}: CreateViewportOptions = {}): Viewport {
+export function createViewport({ themeColor = "#3b62f6" } = {}) {
   return {
     width: "device-width",
     initialScale: 1,

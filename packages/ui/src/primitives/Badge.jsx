@@ -1,13 +1,6 @@
 import { cn } from "@gradlly/utils";
 
-import type { PropsWithChildren } from "react";
-
-interface BadgeProps extends PropsWithChildren {
-  tone?: "neutral" | "success" | "warning" | "danger" | "info";
-  className?: string;
-}
-
-const tones: Record<NonNullable<BadgeProps["tone"]>, string> = {
+const tones = {
   neutral: "bg-slate-700/80 text-slate-100",
   success: "bg-emerald-600/90 text-white",
   warning: "bg-amber-500/90 text-slate-950",
@@ -15,7 +8,7 @@ const tones: Record<NonNullable<BadgeProps["tone"]>, string> = {
   info: "bg-blue-600/90 text-white",
 };
 
-export function Badge({ tone = "neutral", className, children }: BadgeProps) {
+export function Badge({ tone = "neutral", className, children }) {
   return (
     <span
       className={cn(

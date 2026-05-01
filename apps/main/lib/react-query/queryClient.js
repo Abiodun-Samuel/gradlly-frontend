@@ -2,13 +2,13 @@ import { QueryClient } from "@tanstack/react-query";
 
 import { queryConfig } from "@/lib/react-query/query.config";
 
-function makeQueryClient(): QueryClient {
+function makeQueryClient() {
   return new QueryClient({ defaultOptions: queryConfig });
 }
 
-let browserQueryClient: QueryClient | undefined;
+let browserQueryClient;
 
-export function getQueryClient(): QueryClient {
+export function getQueryClient() {
   if (typeof window === "undefined") {
     return makeQueryClient();
   }

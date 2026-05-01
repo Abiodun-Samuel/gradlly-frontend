@@ -1,13 +1,86 @@
 @import "@gradlly/config/tailwind/base.css";
 
 /* ============================================================
-   PROVIDER APP — PORTAL THEME
+   PROVIDER PORTAL — CYAN THEME
    ============================================================ */
 
 :root {
-  --portal-accent: #2563eb;
-  --portal-accent-subtle: #dbeafe;
+  --portal-accent: #06b6d4;
+  --portal-accent-hover: #0891b2;
+  --portal-accent-subtle: #ecfeff;
   --portal-accent-fg: #ffffff;
-  --portal-header-bg: #1e3a8a;
-  --portal-sidebar-bg: #1d4ed8;
+  --portal-sidebar-bg: #03090d;
+  --portal-header-bg: #ffffff;
+}
+
+@theme {
+  --color-primary-50: #ecfeff;
+  --color-primary-100: #cffafe;
+  --color-primary-200: #a5f3fc;
+  --color-primary-300: #67e8f9;
+  --color-primary-400: #22d3ee;
+  --color-primary-500: #06b6d4;
+  --color-primary-600: #0891b2;
+  --color-primary-700: #0e7490;
+  --color-primary-800: #155e75;
+  --color-primary-900: #164e63;
+  --color-primary-950: #083344;
+}
+
+@theme inline {
+  --color-accent: var(--portal-accent);
+  --color-accent-hover: var(--portal-accent-hover);
+  --color-accent-subtle: var(--portal-accent-subtle);
+  --color-accent-fg: var(--portal-accent-fg);
+  --color-sidebar: var(--portal-sidebar-bg);
+  --color-portal-header: var(--portal-header-bg);
+}
+
+@keyframes dashboard-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes dropdown-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

@@ -1,15 +1,6 @@
 import { cn } from "@gradlly/utils";
 
-import type { ButtonHTMLAttributes, PropsWithChildren } from "react";
-
-type ButtonVariant = "primary" | "secondary" | "ghost";
-
-interface ButtonProps
-  extends PropsWithChildren, ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant;
-}
-
-const variants: Record<ButtonVariant, string> = {
+const variants = {
   primary:
     "bg-[var(--dashboard-primary)] text-white hover:bg-[var(--dashboard-accent)]",
   secondary:
@@ -17,12 +8,7 @@ const variants: Record<ButtonVariant, string> = {
   ghost: "bg-transparent text-slate-600 hover:bg-slate-100",
 };
 
-export function Button({
-  variant = "primary",
-  className,
-  children,
-  ...props
-}: ButtonProps) {
+export function Button({ variant = "primary", className, children, ...props }) {
   return (
     <button
       className={cn(
