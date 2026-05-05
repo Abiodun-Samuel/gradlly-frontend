@@ -1,4 +1,6 @@
-import { StatCard } from "@gradlly/ui";
+"use client";
+import { StatCard, InputForm } from "@gradlly/ui";
+// import { yupResolver } from "@hookform/resolvers/yup";
 import {
   BookOpen,
   Users,
@@ -9,6 +11,7 @@ import {
   AlertCircle,
   Clock4,
 } from "lucide-react";
+import { useForm } from "react-hook-form";
 
 const stats = [
   {
@@ -97,6 +100,14 @@ const topCourses = [
 ];
 
 export default function ProviderHomePage() {
+  const {
+    register,
+    handleSubmit,
+    // formState: { errors },
+  } = useForm({
+    // resolver: yupResolver(ForgotPasswordSchema),
+    defaultValues: { email: "" },
+  });
   const today = new Date().toLocaleDateString("en-GB", {
     weekday: "long",
     day: "numeric",
@@ -118,7 +129,20 @@ export default function ProviderHomePage() {
         <p className="text-sm text-text-tertiary">{today}</p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <InputForm
+        label="Email Address"
+        name="email"
+        type="email"
+        register={register}
+        error={""}
+        placeholder="Enter your email address"
+        required={true}
+      />
+
+      <div
+        onClick={handleSubmit}
+        className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+      >
         {stats.map((s) => (
           <StatCard key={s.label} {...s} />
         ))}
