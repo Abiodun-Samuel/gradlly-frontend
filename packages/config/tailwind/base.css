@@ -377,16 +377,6 @@
     }
   }
 
-  /* Minimum accessible tap target */
-  button,
-  [role="button"],
-  a,
-  input,
-  select,
-  textarea {
-    min-height: 44px;
-  }
-
   /* Icon buttons — allow smaller when explicitly set */
   [data-icon-button] {
     min-height: unset;
