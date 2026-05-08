@@ -1,11 +1,9 @@
 "use client";
 import { InputForm } from "@gradlly/ui";
 
-import AuthLayout from "../components/AuthLayout";
-
 export default function CreatePasswordPage() {
   return (
-    <AuthLayout>
+    <>
       <div className="mb-8">
         <p className="text-xs font-semibold uppercase tracking-widest text-[#2d7a50] mb-2">
           Almost there
@@ -72,6 +70,6 @@ export default function CreatePasswordPage() {
           Set Password
         </button>
       </div>
-    </AuthLayout>
+    </>
   );
 }

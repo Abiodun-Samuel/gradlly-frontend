@@ -1,10 +1,9 @@
 "use client";
 import { InputForm } from "@gradlly/ui";
 
-import AuthLayout from "../components/AuthLayout";
 export default function ResetPasswordPage() {
   return (
-    <AuthLayout>
+    <>
       <div className="mb-8">
         <p className="text-xs font-semibold uppercase tracking-widest text-[#2d7a50] mb-2">
           Account recovery
@@ -47,6 +46,6 @@ export default function ResetPasswordPage() {
           </span>
         </p>
       </div>
-    </AuthLayout>
+    </>
   );
 }

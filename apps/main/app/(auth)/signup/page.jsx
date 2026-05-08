@@ -2,12 +2,11 @@
 import { InputForm } from "@gradlly/ui";
 import Link from "next/link";
 
-import AuthLayout from "../components/AuthLayout";
-import SocialButtons from "../components/SocialButtons";
+import SocialButtons from "../../../components/auth/SocialButtons";
 
 export default function page() {
   return (
-    <AuthLayout>
+    <>
       <div className="mb-8">
         <p className="text-xs font-semibold uppercase tracking-widest text-[#2d7a50] mb-2">
           Get started — it&apos;s free
@@ -115,6 +114,6 @@ export default function page() {
           </Link>
         </p>
       </div>
-    </AuthLayout>
+    </>
   );
 }

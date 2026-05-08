@@ -1,4 +1,4 @@
-import GoogleIcon from "@/app/(auth)/icons/index";
+import GoogleIcon from "@/assets/icons/index";
 
 export default function SocialButtons() {
   return (

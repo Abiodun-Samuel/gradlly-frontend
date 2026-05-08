@@ -1,9 +1,8 @@
-import AuthLayout from "../components/AuthLayout";
-import OtpInput from "../components/OtpInput";
+import OtpInput from "../../../components/auth/OtpInput";
 
 export default function VerifyEmailPage() {
   return (
-    <AuthLayout>
+    <>
       <div className="mb-8">
         <p className="text-xs font-semibold uppercase tracking-widest text-[#2d7a50] mb-2">
           One last step
@@ -51,6 +50,6 @@ export default function VerifyEmailPage() {
           </span>
         </div>
       </div>
-    </AuthLayout>
+    </>
   );
 }

@@ -76,12 +76,12 @@ export function InputForm({
             type="button"
             onClick={togglePasswordVisibility}
             aria-label={showPassword ? "Hide password" : "Show password"}
-            className="absolute p-1.5 transition-colors -translate-y-1/2 rounded-md right-2 top-1/2 hover:bg-gray-100 focus:outline-none"
+            className="absolute p-1 transition-colors -translate-y-1/2 rounded-md right-2 top-1/2 hover:bg-gray-100 focus:outline-none"
           >
             {showPassword ? (
-              <Eye className="w-5 h-5 text-gray-500" />
+              <Eye className="w-4 h-4 text-gray-500" />
             ) : (
-              <EyeOff className="w-5 h-5 text-gray-500" />
+              <EyeOff className="w-4 h-4 text-gray-500" />
             )}
           </button>
         )}
