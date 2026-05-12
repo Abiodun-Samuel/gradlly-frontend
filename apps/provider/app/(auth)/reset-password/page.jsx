@@ -1,5 +1,5 @@
 "use client";
-import { InputForm } from "@gradlly/ui";
+import { InputField } from "@/components/form/InputField";
 
 export default function ResetPasswordPage() {
   return (
@@ -22,10 +22,11 @@ export default function ResetPasswordPage() {
           <label className="block text-xs font-medium text-[#444] mb-1.5 tracking-wide">
             Email address <span className="text-red-400">*</span>
           </label>
-          <InputForm
+          <InputField
             name="email"
             placeholder="you@yourorganisation.com"
             error={undefined}
+            register={undefined}
           />
         </div>
 

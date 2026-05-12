@@ -1,9 +1,9 @@
 import "server-only";
 import { NextResponse } from "next/server";
 
-import { serverEnv } from "@/config/env.server";
-import { AUTH_API_PATHS, CSRF_HEADER } from "@/features/auth/config";
-import { readAccessToken } from "@/features/auth/lib/session-cookies";
+import { serverEnv } from "@/config/env/server";
+import { AUTH_API_PATHS, CSRF_HEADER } from "@/features/auth/constants";
+import { readAccessToken } from "@/features/auth/server/session-cookies";
 import * as authService from "@/features/auth/services/auth.service";
 
 /**

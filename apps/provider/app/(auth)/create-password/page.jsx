@@ -1,5 +1,6 @@
 "use client";
-import { InputForm } from "@gradlly/ui";
+
+import { InputField } from "@/components/form/InputField";
 
 export default function CreatePasswordPage() {
   return (
@@ -22,9 +23,10 @@ export default function CreatePasswordPage() {
           <label className="block text-xs font-medium text-[#444] mb-1.5 tracking-wide">
             Password <span className="text-red-400">*</span>
           </label>
-          <InputForm
+          <InputField
             name="password"
             type="password"
+            register={undefined}
             placeholder="Min. 8 characters"
             error={undefined}
           />
@@ -34,9 +36,10 @@ export default function CreatePasswordPage() {
           <label className="block text-xs font-medium text-[#444] mb-1.5 tracking-wide">
             Confirm Password <span className="text-red-400">*</span>
           </label>
-          <InputForm
+          <InputField
             name="confirm"
             type="password"
+            register={undefined}
             placeholder="Re-enter your password"
             error={undefined}
           />
