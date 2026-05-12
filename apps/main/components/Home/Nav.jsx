@@ -1,4 +1,4 @@
-import { useScrolled } from "../hooks";
+import { useScrolled } from "@/hooks";
 
 export default function Nav({ menuOpen, setMenuOpen }) {
   const scrolled = useScrolled(50);
@@ -55,6 +55,7 @@ export default function Nav({ menuOpen, setMenuOpen }) {
             className="md:hidden items-center flex mt-3 flex-col gap-1.5 p-1 bg-transparent border-0 cursor-pointer"
             onClick={() => setMenuOpen(true)}
           >
+            {""}
             <span className="block w-5 h-0.5 bg-stone-800 rounded" />
             <span className="block w-5 h-0.5 bg-stone-800 rounded" />
             <span className="block w-5 h-0.5 bg-stone-800 rounded" />

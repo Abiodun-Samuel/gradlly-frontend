@@ -1,6 +1,6 @@
 import { createPageMetadata, createViewport } from "@gradlly/utils";
 
-import "@/styles/globals.css";
+import "@/assets/css/globals.css";
 import { AppProvider } from "@/providers";
 
 export const metadata = createPageMetadata({

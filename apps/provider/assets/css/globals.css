@@ -1,0 +1,106 @@
+@import "@gradlly/config/tailwind/base.css";
+@source "../../../../packages/ui/src";
+
+/* ============================================================
+   MAIN PORTAL — DARK NAVY + BLUE THEME
+   Deep space sidebar (#060c18), vivid blue accent (#3b82f6),
+   clean white canvas.
+   ============================================================ */
+
+:root {
+  --portal-accent: #3b82f6;
+  --portal-accent-hover: #2563eb;
+  --portal-accent-subtle: #eff6ff;
+  --portal-accent-fg: #ffffff;
+  --portal-sidebar-bg: #060c18;
+  --portal-header-bg: #ffffff;
+}
+
+/* ============================================================
+   PRIMARY COLOUR SCALE  (bg-primary-*, text-primary-*, etc.)
+   ============================================================ */
+
+@theme {
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+  --color-primary-950: #172554;
+}
+
+/* ============================================================
+   PORTAL ACCENT UTILITIES  (bg-accent, text-accent, etc.)
+   @theme inline emits var() refs so each portal gets its colour.
+   ============================================================ */
+
+@theme inline {
+  --color-accent: var(--portal-accent);
+  --color-accent-hover: var(--portal-accent-hover);
+  --color-accent-subtle: var(--portal-accent-subtle);
+  --color-accent-fg: var(--portal-accent-fg);
+  --color-sidebar: var(--portal-sidebar-bg);
+  --color-portal-header: var(--portal-header-bg);
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+
+@keyframes dashboard-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dropdown-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

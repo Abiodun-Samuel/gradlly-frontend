@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev --port 3000",
+    "dev": "next dev --port 3005",
     "build": "next build",
-    "start": "next start --port 3000",
+    "start": "next start --port 3005",
     "lint": "eslint . --max-warnings 0",
     "type-check": "tsc --noEmit",
     "clean": "rm -rf .next dist"
@@ -27,13 +27,6 @@
     "zod": "^4.1.11"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@tanstack/react-query-devtools": "^5.0.0",
-    "@types/node": "^20",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4",
-    "typescript": "^5.4.5"
+    "@tanstack/react-query-devtools": "^5.0.0"
   }
 }

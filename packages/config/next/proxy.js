@@ -1,6 +1,3 @@
-// :contentReference[oaicite:0]{index=0}
-// packages/utils/src/proxy/index.js
-
 import { NextResponse } from "next/server";
 
 // ─── Route tables ──────────────────────────────────────────────────────────

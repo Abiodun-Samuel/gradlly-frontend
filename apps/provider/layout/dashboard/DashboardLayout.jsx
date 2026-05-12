@@ -3,13 +3,14 @@ import { useState } from "react";
 
 import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
-export function DashboardLayout({ children }) {
+export function DashboardLayout({ user, children }) {
+  // const user = await getMe();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
     <div className="flex h-dvh overflow-hidden bg-surface-1">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <Header onMenuClick={() => setSidebarOpen(true)} />
+        <Header onMenuClick={() => setSidebarOpen(true)} user={user} />
         <main className="flex-1 overflow-y-auto">
           <div className="mx-auto max-w-screen-2xl animate-[page-enter_250ms_ease-out_forwards] p-5 sm:p-6">
             {children}

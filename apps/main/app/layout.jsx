@@ -1,7 +1,6 @@
 import { createPageMetadata, createViewport } from "@gradlly/utils";
 
 import "@/assets/css/globals.css";
-import { AppProvider } from "@/providers";
 
 export const metadata = createPageMetadata({
   description:
@@ -16,7 +15,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="h-full antialiased">
       <body>
-        <AppProvider>{children}</AppProvider>
+        <>{children}</>
       </body>
     </html>
   );

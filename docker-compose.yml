@@ -33,14 +33,14 @@ services:
       dockerfile: apps/main/Dockerfile
       args:
         APP_NAME: main
-        PORT: 3000
+        PORT: 3005
     container_name: gradlly-main
     env_file:
       - .env.docker
     environment:
-      - PORT=3000
+      - PORT=3005
     expose:
-      - "3000"
+      - "3005"
     networks:
       - gradlly-network
     restart: unless-stopped

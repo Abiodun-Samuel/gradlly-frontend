@@ -1,4 +1,4 @@
-import { useInView } from "../hooks";
+import { useInView } from "../../hooks";
 
 export default function Reveal({ children, delay = 0, className = "" }) {
   const [ref, visible] = useInView();

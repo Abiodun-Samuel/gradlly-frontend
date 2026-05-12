@@ -4,7 +4,7 @@ import { createProxy } from "@gradlly/config/next/proxy";
 
 export const proxy = createProxy({
   portalId: "main",
-  extraPublicRoutes: ["/", "/docs"],
+  extraPublicRoutes: ["/"],
 });
 
 export const config = {

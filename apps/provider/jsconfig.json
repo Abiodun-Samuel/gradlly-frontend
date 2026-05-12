@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "./",
     "ignoreDeprecations": "6.0",
     "allowJs": true,
     "checkJs": false,
@@ -21,5 +21,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", ".next", "dist"]
 }
