@@ -1,101 +1,156 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
+import { PORTAL } from "@/config/portal.config";
+import { AUTH_REDIRECTS } from "@/features/auth/constants";
+import { AUTH_QUERY_KEYS } from "@/features/auth/queries/keys";
 import {
-  signupAction,
-  loginAction,
-  logoutAction,
-  meAction,
-} from "../actions/auth.actions";
-import { plainToAuthError } from "../errors";
-import { AUTH_QUERY_KEYS } from "./keys";
-
-/**
- * Auth query/mutation hooks.
- *
- * Note on redirects: signup/login/logout actions `redirect()` from the
- * SERVER on success. We do NOT call `router.replace` here — doing so
- * caused a redirect loop because the client-side navigation could fire
- * before the cookies were committed.
- *
- * When an action redirects, Next.js short-circuits the mutation: the
- * promise rejects with a special internal error that the framework
- * intercepts and turns into navigation. The `onSuccess` handlers below
- * therefore only fire on the no-redirect actions (i.e. `useMe`).
- *
- * If a mutation returns `{ ok: false, error }` we surface it as an
- * `AuthError` so the form can hand it to `applyServerErrors`.
- */
-
-// ---------------------------------------------------------------------------
-// useMe
-// ---------------------------------------------------------------------------
+  forgotPassword,
+  getMe,
+  login,
+  logout,
+  resendVerificationEmail,
+  resetPassword,
+  signup,
+  verifyEmail,
+} from "@/features/auth/services/auth.service";
+import { toastError, toastSuccess } from "@/hooks/useToast";
+import { ERROR_CODES } from "@/lib/errors";
 
 export function useMe(options = {}) {
   return useQuery({
-    queryKey: AUTH_QUERY_KEYS.me,
-    queryFn: async () => {
-      const result = await meAction();
-      if (!result.ok) {
-        if (result.error?.status === 401) return null;
-        throw plainToAuthError(result.error);
-      }
-      return result.user;
-    },
+    queryKey: AUTH_QUERY_KEYS.me(),
+    queryFn: getMe,
     staleTime: 30_000,
     retry: false,
     ...options,
   });
 }
 
-// ---------------------------------------------------------------------------
-// useSignup — redirect happens on the server
-// ---------------------------------------------------------------------------
-
-export function useSignup() {
-  return useMutation({
-    mutationFn: async (values) => {
-      const result = await signupAction(values);
-      // If the action redirected, control doesn't reach here.
-      // We only get a result on failure.
-      if (result && !result.ok) throw plainToAuthError(result.error);
-      return result;
-    },
-  });
-}
-
-// ---------------------------------------------------------------------------
-// useLogin — redirect happens on the server
-// ---------------------------------------------------------------------------
-
 export function useLogin() {
-  return useMutation({
-    mutationFn: async (values) => {
-      const result = await loginAction(values);
-      if (result && !result.ok) throw plainToAuthError(result.error);
-      return result;
-    },
-  });
-}
-
-// ---------------------------------------------------------------------------
-// useLogout — redirect happens on the server; we just clear cache
-// ---------------------------------------------------------------------------
-
-export function useLogout() {
+  const router = useRouter();
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: async () => {
-      const result = await logoutAction();
-      if (result && !result.ok) throw plainToAuthError(result.error);
-      return result;
+    mutationFn: login,
+    onSuccess: (data) => {
+      toastSuccess(data?.message || "Welcome back!");
+      qc.removeQueries({ queryKey: AUTH_QUERY_KEYS.me() });
+      router.replace(AUTH_REDIRECTS.DASHBOARD_HOME_PAGE);
     },
-    onMutate: () => {
-      // Clear cached user immediately so any client UI that reads
-      // useMe doesn't flash stale data during the redirect.
-      qc.removeQueries({ queryKey: AUTH_QUERY_KEYS.me });
+    onError: (error) => {
+      if (error.code !== ERROR_CODES.VALIDATION) {
+        toastError(error.message);
+      }
+    },
+  });
+}
+
+export function useSignup() {
+  const router = useRouter();
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: signup,
+    onSuccess: (data, variables) => {
+      toastSuccess(data?.message || "Account created! Check your inbox.");
+      qc.removeQueries({ queryKey: AUTH_QUERY_KEYS.me() });
+      // Start cooldown here so the resend button is locked on the verify-email page
+      localStorage.setItem(
+        PORTAL.emailVerification.storageKey,
+        String(Date.now()),
+      );
+      const email = encodeURIComponent(variables.email);
+      router.replace(`${AUTH_REDIRECTS.VERIFY_EMAIL_PAGE}?email=${email}`);
+    },
+    onError: (error) => {
+      if (error.code !== ERROR_CODES.VALIDATION) {
+        toastError(error.message);
+      }
+    },
+  });
+}
+
+export function useVerifyEmail() {
+  const router = useRouter();
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: verifyEmail,
+    onSuccess: (data) => {
+      toastSuccess(data?.message || "Email verified successfully!");
+      qc.removeQueries({ queryKey: AUTH_QUERY_KEYS.me() });
+      router.replace(AUTH_REDIRECTS.DASHBOARD_HOME_PAGE);
+    },
+    onError: (error) => {
+      if (error.code !== ERROR_CODES.VALIDATION) {
+        toastError(error.message);
+      }
+    },
+  });
+}
+
+export function useResendVerification() {
+  return useMutation({
+    mutationFn: resendVerificationEmail,
+    onSuccess: (data) => {
+      toastSuccess(data?.message || "Verification email sent.");
+    },
+    onError: (error) => {
+      toastError(error.message || "Failed to resend. Please try again.");
+    },
+  });
+}
+
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: forgotPassword,
+    onSuccess: (data) => {
+      toastSuccess(
+        data?.message || "Check your inbox for a password reset link.",
+      );
+    },
+    onError: (error) => {
+      if (error.code !== ERROR_CODES.VALIDATION) {
+        toastError(error.message);
+      }
+    },
+  });
+}
+
+export function useResetPassword() {
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: resetPassword,
+    onSuccess: (data) => {
+      toastSuccess(
+        data?.message || "Password reset successfully. Please log in.",
+      );
+      router.replace(AUTH_REDIRECTS.LOGIN_PAGE);
+    },
+    onError: (error) => {
+      if (error.code !== ERROR_CODES.VALIDATION) {
+        toastError(error.message);
+      }
+    },
+  });
+}
+
+export function useLogout() {
+  const router = useRouter();
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: logout,
+    onSuccess: () => {
+      toastSuccess("Signed out successfully.");
+    },
+    onSettled: () => {
+      qc.clear();
+      router.replace(AUTH_REDIRECTS.LOGIN_PAGE);
     },
   });
 }

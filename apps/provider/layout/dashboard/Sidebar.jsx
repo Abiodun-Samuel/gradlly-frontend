@@ -1,214 +1,257 @@
 "use client";
-import { cn } from "@gradlly/utils";
+
+import * as LucideIcons from "lucide-react";
 import { X } from "lucide-react";
+import Link from "next/link";
 
-import { SidebarSection } from "./SidebarSection";
+import { GradllyLogo } from "@/assets/svgs/GradllyLogo";
+import { Avatar } from "@/components/ui/Avatar";
+import { NAV_SECTIONS, UTILITY_LINKS } from "@/data/sidebar.data";
+import { LogoutButton } from "@/features/auth/components/LogoutButton";
+import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
+import { capitalise, getFullName, getInitials } from "@/utils/helper";
 
-import { progressData, sidebarData, portalMeta } from "@/data/sidebar.data";
+import { SidebarNavSection } from "./SidebarNavSection";
 
-const R = 17,
-  C = 2 * Math.PI * R;
+// ─── Sub-blocks ───────────────────────────────────────────────────────────────
 
-function ArcProgress({ percent }) {
-  const offset = C - (percent / 100) * C;
+function OrgBlock({ org }) {
+  const initial = (org?.name?.[0] ?? "G").toUpperCase();
+
   return (
-    <div className="relative size-[52px] shrink-0">
-      <svg
-        viewBox="0 0 44 44"
-        className="size-[52px]"
-        aria-hidden="true"
-        style={{ transform: "rotate(-90deg)" }}
+    <div className="shrink-0 px-4 py-3">
+      <div
+        className="rounded-xl p-3.5"
+        style={{
+          backgroundColor: "rgba(255,255,255,0.05)",
+          border: "1px solid rgba(255,255,255,0.06)",
+        }}
       >
-        <circle
-          cx="22"
-          cy="22"
-          r={R}
-          fill="none"
-          stroke="rgba(255,255,255,0.07)"
-          strokeWidth="3"
-        />
-        <circle
-          cx="22"
-          cy="22"
-          r={R}
-          fill="none"
-          stroke="var(--portal-accent)"
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeDasharray={C}
-          strokeDashoffset={offset}
-          style={{
-            transition:
-              "stroke-dashoffset 800ms cubic-bezier(0.34,1.56,0.64,1)",
-          }}
-        />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-px">
-        <span className="text-[12px] font-bold leading-none text-white">
-          {percent}
-        </span>
-        <span className="text-[7px] font-semibold uppercase tracking-wide text-white/40">
-          %
-        </span>
+        {/* Top row: avatar + name + tier */}
+        <div className="flex items-start gap-3">
+          {/* Org logo / avatar — larger, more prominent */}
+          <div
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-[18px] font-extrabold"
+            style={{
+              background: "linear-gradient(145deg, #2c6b44 0%, #143d27 100%)",
+              color: "#78bf8d",
+              boxShadow:
+                "0 0 0 1px rgba(94,164,120,0.22), inset 0 1px 0 rgba(255,255,255,0.07)",
+            }}
+          >
+            {initial}
+          </div>
+
+          <div className="min-w-0 flex-1 pt-0.5">
+            <p className="truncate text-[13.5px] font-bold leading-tight text-white/90">
+              {org?.name}
+            </p>
+            <p
+              className="mt-1 font-mono text-[10px] font-medium"
+              style={{ color: "rgba(255,255,255,0.3)" }}
+            >
+              UKPRN&nbsp;&middot;&nbsp;{org?.ukprn}
+            </p>
+          </div>
+        </div>
+
+        {/* Badge row */}
+        <div
+          className="mt-3 flex items-center gap-1.5 border-t pt-2.5"
+          style={{ borderColor: "rgba(255,255,255,0.06)" }}
+        >
+          <span
+            className="rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider"
+            style={{
+              backgroundColor: "rgba(94,164,120,0.14)",
+              color: "#78bf8d",
+            }}
+          >
+            Provider
+          </span>
+          <span
+            className="rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider"
+            style={{
+              backgroundColor: "rgba(255,255,255,0.07)",
+              color: "rgba(255,255,255,0.45)",
+            }}
+          >
+            Pro
+          </span>
+          <span
+            className="ml-auto flex items-center gap-1"
+            style={{ color: "#78bf8d" }}
+          >
+            <span
+              className="h-1.5 w-1.5 rounded-full bg-success-400"
+              aria-hidden
+            />
+            <span className="text-[10px] font-semibold">Active</span>
+          </span>
+        </div>
       </div>
     </div>
   );
 }
 
-function LogoSection({ onClose }) {
+function UserBlock({ user, roles }) {
+  const initials = getInitials(user?.firstName, user?.lastName);
+  const fullName = getFullName(user);
+  const role = capitalise(roles?.[0] ?? "member");
+
   return (
     <div
-      className="relative flex shrink-0 items-center justify-between px-5 py-[18px]"
-      style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+      className="shrink-0 px-3 py-2.5"
+      style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
     >
       <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px"
-        style={{
-          background:
-            "linear-gradient(90deg,transparent 0%,color-mix(in srgb,var(--portal-accent) 55%,transparent) 45%,color-mix(in srgb,var(--portal-accent) 15%,transparent) 100%)",
-        }}
-      />
-      <div className="flex items-center gap-3.5">
-        <div
-          className="flex size-10 shrink-0 items-center justify-center rounded-xl"
-          style={{
-            background:
-              "linear-gradient(145deg,color-mix(in srgb,var(--portal-accent) 42%,transparent) 0%,color-mix(in srgb,var(--portal-accent) 20%,transparent) 100%)",
-            border:
-              "1px solid color-mix(in srgb,var(--portal-accent) 40%,transparent)",
-            boxShadow:
-              "0 0 18px color-mix(in srgb,var(--portal-accent) 20%,transparent),inset 0 1px 0 rgba(255,255,255,0.14)",
-          }}
-        >
-          <span className="font-display text-base font-bold text-white">G</span>
-        </div>
-        <div className="flex flex-col gap-[5px] leading-none">
-          <div className="flex items-center gap-2">
-            <span className="font-display text-[15px] font-semibold tracking-tight text-white/90">
-              Gradlly
-            </span>
-            {portalMeta?.name && (
-              <span
-                className="rounded-md px-[7px] py-[3px] text-[9px] font-bold uppercase tracking-wider text-white/48"
-                style={{
-                  background: "rgba(255,255,255,0.07)",
-                  border: "1px solid rgba(255,255,255,0.11)",
-                }}
-              >
-                {portalMeta.name}
-              </span>
-            )}
-          </div>
-          {portalMeta?.tagline && (
-            <span className="text-[10px] font-medium tracking-wide text-white/26">
-              {portalMeta.tagline}
-            </span>
+        className="flex items-center gap-2.5 rounded-xl px-3 py-2.5"
+        style={{ backgroundColor: "rgba(255,255,255,0.04)" }}
+      >
+        {/* Avatar with online dot */}
+        <div className="relative shrink-0">
+          <Avatar
+            initials={initials}
+            src={user?.avatarUrl}
+            size="sm"
+            className="ring-1 ring-white/10"
+          />
+          {user?.isActive && (
+            <span
+              aria-hidden
+              className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-success-400"
+              style={{ outline: "2px solid #03090d" }}
+            />
           )}
         </div>
-      </div>
-      <button
-        aria-label="Close sidebar"
-        data-icon-button
-        onClick={onClose}
-        className="rounded-lg p-1.5 text-white/28 transition-colors hover:bg-white/6 hover:text-white/55 lg:hidden"
-      >
-        <X aria-hidden="true" className="size-3.5" />
-      </button>
-    </div>
-  );
-}
 
-function ProgressCard() {
-  if (!progressData) return null;
-  const { percent, label, subtitle, detail } = progressData;
-  return (
-    <div
-      className="mx-3 mt-3 rounded-2xl p-4"
-      style={{
-        background: "rgba(255,255,255,0.032)",
-        border: "1px solid rgba(255,255,255,0.07)",
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05)",
-      }}
-    >
-      <div className="flex items-center gap-3.5">
-        <ArcProgress percent={percent} />
         <div className="min-w-0 flex-1">
-          <p className="text-[12px] font-semibold leading-snug text-white/84">
-            {label}
+          <p className="truncate text-[12.5px] font-semibold leading-snug text-white/85">
+            {fullName}
           </p>
-          <p className="mt-1 text-[11px] leading-none text-white/44">
-            {subtitle}
-          </p>
-          <p className="mt-1 text-[10px] leading-none text-white/26">
-            {detail}
+          <p
+            className="mt-0.5 truncate text-[10.5px] leading-none"
+            style={{ color: "rgba(255,255,255,0.32)" }}
+          >
+            {role}
           </p>
         </div>
-      </div>
-      <div
-        className="mt-3.5 h-[5px] overflow-hidden rounded-full"
-        style={{ background: "rgba(255,255,255,0.07)" }}
-      >
-        <div
-          className="h-full rounded-full transition-all duration-700"
-          style={{
-            width: `${percent}%`,
-            background:
-              "linear-gradient(90deg,var(--portal-accent) 0%,color-mix(in srgb,var(--portal-accent) 70%,white) 100%)",
-          }}
-        />
-      </div>
-      <div className="mt-2 flex items-center justify-between">
-        <span className="text-[9px] font-semibold uppercase tracking-wide text-white/20">
-          Start
-        </span>
-        <span className="text-[10px] font-semibold text-white/38">
-          {percent}% complete
-        </span>
-        <span className="text-[9px] font-semibold uppercase tracking-wide text-white/20">
-          End
-        </span>
+
+        <LogoutButton variant="sidebar" />
       </div>
     </div>
   );
 }
 
-export function Sidebar({ isOpen, onClose }) {
+// ─── Main export ──────────────────────────────────────────────────────────────
+
+export function Sidebar({ onClose }) {
+  const { user, activeOrganisation } = useAuthUser();
+  const org = activeOrganisation?.organisation;
+  const roles = activeOrganisation?.roles ?? [];
+
   return (
-    <>
-      {isOpen && (
-        <div
-          aria-hidden="true"
-          className="fixed inset-0 z-300 bg-black/65 backdrop-blur-sm lg:hidden"
-          onClick={onClose}
-        />
-      )}
-      <aside
-        aria-label="Sidebar navigation"
-        className={cn(
-          "fixed inset-y-0 left-0 z-400 flex w-[272px] flex-col transition-transform duration-300 ease-out lg:relative lg:z-auto lg:translate-x-0",
-          isOpen ? "translate-x-0" : "-translate-x-full",
-        )}
-        style={{ background: "var(--portal-sidebar-bg)" }}
+    <aside
+      aria-label="Main navigation"
+      className="relative flex h-full w-66 flex-col overflow-hidden"
+      style={{ backgroundColor: "#03090d" }}
+    >
+      {/* Top shimmer line */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 z-10 h-[2px] pointer-events-none"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent 0%, rgba(94,164,120,0.55) 50%, transparent 100%)",
+        }}
+      />
+
+      {/* Brand lockup */}
+      <div
+        className="flex shrink-0 items-center justify-between px-4 py-4"
+        style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
       >
-        <LogoSection onClose={onClose} />
-        <ProgressCard />
-        <nav
-          aria-label="Main navigation"
-          className="flex-1 space-y-4 overflow-y-auto px-3 py-4 [scrollbar-width:none]"
+        <Link
+          href="/"
+          aria-label="Gradlly home"
+          className="flex items-center gap-2.5 rounded focus-visible:outline-2 focus-visible:outline-primary-300 focus-visible:outline-offset-2"
         >
-          {sidebarData.map((section) => (
-            <SidebarSection key={section.title} section={section} />
-          ))}
-        </nav>
-        <div
-          className="flex items-center justify-between px-5 py-3"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
-        >
-          <span className="text-[10px] text-white/16">v0.1.0</span>
-          <span className="text-[10px] text-white/16">© 2026 Gradlly</span>
-        </div>
-      </aside>
-    </>
+          <GradllyLogo size={34} />
+          <span className="text-[16px] font-bold tracking-tight text-white/90">
+            Gradlly
+          </span>
+          <span
+            className="rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide"
+            style={{
+              backgroundColor: "rgba(94,164,120,0.14)",
+              color: "#78bf8d",
+            }}
+          >
+            Provider
+          </span>
+        </Link>
+
+        {onClose && (
+          <button
+            onClick={onClose}
+            aria-label="Close sidebar"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-white/25 transition-colors hover:bg-white/6 hover:text-white/60 focus-visible:outline-2 focus-visible:outline-primary-300 lg:hidden"
+          >
+            <X aria-hidden className="h-3.5 w-3.5" />
+          </button>
+        )}
+      </div>
+
+      {/* Org block */}
+      <OrgBlock org={org} />
+
+      {/* Thin divider */}
+      <div
+        className="mx-4 shrink-0"
+        style={{ height: "1px", backgroundColor: "rgba(255,255,255,0.04)" }}
+      />
+
+      {/* Primary nav — scrollable */}
+      <nav
+        aria-label="Primary navigation"
+        className="flex-1 overflow-y-auto py-1 scrollbar-none"
+      >
+        {NAV_SECTIONS.map((section) => (
+          <SidebarNavSection key={section.title} section={section} />
+        ))}
+      </nav>
+
+      {/* Utility links */}
+      <div
+        className="shrink-0 py-1.5"
+        style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
+        role="navigation"
+        aria-label="Utility navigation"
+      >
+        {UTILITY_LINKS.map(({ label, icon, href }) => {
+          const Icon = LucideIcons[icon];
+          return (
+            <Link
+              key={href}
+              href={href}
+              className="mx-2 flex items-center gap-3 rounded-md px-3.5 py-2.5 text-[13px] font-medium transition-colors duration-150 hover:bg-white/[0.07] hover:text-white/70 focus-visible:outline-2 focus-visible:outline-primary-300 focus-visible:-outline-offset-2"
+              style={{ color: "rgba(255,255,255,0.35)" }}
+            >
+              {Icon && (
+                <Icon
+                  aria-hidden
+                  className="h-4 w-4 shrink-0"
+                  strokeWidth={1.75}
+                />
+              )}
+              {label}
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* User block */}
+      <UserBlock user={user} roles={roles} />
+    </aside>
   );
 }

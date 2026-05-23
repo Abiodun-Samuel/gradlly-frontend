@@ -1,57 +1,69 @@
 "use client";
 
+import { prettifyField } from "@/utils/helper";
+
 /**
- * ServerErrorAlert — displays an error message returned by the backend.
+ * Renders the backend error envelope: error (category), message, and field errors.
  *
- * Not a form-error component. It renders the *server's* response when a
- * request fails: a 409 conflict, a 500, a network error, an aggregated
- * 422 summary, anything that came back over the wire.
+ * Accepts an ApiClientError (or any object with the same shape).
  *
  * Props:
- *   - error      either a string, an Error/AuthError, or a plain
- *                `{ message, code, status, fieldErrors }` object
- *   - title      optional heading (default: 'Something went wrong')
- *   - showFieldList  if true and `fieldErrors` is present, render an
- *                itemised list under the headline. Useful as a "summary"
- *                pattern at the top of long forms (GOV.UK style).
- *   - onDismiss  optional dismiss handler — renders a close button.
- *   - className  passthrough
- *
- * Returns `null` when there's nothing to show, so callers can render it
- * unconditionally.
+ *   error        — ApiClientError instance (or null/undefined to render nothing)
+ *   showFieldList — render per-field errors as a bullet list (default false)
+ *   onDismiss    — if provided, shows a dismiss button
+ *   className    — extra classes on the wrapper
  */
 export function ServerErrorAlert({
   error,
-  title = "Something went wrong",
   showFieldList = false,
   onDismiss,
   className = "",
 }) {
-  const normalized = normalize(error);
-  if (!normalized) return null;
+  if (!error) return null;
 
-  const { message, fieldErrors, requestId } = normalized;
+  // error.error  → backend's "error" field, e.g. "Unauthorized", "Unprocessable Entity"
+  // error.message → human-readable description,  e.g. "Invalid credentials"
+  // error.fieldErrors → per-field validation map, e.g. { email: "must be an email" }
+  const errorCategory = error.error ?? null;
+  const message = error.message ?? null;
+  const fieldErrors = error.fieldErrors ?? error.errors ?? null;
   const hasList =
     showFieldList && fieldErrors && Object.keys(fieldErrors).length > 0;
+
+  if (!errorCategory && !message && !hasList) return null;
 
   return (
     <div
       role="alert"
       aria-live="assertive"
       className={[
-        "rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800",
+        "rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm",
         className,
       ]
         .filter(Boolean)
         .join(" ")}
     >
-      <div className="flex items-start gap-3">
-        <div className="flex-1 min-w-0">
-          {title ? <p className="font-semibold mb-0.5">{title}</p> : null}
-          {message ? <p className="text-red-700">{message}</p> : null}
+      <div className="flex items-start gap-2">
+        <div className="min-w-0 flex-1 space-y-1">
+          {/* "Unauthorized" / "Unprocessable Entity" — HTTP error category */}
+          {errorCategory && (
+            <p className="font-semibold text-red-800">{errorCategory}</p>
+          )}
 
-          {hasList ? (
-            <ul className="mt-2 list-disc list-inside space-y-1 text-red-700">
+          {/* "Invalid credentials" / "Validation Error" — human-readable description */}
+          {message && (
+            <p
+              className={
+                errorCategory ? "text-red-700" : "font-medium text-red-700"
+              }
+            >
+              {message}
+            </p>
+          )}
+
+          {/* Per-field validation errors */}
+          {hasList && (
+            <ul className="mt-1 list-inside list-disc space-y-0.5 text-red-600">
               {Object.entries(fieldErrors).map(([field, msg]) => (
                 <li key={field}>
                   <span className="font-medium">{prettifyField(field)}:</span>{" "}
@@ -59,52 +71,20 @@ export function ServerErrorAlert({
                 </li>
               ))}
             </ul>
-          ) : null}
-
-          {requestId ? (
-            <p className="mt-2 text-[11px] text-red-600/80 font-mono">
-              Request ID: {requestId}
-            </p>
-          ) : null}
+          )}
         </div>
 
-        {onDismiss ? (
+        {onDismiss && (
           <button
             type="button"
             onClick={onDismiss}
-            aria-label="Dismiss"
-            className="text-red-700 hover:text-red-900 leading-none px-1"
+            aria-label="Dismiss error"
+            className="mt-0.5 shrink-0 p-0.5 leading-none text-red-400 transition-colors hover:text-red-700"
           >
             ×
           </button>
-        ) : null}
+        )}
       </div>
     </div>
   );
-}
-
-// ---------------------------------------------------------------------------
-// Normalization — accept anything reasonable, return a stable shape
-// ---------------------------------------------------------------------------
-
-function normalize(error) {
-  if (!error) return null;
-
-  if (typeof error === "string") {
-    return { message: error, fieldErrors: null, requestId: null };
-  }
-
-  // AuthError, plain auth error, or anything shaped close enough
-  const message = error.message ?? null;
-  const fieldErrors = error.fieldErrors ?? null;
-  const requestId = error.requestId ?? null;
-
-  if (!message && !fieldErrors) return null;
-  return { message, fieldErrors, requestId };
-}
-
-function prettifyField(field) {
-  const last = field.split(".").pop() ?? field;
-  const spaced = last.replace(/([A-Z])/g, " $1").toLowerCase();
-  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
 }

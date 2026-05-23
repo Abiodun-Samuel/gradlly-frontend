@@ -93,10 +93,10 @@ export const InputField = forwardRef(function InputField(
         <p
           id={`${name}-error`}
           role="alert"
-          className="mt-1 flex items-center gap-1 text-xs font-normal text-red-600"
+          className="mt-1 flex items-start gap-1 text-xs font-normal text-red-600"
         >
-          <AlertCircle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-          {error}
+          <AlertCircle className="w-3 h-3 shrink-0" aria-hidden="true" />
+          <span className="leading-none">{error}</span>
         </p>
       )}
     </div>

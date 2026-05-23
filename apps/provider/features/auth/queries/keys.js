@@ -1,7 +1,6 @@
-/**
- * Hierarchical React Query keys for the auth feature.
- * Centralizing keys prevents typos and makes cache management explicit.
- */
+// ============================================================
+// FILE: apps/provider/features/auth/queries/keys.js
+// ============================================================
 
 export const AUTH_QUERY_KEYS = Object.freeze({
   all: () => ["auth"],

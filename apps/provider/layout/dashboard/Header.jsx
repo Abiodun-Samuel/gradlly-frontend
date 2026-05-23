@@ -1,111 +1,186 @@
 "use client";
-import { cn } from "@gradlly/utils";
-import { CalendarDays, Menu } from "lucide-react";
+
+import {
+  ChevronDown,
+  ChevronRight,
+  HelpCircle,
+  Menu,
+  Settings,
+} from "lucide-react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useRef } from "react";
 
-import { NotificationBell } from "./NotificationBell";
-import { ProfileDropdown } from "./ProfileDropdown";
+import { Avatar } from "@/components/ui/Avatar";
+import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
+import { capitalise, cn, getFullName, getInitials } from "@/utils/helper";
 
-import { pageLabels, portalMeta, sidebarData } from "@/data/sidebar.data";
+import { HeaderNotifications } from "./HeaderNotifications";
+import { UserMenu } from "./UserMenu";
 
-function formatDate() {
-  return new Date().toLocaleDateString("en-GB", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-  });
-}
+// ─── Breadcrumb map ───────────────────────────────────────────────────────────
 
-function getSectionBreadcrumb(pathname) {
-  for (const section of sidebarData) {
-    for (const item of section.items) {
-      if (
-        pathname === item.href ||
-        (item.href !== "/" &&
-          item.href !== "/home" &&
-          pathname.startsWith(item.href))
-      )
-        return section.title;
-      if (item.children) {
-        for (const child of item.children) {
-          if (
-            pathname === child.href ||
-            (child.href !== "/" && pathname.startsWith(child.href))
-          )
-            return section.title;
-        }
-      }
-    }
-  }
-  return null;
-}
+const BREADCRUMBS = {
+  "/": { parent: "Overview", current: "Dashboard" },
+  "/cohort": { parent: "Overview", current: "Cohort" },
+  "/at-risk": { parent: "Overview", current: "At-Risk Queue" },
+  "/ofsted-hub": { parent: "Compliance", current: "Ofsted Hub" },
+  "/qip": { parent: "Compliance", current: "QIP" },
+  "/ilr-das": { parent: "Compliance", current: "ILR & DAS" },
+  "/evidence-vault": { parent: "Compliance", current: "Evidence Vault" },
+  "/reviews": { parent: "Delivery", current: "Reviews" },
+  "/tutors": { parent: "Delivery", current: "Tutors" },
+  "/employers": { parent: "Delivery", current: "Employers" },
+  "/commitment-statements": {
+    parent: "Delivery",
+    current: "Commitment Statements",
+  },
+  "/reports": { parent: "Insights", current: "Reports" },
+  "/ksb-coverage": { parent: "Insights", current: "KSB Coverage" },
+  "/settings": { parent: "Account", current: "Settings" },
+  "/profile": { parent: "Account", current: "Profile" },
+  "/help": { parent: "Support", current: "Help & Docs" },
+};
 
-export function Header({ onMenuClick }) {
+// ─── Shared icon-button class ─────────────────────────────────────────────────
+
+const ICON_BTN = cn(
+  "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
+  "text-neutral-500 transition-colors duration-150",
+  "hover:bg-neutral-100 hover:text-neutral-700",
+  "focus-visible:outline-2 focus-visible:outline-primary-700 focus-visible:outline-offset-2",
+);
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export function Header({ onMenuOpen, userMenuOpen, onUserMenuOpenChange }) {
+  const { user, activeOrganisation } = useAuthUser();
   const pathname = usePathname();
-  const title = pageLabels[pathname] ?? "Dashboard";
-  const section = getSectionBreadcrumb(pathname);
-  const date = formatDate();
+  const avatarRef = useRef(null);
+
+  const breadcrumb = BREADCRUMBS[pathname] ?? {
+    parent: "Overview",
+    current: "Dashboard",
+  };
+  const initials = getInitials(user?.firstName, user?.lastName);
+  const fullName = getFullName(user);
+  const role = capitalise(activeOrganisation?.roles?.[0] ?? "member");
+
   return (
     <header
-      className="sticky top-0 z-200 flex h-18 shrink-0 items-center gap-4 bg-surface-0 px-4 sm:px-6"
+      className="sticky top-0 z-200 flex h-16 shrink-0 items-center border-b border-neutral-100 px-4 sm:px-6"
       style={{
-        borderBottom: "1px solid var(--color-border)",
-        boxShadow: "0 1px 0 var(--color-border),0 4px 16px rgba(0,0,0,0.03)",
+        backgroundColor: "rgba(255,255,255,0.96)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
       }}
     >
+      <a href="#main-content" className="sr-only-focusable">
+        Skip to content
+      </a>
+
+      {/* ── Left: hamburger + breadcrumb ─────────────────────────── */}
       <div className="flex min-w-0 flex-1 items-center gap-3">
+        {/* Mobile menu */}
         <button
+          onClick={onMenuOpen}
           aria-label="Open navigation menu"
-          data-icon-button
-          onClick={onMenuClick}
-          className="flex size-9 shrink-0 items-center justify-center rounded-xl text-text-tertiary transition-colors hover:bg-surface-2 hover:text-text-primary lg:hidden"
+          className={cn(ICON_BTN, "lg:hidden")}
         >
-          <Menu aria-hidden="true" className="size-4.5" />
+          <Menu aria-hidden className="h-4.5 w-4.5" />
         </button>
-        <div
-          aria-hidden="true"
-          className="hidden h-8 w-px bg-surface-3 lg:block"
-        />
-        <div className="min-w-0">
-          <div className="mb-1.25 flex items-center gap-1.5">
-            <span className="text-[11px] font-medium text-text-tertiary">
-              {portalMeta?.name ?? "Portal"}
-            </span>
-            {section && (
-              <>
-                <span className="text-[11px] text-text-disabled">/</span>
-                <span className="text-[11px] font-medium text-text-tertiary">
-                  {section}
-                </span>
-              </>
-            )}
-          </div>
-          <h1 className="truncate text-[17px] font-semibold leading-none tracking-tight text-text-primary">
-            {title}
-          </h1>
-        </div>
+
+        {/* Breadcrumb */}
+        <nav aria-label="Breadcrumb">
+          <ol className="flex items-center gap-1.5">
+            <li className="hidden text-xs font-medium text-neutral-400 sm:block">
+              {breadcrumb.parent}
+            </li>
+            <li aria-hidden className="hidden sm:block">
+              <ChevronRight className="h-3 w-3 text-neutral-300" />
+            </li>
+            <li>
+              <span className="text-sm font-semibold text-neutral-800">
+                {breadcrumb.current}
+              </span>
+            </li>
+          </ol>
+        </nav>
       </div>
-      <div className="flex shrink-0 items-center gap-2">
-        <div
-          className={cn(
-            "hidden items-center gap-1.5 rounded-xl px-3 py-1.75 xl:flex border border-(--color-border) bg-surface-1",
-          )}
+
+      {/* ── Right: actions + notifications + user ────────────────── */}
+      <div className="flex shrink-0 items-center gap-1">
+        {/* Settings shortcut */}
+        <Link
+          href="/settings"
+          aria-label="Settings"
+          className={ICON_BTN}
+          title="Settings"
         >
-          <CalendarDays
-            aria-hidden="true"
-            className="size-3.5 text-text-tertiary"
+          <Settings aria-hidden className="h-4.5 w-4.5" strokeWidth={1.75} />
+        </Link>
+
+        {/* Help / Docs */}
+        <Link
+          href="/help"
+          aria-label="Help and docs"
+          className={ICON_BTN}
+          title="Help & Docs"
+        >
+          <HelpCircle aria-hidden className="h-4.5 w-4.5" strokeWidth={1.75} />
+        </Link>
+
+        {/* Notifications */}
+        <HeaderNotifications />
+
+        {/* Separator */}
+        <div aria-hidden className="mx-1.5 h-5 w-px bg-neutral-200" />
+
+        {/* User button */}
+        <div className="relative">
+          <button
+            ref={avatarRef}
+            onClick={() => onUserMenuOpenChange?.(!userMenuOpen)}
+            aria-label="Open user menu"
+            aria-expanded={userMenuOpen}
+            aria-haspopup="menu"
+            className={cn(
+              "flex items-center gap-2 rounded-xl px-2 py-1.5",
+              "transition-colors duration-150",
+              "hover:bg-neutral-100",
+              "focus-visible:outline-2 focus-visible:outline-primary-700 focus-visible:outline-offset-2",
+              userMenuOpen && "bg-neutral-100",
+            )}
+          >
+            <Avatar
+              initials={initials}
+              src={user?.avatarUrl}
+              size="sm"
+              className="shrink-0 ring-2 ring-primary-100"
+            />
+            <div className="hidden min-w-0 text-left sm:block">
+              <p className="text-[13px] font-semibold leading-snug text-neutral-800">
+                {fullName}
+              </p>
+              <p className="text-[11px] leading-none text-neutral-400">
+                {role}
+              </p>
+            </div>
+            <ChevronDown
+              aria-hidden
+              className={cn(
+                "hidden h-3 w-3 shrink-0 text-neutral-400 transition-transform duration-150 sm:block",
+                userMenuOpen && "rotate-180",
+              )}
+            />
+          </button>
+
+          <UserMenu
+            open={userMenuOpen}
+            onClose={() => onUserMenuOpenChange?.(false)}
+            anchorRef={avatarRef}
           />
-          <span className="text-xs font-medium text-text-secondary">
-            {date}
-          </span>
         </div>
-        <NotificationBell />
-        <div
-          aria-hidden="true"
-          className="h-5 w-px"
-          style={{ background: "var(--color-border)" }}
-        />
-        <ProfileDropdown />
       </div>
     </header>
   );

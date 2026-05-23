@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\" -Directory)",
+      "WebSearch",
+      "Bash(Get-ChildItem -Recurse \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\provider\\\\app\\\\api\")",
+      "Bash(Select-Object FullName)",
+      "Bash(npm install *)",
+      "Bash(npx eslint *)",
+      "Bash(node_modules/.bin/eslint apps/provider --ext .js,.jsx)",
+      "Bash(node_modules/.bin/knip --workspace apps/provider)",
+      "Bash(node_modules/.bin/eslint apps/provider --ext .js,.jsx --fix)",
+      "Bash(npm uninstall *)",
+      "Bash(node_modules/.bin/eslint apps/provider/app/\\\\\\(dashboard\\\\\\)/page.jsx)",
+      "Bash(cat apps/provider/next.config.js)",
+      "Bash(cat apps/provider/next.config.mjs)",
+      "Bash(node ../../node_modules/.bin/eslint app/\\\\\\(dashboard\\\\\\)/page.jsx lib/api/client.js features/auth/services/auth.service.js)",
+      "Bash(node \"../../node_modules/.bin/eslint\" \"app/\\(dashboard\\)/page.jsx\" \"lib/api/client.js\" \"features/auth/services/auth.service.js\")",
+      "Bash(node -e \"const e = require\\('./node_modules/eslint'\\); console.log\\(Object.keys\\(e\\)\\)\")",
+      "Bash(node -e ' *)",
+      "Bash(grep -o \".\\\\{80\\\\}extensions.\\\\{80\\\\}\" \"c:\\\\Users\\\\OLUYEMI\\\\.vscode\\\\extensions\\\\dbaeumer.vscode-eslint-3.0.24\\\\server\\\\out\\\\eslintServer.js\" 2>&1 | head -20)",
+      "Read(//c/Users/OLUYEMI/.vscode/extensions/dbaeumer.vscode-eslint-3.0.24/server/out/**)",
+      "Bash(cat \"C:\\\\Users\\\\OLUYEMI\\\\AppData\\\\Roaming\\\\Code\\\\User\\\\settings.json\" 2>&1)",
+      "Read(//c/Users/OLUYEMI/AppData/Roaming/Code/User/**)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\provider\" -Recurse -File)",
+      "Bash(Remove-Item \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\provider\\\\app\\\\icon.svg\" -Force)",
+      "Bash(Remove-Item \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\provider\\\\app\\\\icon.js\" -Force)",
+      "Bash(Remove-Item \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\provider\\\\public\\\\logo.svg\" -Force)",
+      "PowerShell(cd \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\"; Get-ChildItem -Path \"apps\\\\provider\" -MaxDepth 1 | Where-Object { $_.Name -match 'middleware|proxy' })",
+      "PowerShell(cd \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\"; Get-ChildItem -Path \"apps\\\\provider\" -Depth 0 | Where-Object { $_.Name -match 'middleware|proxy' })",
+      "PowerShell(Get-ChildItem -Path \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\provider\\\\app\" -Recurse -MaxDepth 2 2>$null | Where-Object { $_.PSIsContainer } | Select-Object -ExpandProperty FullName)",
+      "PowerShell(Get-ChildItem -Path \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\provider\\\\app\" -Recurse 2>$null | Where-Object { $_.PSIsContainer } | Select-Object -ExpandProperty FullName | Select-Object -First 30)",
+      "PowerShell(Get-ChildItem -Path \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\provider\\\\features\\\\auth\" -Recurse 2>$null | Where-Object { -not $_.PSIsContainer } | Select-Object -ExpandProperty FullName)",
+      "Bash(Remove-Item -Recurse -Force \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\provider\\\\app\\\\\\(auth\\)\\\\onboarding\")",
+      "Bash(npm ls *)",
+      "Bash(node -e \"const p = require\\('./node_modules/motion/package.json'\\); console.log\\(p.name, p.version\\)\")",
+      "Bash(node -e \"const m = require\\('./node_modules/motion/dist/index.cjs'\\); console.log\\(typeof m.AnimatePresence, typeof m.motion\\)\")",
+      "Bash(node -e \"const p = require\\('./node_modules/motion/package.json'\\); const exports = p.exports; console.log\\(JSON.stringify\\(Object.keys\\(exports\\), null, 2\\)\\)\")"
+    ]
+  }
+}

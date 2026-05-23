@@ -1,3 +1,7 @@
+// ============================================================
+// FILE: apps/provider/features/auth/schemas/index.js
+// ============================================================
+
 import { z } from "zod";
 
 const passwordSchema = z
@@ -13,16 +17,8 @@ const passwordSchema = z
   );
 
 export const signupSchema = z.object({
-  firstName: z
-    .string()
-    .trim()
-    .min(1, "First name is required")
-    .max(50, "First name is too long"),
-  lastName: z
-    .string()
-    .trim()
-    .min(1, "Last name is required")
-    .max(50, "Last name is too long"),
+  firstName: z.string().trim().min(1, "First name is required").max(50),
+  lastName: z.string().trim().min(1, "Last name is required").max(50),
   email: z
     .string()
     .trim()
@@ -58,7 +54,33 @@ export const loginDefaults = Object.freeze({
   password: "",
 });
 
-export function toSignupPayload(values) {
-  const { acceptTerms: _omit, ...rest } = values;
-  return rest;
-}
+export const forgotPasswordSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .min(1, "Email is required")
+    .email("Enter a valid email address"),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    newPassword: passwordSchema,
+    confirmPassword: z.string().min(1, "Please confirm your password"),
+  })
+  .superRefine(({ newPassword, confirmPassword }, ctx) => {
+    if (newPassword !== confirmPassword) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Passwords do not match",
+        path: ["confirmPassword"],
+      });
+    }
+  });
+
+export const forgotPasswordDefaults = Object.freeze({ email: "" });
+
+export const resetPasswordDefaults = Object.freeze({
+  newPassword: "",
+  confirmPassword: "",
+});

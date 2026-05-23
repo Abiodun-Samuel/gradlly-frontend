@@ -1,92 +1,44 @@
-export const portalMeta = {
-  name: "Provider",
-  tagline: "Course Hub",
-};
-
-export const sidebarData = [
+export const NAV_SECTIONS = [
   {
     title: "Overview",
     items: [
-      { label: "Dashboard", icon: "LayoutDashboard", href: "/home" },
-      { label: "Analytics", icon: "BarChart3", href: "/analytics" },
+      { label: "Dashboard", icon: "LayoutDashboard", href: "/" },
+      { label: "Cohort", icon: "Users", href: "/cohort" },
+      { label: "At-Risk Queue", icon: "AlertTriangle", href: "/at-risk" },
     ],
   },
   {
-    title: "Programme",
+    title: "Compliance",
     items: [
-      {
-        label: "Courses",
-        icon: "BookOpen",
-        href: "/courses",
-        children: [
-          { label: "Live Courses", href: "/courses/live" },
-          { label: "Drafts", href: "/courses/drafts" },
-          { label: "Archived", href: "/courses/archived" },
-        ],
-      },
-      { label: "Curriculum", icon: "BookMarked", href: "/curriculum" },
-      {
-        label: "Assessments",
-        icon: "ClipboardList",
-        href: "/assessments",
-        badge: { text: "11 pending", variant: "warning" },
-      },
+      { label: "Ofsted Hub", icon: "ShieldCheck", href: "/ofsted-hub" },
+      { label: "QIP", icon: "ClipboardCheck", href: "/qip" },
+      { label: "ILR & DAS", icon: "FileText", href: "/ilr-das" },
+      { label: "Evidence Vault", icon: "FolderLock", href: "/evidence-vault" },
     ],
   },
   {
-    title: "Learners",
+    title: "Delivery",
     items: [
-      { label: "All Learners", icon: "Users", href: "/learners" },
-      { label: "Progress", icon: "TrendingUp", href: "/progress" },
+      { label: "Reviews", icon: "CalendarCheck", href: "/reviews" },
+      { label: "Tutors", icon: "GraduationCap", href: "/tutors" },
+      { label: "Employers", icon: "Building2", href: "/employers" },
       {
-        label: "Reports",
-        icon: "FileText",
-        href: "/reports",
-        children: [
-          { label: "Completion", href: "/reports/completion" },
-          { label: "Engagement", href: "/reports/engagement" },
-        ],
+        label: "Commitment Statements",
+        icon: "FileSignature",
+        href: "/commitment-statements",
       },
     ],
   },
   {
-    title: "Account",
-    items: [{ label: "Settings", icon: "Settings", href: "/settings" }],
+    title: "Insights",
+    items: [
+      { label: "Reports", icon: "BarChart3", href: "/reports" },
+      { label: "KSB Coverage", icon: "BookOpen", href: "/ksb-coverage" },
+    ],
   },
 ];
 
-export const profileData = {
-  name: "Sarah Williams",
-  role: "Course Director",
-  initials: "SW",
-  isOnline: true,
-  stats: [
-    { value: "47", label: "learners" },
-    { value: "11", label: "courses" },
-  ],
-};
-
-export const progressData = {
-  label: "Delivery Progress",
-  percent: 72,
-  subtitle: "Q2 cohort · 8 of 11 courses",
-  detail: "On schedule · 2 pending review",
-};
-
-export const pageLabels = {
-  "/home": "Dashboard",
-  "/analytics": "Analytics",
-  "/courses": "Courses",
-  "/courses/live": "Live Courses",
-  "/courses/drafts": "Drafts",
-  "/courses/archived": "Archived",
-  "/curriculum": "Curriculum",
-  "/assessments": "Assessments",
-  "/learners": "All Learners",
-  "/progress": "Progress",
-  "/reports": "Reports",
-  "/reports/completion": "Completion Report",
-  "/reports/engagement": "Engagement Report",
-  "/settings": "Settings",
-  "/profile": "Profile",
-};
+export const UTILITY_LINKS = [
+  { label: "Help & Docs", icon: "HelpCircle", href: "/help" },
+  { label: "Settings", icon: "Settings", href: "/settings" },
+];
