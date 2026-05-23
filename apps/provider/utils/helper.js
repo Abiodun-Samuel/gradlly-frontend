@@ -144,40 +144,6 @@ export function slugify(value = "") {
     ?.replace(/-+/g, "-");
 }
 
-// ── Cooldown helpers ──────────────────────────────────────────
-// Config lives in PORTAL (portal.config.js). These helpers reference PORTAL
-// inside their bodies (at call time), which is safe despite the circular import
-// between helper.js and portal.config.js — PORTAL is fully initialised by the
-// time any of these functions are first invoked at runtime.
-
-export function startVerifyCooldown() {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(PORTAL.emailVerification.storageKey, String(Date.now()));
-}
-
-export function getVerifySecondsLeft() {
-  if (typeof window === "undefined") return 0;
-  const raw = localStorage.getItem(PORTAL.emailVerification.storageKey);
-  if (!raw) return 0;
-  const remaining =
-    PORTAL.emailVerification.cooldownMs - (Date.now() - Number(raw));
-  return remaining > 0 ? Math.ceil(remaining / 1000) : 0;
-}
-
-export function startFpCooldown() {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(PORTAL.forgotPassword.storageKey, String(Date.now()));
-}
-
-export function getFpSecondsLeft() {
-  if (typeof window === "undefined") return 0;
-  const raw = localStorage.getItem(PORTAL.forgotPassword.storageKey);
-  if (!raw) return 0;
-  const remaining =
-    PORTAL.forgotPassword.cooldownMs - (Date.now() - Number(raw));
-  return remaining > 0 ? Math.ceil(remaining / 1000) : 0;
-}
-
 export function maskEmail(email) {
   if (!email) return "";
   const at = email.indexOf("@");

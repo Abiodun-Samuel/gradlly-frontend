@@ -11,7 +11,7 @@ export async function parseFetchResponse(response, { throwError }) {
   if (!response.ok) {
     const message =
       (data && typeof data === "object" && (data.message || data.error)) ||
-      `Request failed with status ${response.status}`;
+      "Something went wrong. Please try again.";
     throwError({
       message,
       status: response.status,

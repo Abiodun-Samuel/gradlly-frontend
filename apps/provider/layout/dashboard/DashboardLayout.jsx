@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { SessionErrorScreen } from "@/components/error/SessionErrorScreen";
 import { DashboardSkeleton } from "@/components/skeleton";
 import { Modal } from "@/components/ui/Modal";
 import { AUTH_REDIRECTS } from "@/features/auth/constants";
@@ -19,17 +20,21 @@ export function DashboardLayout({ children }) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [orgModalOpen, setOrgModalOpen] = useState(false);
 
-  const { user, isLoading } = useAuthUser();
+  const { user, isLoading, isError } = useAuthUser();
 
   const needsOrg = Boolean(user && !user.activeOrganisation);
 
   useEffect(() => {
     if (!needsOrg) return;
     const timer = setTimeout(() => setOrgModalOpen(true), MODAL_DELAY_MS);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      setOrgModalOpen(false);
+    };
   }, [needsOrg]);
 
   if (isLoading) return <DashboardSkeleton />;
+  if (isError) return <SessionErrorScreen />;
   if (!user) redirect(AUTH_REDIRECTS.LOGIN_PAGE);
 
   return (
@@ -67,7 +72,9 @@ export function DashboardLayout({ children }) {
         size="4xl"
         className="flex-col lg:flex-row"
       >
-        <CreateOrganisationContent />
+        <CreateOrganisationContent
+          onOrgCreated={() => setOrgModalOpen(false)}
+        />
       </Modal>
     </>
   );

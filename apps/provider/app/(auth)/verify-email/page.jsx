@@ -23,7 +23,7 @@ function FormSkeleton() {
 export default function VerifyEmailPage() {
   return (
     <div className="w-full max-w-md mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
-      <div className="mb-8 sm:mb-10">
+      <div className="mb-6 sm:mb-8">
         <p className="mb-2 text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-[#2d7a50]">
           One last step
         </p>

@@ -100,7 +100,10 @@ export function Header({ onMenuOpen, userMenuOpen, onUserMenuOpenChange }) {
               <ChevronRight className="h-3 w-3 text-neutral-300" />
             </li>
             <li>
-              <span className="text-sm font-semibold text-neutral-800">
+              <span
+                aria-current="page"
+                className="text-sm font-semibold text-neutral-800"
+              >
                 {breadcrumb.current}
               </span>
             </li>

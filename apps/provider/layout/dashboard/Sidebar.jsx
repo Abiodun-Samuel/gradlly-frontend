@@ -1,7 +1,6 @@
 "use client";
 
-import * as LucideIcons from "lucide-react";
-import { X } from "lucide-react";
+import { HelpCircle, Settings, X } from "lucide-react";
 import Link from "next/link";
 
 import { GradllyLogo } from "@/assets/svgs/GradllyLogo";
@@ -14,6 +13,7 @@ import { capitalise, getFullName, getInitials } from "@/utils/helper";
 import { SidebarNavSection } from "./SidebarNavSection";
 
 // ─── Sub-blocks ───────────────────────────────────────────────────────────────
+const UTILITY_ICON_MAP = { HelpCircle, Settings };
 
 function OrgBlock({ org }) {
   const initial = (org?.name?.[0] ?? "G").toUpperCase();
@@ -159,7 +159,7 @@ export function Sidebar({ onClose }) {
       {/* Top shimmer line */}
       <div
         aria-hidden
-        className="absolute inset-x-0 top-0 z-10 h-[2px] pointer-events-none"
+        className="absolute inset-x-0 top-0 z-10 h-0.5 pointer-events-none"
         style={{
           background:
             "linear-gradient(90deg, transparent 0%, rgba(94,164,120,0.55) 50%, transparent 100%)",
@@ -222,14 +222,13 @@ export function Sidebar({ onClose }) {
       </nav>
 
       {/* Utility links */}
-      <div
+      <nav
         className="shrink-0 py-1.5"
         style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
-        role="navigation"
         aria-label="Utility navigation"
       >
         {UTILITY_LINKS.map(({ label, icon, href }) => {
-          const Icon = LucideIcons[icon];
+          const Icon = UTILITY_ICON_MAP[icon];
           return (
             <Link
               key={href}
@@ -248,7 +247,7 @@ export function Sidebar({ onClose }) {
             </Link>
           );
         })}
-      </div>
+      </nav>
 
       {/* User block */}
       <UserBlock user={user} roles={roles} />

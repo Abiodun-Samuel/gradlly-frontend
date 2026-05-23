@@ -3,6 +3,7 @@
 import { FileText, ShieldCheck, Users } from "lucide-react";
 
 import { GradllyLogo } from "@/assets/svgs/GradllyLogo";
+import { LogoutButton } from "@/features/auth/components/LogoutButton";
 
 import { CreateOrganizationForm } from "./CreateOrganizationForm";
 
@@ -19,7 +20,7 @@ const BENEFITS = [
 function LeftPanel() {
   return (
     <div
-      className="hidden lg:flex lg:flex-col lg:w-[300px] xl:w-[320px] lg:shrink-0 lg:relative lg:overflow-hidden"
+      className="hidden lg:flex lg:flex-col lg:w-75 xl:w-[320px] lg:shrink-0 lg:relative lg:overflow-hidden"
       style={{
         background:
           "linear-gradient(160deg, #060e09 0%, #0d2918 35%, #1b4f32 75%, #2c6b44 100%)",
@@ -40,7 +41,7 @@ function LeftPanel() {
       {/* Top shimmer */}
       <div
         aria-hidden
-        className="absolute inset-x-0 top-0 h-[2px] pointer-events-none"
+        className="absolute inset-x-0 top-0 h-0.5 pointer-events-none"
         style={{
           background:
             "linear-gradient(90deg, transparent 0%, rgba(94,164,120,0.7) 50%, transparent 100%)",
@@ -117,7 +118,7 @@ function LeftPanel() {
   );
 }
 
-function FormPanel() {
+function FormPanel({ onOrgCreated }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col bg-white">
       {/* Mobile brand strip */}
@@ -133,22 +134,27 @@ function FormPanel() {
 
       {/* Header */}
       <div className="shrink-0 px-6 pb-0 pt-6 sm:px-8 sm:pt-8 lg:px-8 lg:pt-10">
-        <div className="mb-4 flex items-center gap-2">
-          <span
-            className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold"
-            style={{ backgroundColor: "#f1f7f3", color: "#1b4f32" }}
-          >
+        <div className="mb-4 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
             <span
-              className="inline-flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold leading-none text-white"
-              style={{ backgroundColor: "#1b4f32" }}
+              className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold"
+              style={{ backgroundColor: "#f1f7f3", color: "#1b4f32" }}
             >
-              1
+              <span
+                className="inline-flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold leading-none text-white"
+                style={{ backgroundColor: "#1b4f32" }}
+              >
+                1
+              </span>
+              Organisation Setup
             </span>
-            Organisation Setup
-          </span>
-          <span className="text-[11px] font-medium text-neutral-400">
-            Step 1 of 1
-          </span>
+            <span className="text-[11px] font-medium text-neutral-400">
+              Step 1 of 1
+            </span>
+          </div>
+          <div className="shrink-0">
+            <LogoutButton variant="menu" />
+          </div>
         </div>
 
         <h2 className="mb-1.5 text-xl font-bold leading-tight tracking-tight text-neutral-900 sm:text-2xl">
@@ -164,17 +170,17 @@ function FormPanel() {
 
       {/* Scrollable form */}
       <div className="flex-1 overflow-y-auto overscroll-contain px-6 py-5 sm:px-8 sm:py-6">
-        <CreateOrganizationForm />
+        <CreateOrganizationForm onSuccess={onOrgCreated} />
       </div>
     </div>
   );
 }
 
-export function CreateOrganisationContent() {
+export function CreateOrganisationContent({ onOrgCreated }) {
   return (
     <>
       <LeftPanel />
-      <FormPanel />
+      <FormPanel onOrgCreated={onOrgCreated} />
     </>
   );
 }

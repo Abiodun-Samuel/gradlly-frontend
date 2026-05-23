@@ -13,6 +13,7 @@ import { createPortal } from "react-dom";
 
 import { AnimatePresence, MotionBox } from "@/components/ui/MotionBox";
 import { cn } from "@/utils/helper";
+import { acquireScrollLock, releaseScrollLock } from "@/utils/scroll-lock";
 
 // ─── Isomorphic layout effect ─────────────────────────────────────────────────
 //
@@ -36,15 +37,6 @@ const SIZES = {
   full: "max-w-[90vw]",
 };
 
-// ─── Scroll-lock ref counter ──────────────────────────────────────────────────
-//
-// A simple module-level counter replaces the per-instance prev/restore pattern.
-// Each open modal increments it; each close decrements it. The body gets locked
-// on the first open and unlocked only when the last modal closes, so stacked
-// modals can never leave the page scrollable while one is still visible.
-
-let openModalCount = 0;
-
 // ─── Internal helpers ─────────────────────────────────────────────────────────
 
 function getFocusableNodes(root) {
@@ -57,32 +49,7 @@ function getFocusableNodes(root) {
   );
 }
 
-// ─── Modal ────────────────────────────────────────────────────────────────────
-
-/**
- * Accessible, portal-based modal dialog with choreographed enter/exit animations.
- *
- * Animation architecture — TWO MotionBox under ONE AnimatePresence (coordinated mode):
- *
- *   AnimatePresence
- *     └─ MotionBox key="modal-backdrop"   variant="fade"   — animates opacity only
- *          ├─ div.overlay                                  — backdrop-filter + color (GPU-isolated)
- *          └─ MotionBox                   variant="popUp"  — card; no delay, naturally trails backdrop
- *
- * Backdrop/blur separation rationale:
- *   backdrop-filter forces the browser to allocate a GPU compositing layer. When
- *   backdrop-filter lives on the opacity-animated MotionBox, the GPU layer is
- *   created mid-animation, causing a 1–3 frame artifact. Moving it to a plain
- *   child div means the layer is pre-allocated at first render, before any
- *   animation frame runs. The child inherits parent opacity via CSS cascade so
- *   the visual fade is identical — only the GPU allocation timing changes.
- *
- * Accessibility:
- *   - Backdrop is NOT aria-hidden: it contains the dialog landmark. Marking a
- *     parent aria-hidden removes all descendants from the a11y tree — a violation.
- *   - Focus is trapped inside the card via keydown handler.
- *   - Body scroll is locked while open.
- *
+/*
  * @param {object}            props
  * @param {boolean}           props.open                   — visibility flag
  * @param {function}          [props.onClose]              — called when the modal requests close
@@ -127,21 +94,12 @@ export function Modal({
     setMounted(true);
   }, []);
 
-  // Body scroll lock — ref-counted so stacked modals never unlock prematurely.
-  // The first open increments to 1 and locks; subsequent opens increment
-  // further. The last close decrements to 0 and unlocks.
+  // Body scroll lock — delegated to the shared ref-counted utility so Modal
+  // and MobileDrawer operate on the same counter and never fight each other.
   useEffect(() => {
     if (!open) return;
-    openModalCount += 1;
-    if (openModalCount === 1) {
-      document.body.style.overflow = "hidden";
-    }
-    return () => {
-      openModalCount = Math.max(0, openModalCount - 1);
-      if (openModalCount === 0) {
-        document.body.style.overflow = "";
-      }
-    };
+    acquireScrollLock();
+    return releaseScrollLock;
   }, [open]);
 
   // Auto-focus first focusable element after entrance animation settles

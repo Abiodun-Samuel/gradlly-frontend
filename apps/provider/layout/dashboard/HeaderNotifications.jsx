@@ -1,6 +1,7 @@
 "use client";
 
 import { Bell, CheckCheck } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/utils/helper";
@@ -64,6 +65,11 @@ export function HeaderNotifications() {
 
   const markAllRead = () =>
     setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })));
+
+  const markRead = (id) =>
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, unread: false } : n)),
+    );
 
   return (
     <div ref={ref} className="relative">
@@ -134,10 +140,13 @@ export function HeaderNotifications() {
           {/* List */}
           <div className="max-h-72 divide-y divide-neutral-50 overflow-y-auto">
             {notifications.map((n) => (
-              <div
+              <button
                 key={n.id}
+                type="button"
+                onClick={() => markRead(n.id)}
                 className={cn(
-                  "flex cursor-pointer gap-3 px-4 py-3.5 transition-colors duration-100 hover:bg-neutral-50",
+                  "flex w-full gap-3 px-4 py-3.5 text-left transition-colors duration-100 hover:bg-neutral-50",
+                  "focus-visible:outline-2 focus-visible:outline-primary-700 focus-visible:-outline-offset-2",
                   n.unread && "bg-primary-50/40",
                 )}
               >
@@ -161,18 +170,19 @@ export function HeaderNotifications() {
                     {n.time}
                   </p>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
 
           {/* Footer */}
           <div className="border-t border-neutral-100 bg-neutral-50/50 px-4 py-2.5">
-            <button
+            <Link
+              href="/notifications"
               onClick={() => setOpen(false)}
-              className="w-full text-center text-xs font-semibold text-primary-700 transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-primary-700 focus-visible:outline-offset-2"
+              className="block w-full text-center text-xs font-semibold text-primary-700 transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-primary-700 focus-visible:outline-offset-2"
             >
               View all notifications
-            </button>
+            </Link>
           </div>
         </div>
       )}

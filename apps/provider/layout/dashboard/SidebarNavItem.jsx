@@ -1,7 +1,37 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
-import * as LucideIcons from "lucide-react";
+import {
+  AlertTriangle,
+  BarChart3,
+  BookOpen,
+  Building2,
+  CalendarCheck,
+  ChevronRight,
+  ClipboardCheck,
+  FileSignature,
+  FileText,
+  FolderLock,
+  GraduationCap,
+  LayoutDashboard,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
+// Keyed by the icon string values used in sidebar.data.js
+const ICON_MAP = {
+  AlertTriangle,
+  BarChart3,
+  BookOpen,
+  Building2,
+  CalendarCheck,
+  ClipboardCheck,
+  FileSignature,
+  FileText,
+  FolderLock,
+  GraduationCap,
+  LayoutDashboard,
+  ShieldCheck,
+  Users,
+};
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -20,7 +50,7 @@ const IDLE_CLASSES = "text-white/50 hover:bg-white/[0.07] hover:text-white/90";
 // ─── Nav icon ─────────────────────────────────────────────────────────────────
 
 function NavIcon({ name, active }) {
-  const Icon = LucideIcons[name];
+  const Icon = ICON_MAP[name];
   if (!Icon) return null;
   return (
     <Icon

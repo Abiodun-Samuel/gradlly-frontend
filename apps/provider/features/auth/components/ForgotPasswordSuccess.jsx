@@ -90,7 +90,7 @@ export function ForgotPasswordSuccess({ email }) {
         )}
       </div>
 
-      <p className="text-center text-sm text-neutral-500 pt-2">
+      <p className="text-center text-sm text-gray-500 pt-2 pb-4">
         <Link href="/login" className="font-semibold text-primary-700">
           Back to login
         </Link>

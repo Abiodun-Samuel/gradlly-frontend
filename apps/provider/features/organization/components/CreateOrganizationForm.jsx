@@ -55,7 +55,7 @@ function getRegionLabel(isoCode) {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function CreateOrganizationForm() {
+export function CreateOrganizationForm({ onSuccess }) {
   const {
     register,
     handleSubmit,
@@ -115,6 +115,7 @@ export function CreateOrganizationForm() {
         portalType: PORTAL.key,
       };
       await mutateAsync(payload);
+      onSuccess?.();
     } catch (error) {
       applyServerErrors(error, setError);
     }

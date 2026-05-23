@@ -3,7 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { KeyRound } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { ServerErrorAlert } from "@/components/error/ServerErrorAlert";
@@ -16,15 +17,15 @@ import {
 } from "@/features/auth/schemas";
 import { applyServerErrors } from "@/lib/errors";
 
-/**
- * Reads ?token= from the URL, validates the new password, and calls the
- * reset-password API. Backend only receives { token, password }.
- *
- * Invalid/missing token: renders a clear error state rather than the form.
- */
 export function ResetPasswordForm() {
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const router = useRouter();
+
+  const [token] = useState(() => searchParams.get("token"));
+
+  useEffect(() => {
+    if (token) router.replace("/reset-password");
+  }, [token, router]);
 
   const {
     register,
@@ -42,7 +43,6 @@ export function ResetPasswordForm() {
 
   const onSubmit = async (values) => {
     try {
-      // confirmPassword is UI-only; backend only accepts { token, password }
       await mutateAsync({ token, password: values.newPassword });
     } catch (error) {
       applyServerErrors(error, setError);
@@ -66,12 +66,7 @@ export function ResetPasswordForm() {
           </p>
         </div>
 
-        <Link
-          href="/forgot-password"
-          className="inline-flex items-center justify-center rounded-lg bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors"
-        >
-          Request a new link
-        </Link>
+        <Button href="/forgot-password">Request a new link</Button>
       </div>
     );
   }

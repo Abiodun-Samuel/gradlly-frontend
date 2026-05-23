@@ -1,19 +1,18 @@
 // ============================================================
 // FILE: apps/provider/config/portal.js
 // ============================================================
-
-import { capitalizeWords } from "@/utils/helper";
-
 import { clientEnv } from "./env/client";
 
 const PORTAL_KEY = clientEnv.NEXT_PUBLIC_PORTAL || "provider";
 const themeColor = "#1b4f32";
+const capitalize = (word) =>
+  word ? word[0]?.toUpperCase() + word?.slice(1) : "";
 
 export const PORTAL = Object.freeze({
   key: PORTAL_KEY,
-  name: `${capitalizeWords(PORTAL_KEY)} Portal`,
+  name: `${capitalize(PORTAL_KEY)} Portal`,
   brand: "Gradlly",
-  locale: "en_GB",
+  locale: "en-GB",
   timeZone: "Europe/London",
   themeColor: themeColor,
   baseUrl: clientEnv.NEXT_PUBLIC_APP_URL || "https://provider.gradlly.com",

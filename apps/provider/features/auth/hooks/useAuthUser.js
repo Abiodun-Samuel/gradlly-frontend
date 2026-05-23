@@ -9,11 +9,12 @@ import { useMe } from "@/features/auth/queries/auth.query";
  * All dashboard components should use this hook — never useMe.
  */
 export function useAuthUser() {
-  const { data, isLoading, error } = useMe();
+  const { data, isLoading, isError, error } = useMe();
   return {
     user: data ?? null,
     activeOrganisation: data?.activeOrganisation ?? null,
     isLoading,
+    isError,
     error,
   };
 }

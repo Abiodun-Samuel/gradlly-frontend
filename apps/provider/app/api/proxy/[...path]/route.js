@@ -116,7 +116,16 @@ async function proxyRequest(path, method, body) {
   }
 }
 
+let rotating = null;
+
 async function rotateTokens() {
+  rotating ??= doRotate().finally(() => {
+    rotating = null;
+  });
+  return rotating;
+}
+
+async function doRotate() {
   const refreshToken = await readRefreshToken();
   if (!refreshToken) return null;
 

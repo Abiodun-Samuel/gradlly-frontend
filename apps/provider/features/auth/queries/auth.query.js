@@ -24,7 +24,6 @@ export function useMe(options = {}) {
     queryKey: AUTH_QUERY_KEYS.me(),
     queryFn: getMe,
     staleTime: 30_000,
-    retry: false,
     ...options,
   });
 }

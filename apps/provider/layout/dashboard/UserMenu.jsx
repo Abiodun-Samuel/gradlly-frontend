@@ -26,7 +26,7 @@ const MENU_ITEMS = [
     icon: Bell,
     href: "/settings/notifications",
   },
-  { label: "Switch organisation", icon: ArrowLeftRight, href: "/settings" },
+  { label: "Switch organisation", icon: ArrowLeftRight, href: "/organisation" },
   { label: "Help & docs", icon: HelpCircle, href: "/help" },
 ];
 
