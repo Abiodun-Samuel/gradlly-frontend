@@ -1,13 +1,8 @@
-export const portalMeta = {
-  name: "Flow",
-  tagline: "Automation Hub",
-};
-
-export const sidebarData = [
+export const NAV_SECTIONS = [
   {
     title: "Workspace",
     items: [
-      { label: "Dashboard", icon: "LayoutDashboard", href: "/home" },
+      { label: "Dashboard", icon: "LayoutDashboard", href: "/" },
       { label: "My Flows", icon: "GitBranch", href: "/flows" },
       {
         label: "Builder",
@@ -24,12 +19,7 @@ export const sidebarData = [
     title: "Integrations",
     items: [
       { label: "Connections", icon: "Plug", href: "/connections" },
-      {
-        label: "Webhooks",
-        icon: "Zap",
-        href: "/webhooks",
-        badge: { text: "2 failed", variant: "danger" },
-      },
+      { label: "Webhooks", icon: "Zap", href: "/webhooks" },
     ],
   },
   {
@@ -50,41 +40,11 @@ export const sidebarData = [
   },
   {
     title: "Account",
-    items: [{ label: "Settings", icon: "Settings", href: "/settings" }],
+    items: [{ label: "Profile", icon: "User", href: "/profile" }],
   },
 ];
 
-export const profileData = {
-  name: "Ethan Park",
-  role: "DevOps Engineer",
-  initials: "EP",
-  isOnline: true,
-  stats: [
-    { value: "99.9%", label: "uptime" },
-    { value: "24", label: "flows" },
-  ],
-};
-
-export const progressData = {
-  label: "System Health",
-  percent: 99,
-  subtitle: "All systems operational",
-  detail: "Last incident: 14 days ago",
-};
-
-export const pageLabels = {
-  "/home": "Dashboard",
-  "/flows": "My Flows",
-  "/builder": "Flow Builder",
-  "/builder/new": "New Flow",
-  "/builder/templates": "Templates",
-  "/connections": "Connections",
-  "/webhooks": "Webhooks",
-  "/reports": "Reports",
-  "/logs": "Activity Logs",
-  "/logs/success": "Success Logs",
-  "/logs/error": "Error Logs",
-  "/logs/audit": "Audit Trail",
-  "/settings": "Settings",
-  "/profile": "Profile",
-};
+export const UTILITY_LINKS = [
+  { label: "Help & Docs", icon: "HelpCircle", href: "/help" },
+  { label: "Settings", icon: "Settings", href: "/settings" },
+];

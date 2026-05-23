@@ -1,91 +1,51 @@
-export const portalMeta = {
-  name: "Apprentice",
-  tagline: "Learning Portal",
-};
-
-export const sidebarData = [
+export const NAV_SECTIONS = [
   {
     title: "My Learning",
     items: [
-      { label: "Home", icon: "LayoutDashboard", href: "/home" },
+      { label: "Dashboard", icon: "LayoutDashboard", href: "/" },
       {
         label: "My Courses",
         icon: "BookOpen",
         href: "/courses",
         children: [
-          { label: "In Progress", href: "/courses/active" },
-          { label: "Completed", href: "/courses/completed" },
-          { label: "Browse All", href: "/courses/browse" },
+          { label: "Live", href: "/courses/live" },
+          { label: "Drafts", href: "/courses/drafts" },
+          { label: "Archived", href: "/courses/archived" },
         ],
       },
-      {
-        label: "Assessments",
-        icon: "ClipboardList",
-        href: "/assessments",
-        badge: { text: "2 due", variant: "warning" },
-      },
+      { label: "Assessments", icon: "ClipboardList", href: "/assessments" },
       { label: "Progress", icon: "TrendingUp", href: "/progress" },
     ],
   },
   {
-    title: "Resources",
+    title: "Curriculum",
     items: [
-      { label: "Materials", icon: "FileText", href: "/materials" },
-      { label: "Library", icon: "Library", href: "/library" },
+      { label: "Curriculum", icon: "BookMarked", href: "/curriculum" },
+      { label: "Analytics", icon: "BarChart2", href: "/analytics" },
     ],
   },
   {
-    title: "Communication",
+    title: "Reporting",
     items: [
       {
-        label: "Messages",
-        icon: "Mail",
-        href: "/messages",
-        badge: { text: "3", variant: "info" },
+        label: "Reports",
+        icon: "FileText",
+        href: "/reports",
+        children: [
+          { label: "Completion", href: "/reports/completion" },
+          { label: "Engagement", href: "/reports/engagement" },
+        ],
       },
-      { label: "Discussion", icon: "MessageSquare", href: "/discussion" },
+      { label: "Learners", icon: "Users", href: "/learners" },
     ],
   },
   {
     title: "Account",
-    items: [
-      { label: "Profile", icon: "User", href: "/profile" },
-      { label: "Settings", icon: "Settings", href: "/settings" },
-    ],
+    items: [{ label: "Profile", icon: "User", href: "/profile" }],
   },
 ];
 
-export const profileData = {
-  name: "Maya Chen",
-  role: "Apprentice Developer",
-  initials: "MC",
-  isOnline: true,
-  cohort: "Cohort 2024",
-  stats: [
-    { value: "154", label: "days" },
-    { value: "L1", label: "level" },
-  ],
-};
-
-export const progressData = {
-  label: "Learning Progress",
-  percent: 54,
-  subtitle: "Course 6 of 11",
-  detail: "On track · 3 assessments passed",
-};
-
-export const pageLabels = {
-  "/home": "Home",
-  "/courses": "My Courses",
-  "/courses/active": "In Progress",
-  "/courses/completed": "Completed",
-  "/courses/browse": "Browse Courses",
-  "/assessments": "Assessments",
-  "/progress": "My Progress",
-  "/materials": "Materials",
-  "/library": "Library",
-  "/messages": "Messages",
-  "/discussion": "Discussion",
-  "/profile": "Profile",
-  "/settings": "Settings",
-};
+export const UTILITY_LINKS = [
+  { label: "Help & Docs", icon: "HelpCircle", href: "/help" },
+  { label: "Settings", icon: "Settings", href: "/settings" },
+];

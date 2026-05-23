@@ -16,7 +16,6 @@ import {
   ShieldCheck,
   Users,
 } from "lucide-react";
-// Keyed by the icon string values used in sidebar.data.js
 const ICON_MAP = {
   AlertTriangle,
   BarChart3,
