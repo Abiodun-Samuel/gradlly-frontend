@@ -21,8 +21,8 @@ import {
 import Link from "next/link";
 
 import { Avatar } from "@/components/ui/Avatar";
-import { Badge } from "@/components/ui/Badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
+import TextBadge from "@/components/ui/TextBadge";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import {
   capitalise,
@@ -210,7 +210,7 @@ function HeroSection({ user, activeOrganisation, greeting }) {
       className="relative overflow-hidden rounded-2xl"
       style={{
         background:
-          "linear-gradient(140deg, #060e09 0%, #0d2918 30%, #1b4f32 70%, #2a5e40 100%)",
+          "linear-gradient(135deg, #14532d 0%, #166534 45%, #15803d 80%, #16a34a 100%)",
       }}
     >
       {/* Decorative grid */}
@@ -283,9 +283,15 @@ function HeroSection({ user, activeOrganisation, greeting }) {
               </p>
               <div className="mt-1 flex flex-wrap items-center gap-1.5">
                 {roles.map((role) => (
-                  <Badge key={role} variant="owner" className="text-[10px]">
+                  <TextBadge
+                    key={role}
+                    variant="light"
+                    color="purple"
+                    size="xs"
+                    className="text-[10px]"
+                  >
                     {capitalise(role)}
-                  </Badge>
+                  </TextBadge>
                 ))}
                 {user?.isActive && (
                   <span
@@ -386,7 +392,7 @@ function MetricCard({ stat }) {
 
         <div className="mt-4">
           <p className="text-3xl font-bold tracking-tight text-neutral-300">
-            —
+            N/A
           </p>
           <p className="mt-1 text-sm font-medium text-neutral-500">{label}</p>
         </div>
@@ -585,7 +591,7 @@ function OrganisationCard({ activeOrganisation }) {
       <div
         className="flex items-center gap-3 px-5 py-4"
         style={{
-          background: "linear-gradient(135deg, #0d2918 0%, #1b4f32 100%)",
+          background: "linear-gradient(135deg, #166534 0%, #16a34a 100%)",
         }}
       >
         <div
@@ -626,12 +632,18 @@ function OrganisationCard({ activeOrganisation }) {
 
         {/* Status badges */}
         <div className="flex flex-wrap gap-1.5 border-t border-neutral-100 pt-3.5">
-          <Badge variant="info">{capitalise(org.portalType)}</Badge>
-          <Badge variant="success">
+          <TextBadge variant="light" color="blue" size="xs">
+            {capitalise(org.portalType)}
+          </TextBadge>
+          <TextBadge variant="light" color="green" size="xs">
             <CheckCircle2 className="h-3 w-3" aria-hidden />
             Active
-          </Badge>
-          {org.country && <Badge variant="default">{org.country}</Badge>}
+          </TextBadge>
+          {org.country && (
+            <TextBadge variant="light" color="gray" size="xs">
+              {org.country}
+            </TextBadge>
+          )}
         </div>
       </CardContent>
     </Card>
@@ -664,15 +676,15 @@ function ProfileCard({ user, activeOrganisation, profileStatus }) {
             <p className="truncate text-xs text-neutral-500">{user?.email}</p>
             <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
               {roles.map((r) => (
-                <Badge key={r} variant="owner">
+                <TextBadge key={r} variant="light" color="purple" size="xs">
                   {capitalise(r)}
-                </Badge>
+                </TextBadge>
               ))}
               {user?.isEmailVerified && (
-                <Badge variant="success">
+                <TextBadge variant="light" color="green" size="xs">
                   <CheckCircle2 className="h-3 w-3" aria-hidden />
                   Verified
-                </Badge>
+                </TextBadge>
               )}
             </div>
           </div>
@@ -680,8 +692,8 @@ function ProfileCard({ user, activeOrganisation, profileStatus }) {
 
         {/* Detail rows */}
         <div className="mt-4 space-y-2 border-t border-neutral-100 pt-4">
-          <MiniRow label="Timezone" value={user?.timezone ?? "—"} />
-          <MiniRow label="Locale" value={user?.locale ?? "—"} />
+          <MiniRow label="Timezone" value={user?.timezone ?? "Not set"} />
+          <MiniRow label="Locale" value={user?.locale ?? "Not set"} />
           <MiniRow
             label="Last login"
             value={
@@ -692,7 +704,9 @@ function ProfileCard({ user, activeOrganisation, profileStatus }) {
           />
           <MiniRow
             label="Member since"
-            value={user?.createdAt ? formatDate(user.createdAt) : "—"}
+            value={
+              user?.createdAt ? formatDate(user.createdAt) : "Not recorded"
+            }
           />
           <MiniRow
             label="Account"

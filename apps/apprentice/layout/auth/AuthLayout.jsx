@@ -6,19 +6,19 @@ import { GradllyLogo } from "@/assets/svgs/GradllyLogo";
 export default function AuthLayout({ children }) {
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-[#f7f7f2] font-sans antialiased">
-      <aside className="hidden lg:flex relative overflow-hidden bg-[#1e1b4b] flex-col">
+      <aside className="hidden lg:flex relative overflow-hidden bg-[#0e2d1e] flex-col">
         <AuthLayoutSVG />
         <div className="relative z-10 mt-auto w-full px-12 xl:px-16 pb-14 xl:pb-16">
-          <span className="inline-block text-[11px] font-semibold uppercase tracking-[0.22em] text-[#a5b4fc] mb-4">
+          <span className="inline-block text-[11px] font-semibold uppercase tracking-[0.22em] text-[#7ecb9a] mb-4">
             Learner Portal
           </span>
           <h2
-            className="text-[30px] xl:text-[38px] font-bold text-[#e8e8fc] leading-[1.1] tracking-tight mb-4"
-            style={{ textShadow: "0 2px 24px rgba(20,15,60,0.55)" }}
+            className="text-[30px] xl:text-[38px] font-bold text-[#e8f5ec] leading-[1.1] tracking-tight mb-4"
+            style={{ textShadow: "0 2px 24px rgba(7,24,16,0.55)" }}
           >
             Track your learning journey and connect with your provider.
           </h2>
-          <p className="text-[14px] xl:text-[15px] font-light leading-relaxed text-[#c4b5fd]">
+          <p className="text-[14px] xl:text-[15px] font-light leading-relaxed text-[#a8c9b5]">
             Access your courses, submit evidence and stay on track with your
             apprenticeship programme.
           </p>

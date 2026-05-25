@@ -168,7 +168,7 @@ export const SingleSelectField = memo(function SingleSelectField({
               className={cn(
                 "w-full rounded-md border border-neutral-200 py-2 pl-8 pr-3 text-sm",
                 "bg-white text-neutral-900 placeholder:text-neutral-400",
-                "transition-colors focus:border-primary-400 focus:outline-none",
+                "transition-colors focus:border-blue-400 focus:outline-none",
               )}
               onClick={(e) => e.stopPropagation()}
             />
@@ -191,14 +191,14 @@ export const SingleSelectField = memo(function SingleSelectField({
                   "flex w-full items-center justify-between gap-2",
                   "px-3.5 py-2.5 text-left text-sm transition-colors duration-100",
                   isSelected
-                    ? "bg-primary-50 text-primary-800"
+                    ? "bg-blue-50 text-blue-800"
                     : "text-neutral-700 hover:bg-neutral-50",
                 )}
               >
                 <span className="flex-1 truncate">{option.text}</span>
                 {isSelected && (
                   <Check
-                    className="h-3.5 w-3.5 shrink-0 text-primary-700"
+                    className="h-3.5 w-3.5 shrink-0 text-blue-700"
                     aria-hidden
                   />
                 )}
@@ -260,8 +260,8 @@ export const SingleSelectField = memo(function SingleSelectField({
             error
               ? "border-danger-400 focus:border-danger-500"
               : isOpen
-                ? "border-primary-400"
-                : "border-neutral-200 hover:border-neutral-300 focus:border-primary-400",
+                ? "border-blue-400"
+                : "border-neutral-200 hover:border-neutral-300 focus:border-blue-400",
             disabled &&
               "cursor-not-allowed bg-neutral-50 text-neutral-400 opacity-70",
           )}
@@ -289,7 +289,7 @@ export const SingleSelectField = memo(function SingleSelectField({
               className={cn(
                 "pointer-events-auto rounded p-0.5",
                 "text-neutral-400 transition-colors hover:text-neutral-600",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-700",
               )}
             >
               <X className="h-3.5 w-3.5" aria-hidden />

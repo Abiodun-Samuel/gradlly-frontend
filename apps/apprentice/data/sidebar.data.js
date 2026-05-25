@@ -1,51 +1,46 @@
+import {
+  BarChart3,
+  BookMarked,
+  BookOpen,
+  ClipboardCheck,
+  HelpCircle,
+  LayoutDashboard,
+  Settings,
+  TrendingUp,
+  UserCircle,
+  Users,
+} from "lucide-react";
+
 export const NAV_SECTIONS = [
   {
     title: "My Learning",
     items: [
-      { label: "Dashboard", icon: "LayoutDashboard", href: "/" },
-      {
-        label: "My Courses",
-        icon: "BookOpen",
-        href: "/courses",
-        children: [
-          { label: "Live", href: "/courses/live" },
-          { label: "Drafts", href: "/courses/drafts" },
-          { label: "Archived", href: "/courses/archived" },
-        ],
-      },
-      { label: "Assessments", icon: "ClipboardList", href: "/assessments" },
-      { label: "Progress", icon: "TrendingUp", href: "/progress" },
+      { label: "Dashboard", href: "/", icon: LayoutDashboard },
+      { label: "My Courses", href: "/courses", icon: BookOpen },
+      { label: "Assessments", href: "/assessments", icon: ClipboardCheck },
+      { label: "Progress", href: "/progress", icon: TrendingUp },
     ],
   },
   {
     title: "Curriculum",
     items: [
-      { label: "Curriculum", icon: "BookMarked", href: "/curriculum" },
-      { label: "Analytics", icon: "BarChart2", href: "/analytics" },
+      { label: "Curriculum", href: "/curriculum", icon: BookMarked },
+      { label: "Analytics", href: "/analytics", icon: BarChart3 },
     ],
   },
   {
     title: "Reporting",
     items: [
-      {
-        label: "Reports",
-        icon: "FileText",
-        href: "/reports",
-        children: [
-          { label: "Completion", href: "/reports/completion" },
-          { label: "Engagement", href: "/reports/engagement" },
-        ],
-      },
-      { label: "Learners", icon: "Users", href: "/learners" },
+      { label: "Reports", href: "/reports", icon: BarChart3 },
+      { label: "Learners", href: "/learners", icon: Users },
     ],
   },
   {
     title: "Account",
-    items: [{ label: "Profile", icon: "User", href: "/profile" }],
+    items: [
+      { label: "Profile", href: "/profile", icon: UserCircle },
+      { label: "Settings", href: "/settings", icon: Settings },
+      { label: "Help & Docs", href: "/help", icon: HelpCircle },
+    ],
   },
-];
-
-export const UTILITY_LINKS = [
-  { label: "Help & Docs", icon: "HelpCircle", href: "/help" },
-  { label: "Settings", icon: "Settings", href: "/settings" },
 ];

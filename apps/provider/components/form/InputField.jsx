@@ -61,7 +61,7 @@ export const InputField = forwardRef(function InputField(
           className={cn(
             "w-full text-sm rounded-lg px-3.5 py-2.5 border transition-colors duration-150",
             "bg-white text-gray-900 placeholder:text-gray-400",
-            "focus:outline-none",
+            "focus:outline-none hover:border-neutral-300",
             error
               ? "border-red-400 focus:border-red-500"
               : "border-gray-200 focus:border-blue-400",

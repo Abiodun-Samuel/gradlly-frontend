@@ -17,7 +17,7 @@ export const PORTAL = Object.freeze({
   themeColor: themeColor,
   baseUrl: clientEnv.NEXT_PUBLIC_APP_URL || "https://provider.gradlly.com",
   defaultDescription:
-    "Gradlly Provider Portal — manage learner cohorts, 12-weekly reviews, ILR submissions, and Ofsted readiness across your apprenticeship programmes.",
+    "Gradlly Provider Portal: manage learner cohorts, 12-weekly reviews, ILR submissions, and Ofsted readiness across your apprenticeship programmes.",
   loadingIndicatorProperties: {
     color: themeColor,
     height: 2,

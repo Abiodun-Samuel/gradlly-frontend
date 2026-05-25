@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 
 import { Avatar } from "@/components/ui/Avatar";
-import { Badge } from "@/components/ui/Badge";
+import TextBadge from "@/components/ui/TextBadge";
 import { LogoutButton } from "@/features/auth/components/LogoutButton";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import {
@@ -99,8 +99,14 @@ export function UserMenu({ open, onClose, anchorRef }) {
         </div>
 
         <div className="mt-3 flex items-center gap-2">
-          <Badge variant="owner">{role}</Badge>
-          {user?.isEmailVerified && <Badge variant="success">Verified</Badge>}
+          <TextBadge variant="light" color="purple" size="xs">
+            {role}
+          </TextBadge>
+          {user?.isEmailVerified && (
+            <TextBadge variant="light" color="green" size="xs">
+              Verified
+            </TextBadge>
+          )}
         </div>
 
         {lastLogin && (

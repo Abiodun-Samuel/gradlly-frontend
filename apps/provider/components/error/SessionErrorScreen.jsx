@@ -7,7 +7,7 @@ import { LogoutButton } from "@/features/auth/components/LogoutButton";
 
 export function SessionErrorScreen() {
   return (
-    <div className="flex h-dvh flex-col items-center justify-center bg-gradient-to-b from-neutral-50 to-white px-4">
+    <div className="flex h-dvh flex-col items-center justify-center bg-linear-to-b from-neutral-50 to-white px-4">
       {/* Card */}
       <div className="w-full max-w-[380px] overflow-hidden rounded-2xl border border-neutral-200/80 bg-white shadow-[0_12px_48px_rgba(0,0,0,0.08),0_2px_6px_rgba(0,0,0,0.04)]">
         {/* Top accent */}

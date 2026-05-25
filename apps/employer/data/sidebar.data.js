@@ -1,48 +1,48 @@
+import {
+  BarChart3,
+  Briefcase,
+  ClipboardList,
+  CreditCard,
+  GraduationCap,
+  HelpCircle,
+  LayoutDashboard,
+  Settings,
+  UserCircle,
+  UserPlus,
+} from "lucide-react";
+
 export const NAV_SECTIONS = [
   {
     title: "Overview",
     items: [
-      { label: "Dashboard", icon: "LayoutDashboard", href: "/" },
-      {
-        label: "Analytics",
-        icon: "BarChart2",
-        href: "/analytics",
-        children: [
-          { label: "Hiring Funnel", href: "/analytics/hiring" },
-          { label: "Team Performance", href: "/analytics/performance" },
-          { label: "Cost Reports", href: "/analytics/cost" },
-        ],
-      },
+      { label: "Dashboard", href: "/", icon: LayoutDashboard },
+      { label: "Analytics", href: "/analytics", icon: BarChart3 },
     ],
   },
   {
     title: "Talent",
     items: [
-      { label: "Apprentices", icon: "Users", href: "/apprentices" },
-      { label: "Job Posts", icon: "Briefcase", href: "/jobs" },
+      { label: "Apprentices", href: "/apprentices", icon: GraduationCap },
       {
-        label: "Applications",
-        icon: "ClipboardList",
-        href: "/applications",
+        label: "Recruitment",
+        href: "/jobs",
+        icon: Briefcase,
         children: [
-          { label: "Under Review", href: "/applications/review" },
-          { label: "Shortlisted", href: "/applications/shortlisted" },
-          { label: "Rejected", href: "/applications/rejected" },
+          { label: "Job Posts", href: "/jobs" },
+          { label: "Applications", href: "/applications" },
         ],
       },
-      { label: "Onboarding", icon: "UserPlus", href: "/onboarding" },
+      { label: "Onboarding", href: "/onboarding", icon: UserPlus },
+      { label: "Assessments", href: "/assessments", icon: ClipboardList },
     ],
   },
   {
     title: "Account",
     items: [
-      { label: "Billing", icon: "CreditCard", href: "/billing" },
-      { label: "Profile", icon: "User", href: "/profile" },
+      { label: "Billing", href: "/billing", icon: CreditCard },
+      { label: "Profile", href: "/profile", icon: UserCircle },
+      { label: "Settings", href: "/settings", icon: Settings },
+      { label: "Help & Docs", href: "/help", icon: HelpCircle },
     ],
   },
-];
-
-export const UTILITY_LINKS = [
-  { label: "Help & Docs", icon: "HelpCircle", href: "/help" },
-  { label: "Settings", icon: "Settings", href: "/settings" },
 ];

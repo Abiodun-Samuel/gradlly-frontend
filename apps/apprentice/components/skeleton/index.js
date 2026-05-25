@@ -1,10 +1,13 @@
 export function DashboardSkeleton() {
   return (
-    <div className="flex h-dvh overflow-hidden bg-neutral-50">
-      {/* ── Sidebar ────────────────────────────────────────────── */}
+    <div className="h-dvh overflow-hidden bg-neutral-50">
+      {/* ── Fixed sidebar ──────────────────────────────────────────── */}
       <div
-        className="hidden w-66 shrink-0 flex-col overflow-hidden lg:flex"
-        style={{ backgroundColor: "#03090d" }}
+        className="fixed left-0 top-0 hidden h-dvh w-65 flex-col overflow-hidden lg:flex"
+        style={{
+          backgroundColor: "#06170d",
+          borderRight: "1px solid rgba(94,164,120,0.18)",
+        }}
       >
         {/* Brand lockup */}
         <div
@@ -39,12 +42,11 @@ export function DashboardSkeleton() {
 
         {/* Primary nav */}
         <div className="flex-1 overflow-hidden py-1">
-          {/* Section 1 */}
           <div className="mb-1 ml-4 mt-3 h-2 w-14 animate-pulse rounded bg-white/8" />
           {[88, 72, 96].map((w, i) => (
             <div
               key={i}
-              className="mx-2 flex items-center gap-3 rounded-lg px-3 py-2.5"
+              className="mx-2 flex items-center gap-3 rounded-lg px-3 py-3"
             >
               <div className="h-4 w-4 shrink-0 animate-pulse rounded bg-white/10" />
               <div
@@ -54,12 +56,11 @@ export function DashboardSkeleton() {
             </div>
           ))}
 
-          {/* Section 2 */}
           <div className="mb-1 ml-4 mt-3 h-2 w-20 animate-pulse rounded bg-white/8" />
           {[76, 100, 64, 84].map((w, i) => (
             <div
               key={i}
-              className="mx-2 flex items-center gap-3 rounded-lg px-3 py-2.5"
+              className="mx-2 flex items-center gap-3 rounded-lg px-3 py-3"
             >
               <div className="h-4 w-4 shrink-0 animate-pulse rounded bg-white/10" />
               <div
@@ -69,31 +70,11 @@ export function DashboardSkeleton() {
             </div>
           ))}
 
-          {/* Section 3 */}
           <div className="mb-1 ml-4 mt-3 h-2 w-16 animate-pulse rounded bg-white/8" />
           {[90, 68].map((w, i) => (
             <div
               key={i}
-              className="mx-2 flex items-center gap-3 rounded-lg px-3 py-2.5"
-            >
-              <div className="h-4 w-4 shrink-0 animate-pulse rounded bg-white/10" />
-              <div
-                className="h-3 animate-pulse rounded bg-white/10"
-                style={{ width: w }}
-              />
-            </div>
-          ))}
-        </div>
-
-        {/* Utility nav */}
-        <div
-          className="shrink-0 py-1.5"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
-        >
-          {[52, 64].map((w, i) => (
-            <div
-              key={i}
-              className="mx-2 flex items-center gap-3 rounded-md px-3.5 py-2.5"
+              className="mx-2 flex items-center gap-3 rounded-lg px-3 py-3"
             >
               <div className="h-4 w-4 shrink-0 animate-pulse rounded bg-white/10" />
               <div
@@ -123,17 +104,24 @@ export function DashboardSkeleton() {
         </div>
       </div>
 
-      {/* ── Main ─────────────────────────────────────────────────── */}
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+      {/* ── Main content area ──────────────────────────────────────── */}
+      <div className="main-content-area sidebar-open flex h-dvh flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex h-16 shrink-0 items-center justify-between border-b border-neutral-100 bg-white px-4 sm:px-6">
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-1.5">
-            <div className="skeleton h-3.5 w-16 rounded" />
-            <div className="skeleton h-3 w-3 rounded" />
-            <div className="skeleton h-3.5 w-24 rounded" />
+        <div
+          className="sticky top-0 z-200 flex h-16 shrink-0 items-center justify-between px-4 sm:px-6"
+          style={{
+            backgroundColor: "#ffffff",
+            borderBottom: "1px solid #f1f5f9",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <div className="skeleton h-9 w-9 rounded-lg" />
+            <div className="space-y-1.5">
+              <div className="skeleton hidden h-2 w-14 rounded sm:block" />
+              <div className="skeleton h-4 w-32 rounded-md" />
+            </div>
           </div>
-          {/* Actions */}
           <div className="flex items-center gap-1">
             <div className="skeleton h-9 w-9 rounded-lg" />
             <div className="skeleton h-9 w-9 rounded-lg" />
@@ -143,10 +131,9 @@ export function DashboardSkeleton() {
           </div>
         </div>
 
-        {/* Page content */}
-        <div className="flex-1 overflow-y-auto">
+        {/* Page content — extra bottom padding on mobile for BottomNav */}
+        <main className="flex-1 overflow-y-auto pb-16 md:pb-0">
           <div className="mx-auto w-full max-w-360 px-8 py-8 sm:px-6 sm:py-6 max-sm:px-4 max-sm:py-4">
-            {/* Page heading */}
             <div className="mb-7 flex items-end justify-between">
               <div className="space-y-2">
                 <div className="skeleton h-6 w-40 rounded-lg" />
@@ -155,23 +142,20 @@ export function DashboardSkeleton() {
               <div className="skeleton h-9 w-28 rounded-lg" />
             </div>
 
-            {/* Stat cards */}
             <div className="mb-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
               {[0, 1, 2, 3].map((i) => (
                 <div key={i} className="skeleton h-28 rounded-xl" />
               ))}
             </div>
 
-            {/* Main 2/3 + 1/3 grid */}
             <div className="mb-4 grid gap-4 lg:grid-cols-3">
               <div className="skeleton h-64 rounded-xl lg:col-span-2" />
               <div className="skeleton h-64 rounded-xl" />
             </div>
 
-            {/* Full-width table */}
             <div className="skeleton h-56 rounded-xl" />
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );

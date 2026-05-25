@@ -72,7 +72,21 @@
       "Bash(Remove-Item \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\employer\\\\layout\\\\dashboard\\\\NotificationBell.jsx\" -Force)",
       "Bash(Remove-Item \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\employer\\\\layout\\\\dashboard\\\\ProfileDropdown.jsx\" -Force)",
       "Bash(Remove-Item \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\apprentice\\\\layout\\\\dashboard\\\\SidebarItem.jsx\" -Force)",
-      "PowerShell(Get-ChildItem -Path \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\provider\" -Recurse -Filter \"page.jsx\" | Select-Object -ExpandProperty FullName | Where-Object {$_ -match \"dashboard\"})"
+      "PowerShell(Get-ChildItem -Path \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\provider\" -Recurse -Filter \"page.jsx\" | Select-Object -ExpandProperty FullName | Where-Object {$_ -match \"dashboard\"})",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\" -Recurse -Filter \"*sidebar*\" -File)",
+      "Bash(rm apps/apprentice/layout/dashboard/SidebarNavItem.jsx apps/apprentice/layout/dashboard/SidebarNavSection.jsx apps/apprentice/layout/dashboard/MobileDrawer.jsx)",
+      "Bash(rm apps/employer/layout/dashboard/SidebarNavItem.jsx apps/employer/layout/dashboard/SidebarNavSection.jsx apps/employer/layout/dashboard/MobileDrawer.jsx)",
+      "Bash(rm apps/flow/layout/dashboard/SidebarNavItem.jsx apps/flow/layout/dashboard/SidebarNavSection.jsx apps/flow/layout/dashboard/MobileDrawer.jsx)",
+      "Bash(rm apps/provider/layout/dashboard/SidebarNavItem.jsx apps/provider/layout/dashboard/SidebarNavSection.jsx apps/provider/layout/dashboard/MobileDrawer.jsx)",
+      "Bash(Copy-Item \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\provider\\\\components\\\\ui\\\\Avatar.jsx\" \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\employer\\\\components\\\\ui\\\\Avatar.jsx\")",
+      "Bash(Copy-Item \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\provider\\\\components\\\\ui\\\\Avatar.jsx\" \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\flow\\\\components\\\\ui\\\\Avatar.jsx\")",
+      "Bash(Copy-Item \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\provider\\\\components\\\\ui\\\\Avatar.jsx\" \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\apprentice\\\\components\\\\ui\\\\Avatar.jsx\")",
+      "Bash(Write-Host \"Done\")",
+      "Bash(Remove-Item \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\provider\\\\components\\\\ui\\\\Badge.jsx\" -Force)",
+      "Bash(Remove-Item \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\apprentice\\\\components\\\\ui\\\\Badge.jsx\" -Force)",
+      "Bash(Remove-Item \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\employer\\\\components\\\\ui\\\\Badge.jsx\" -Force)",
+      "Bash(Remove-Item \"c:\\\\Users\\\\OLUYEMI\\\\Desktop\\\\Work Projects\\\\Gradlly\\\\gradlly-frontend\\\\apps\\\\flow\\\\components\\\\ui\\\\Badge.jsx\" -Force)",
+      "Bash(Write-Host \"Deleted all 4 Badge.jsx files\")"
     ]
   }
 }

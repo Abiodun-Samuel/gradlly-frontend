@@ -14,7 +14,7 @@ export const PORTAL = Object.freeze({
   themeColor: themeColor,
   baseUrl: clientEnv.NEXT_PUBLIC_APP_URL || "https://employer.gradlly.com",
   defaultDescription:
-    "Gradlly Employer Portal — manage apprentice hiring, track team performance, and streamline your apprenticeship programme.",
+    "Gradlly Employer Portal: manage apprentice hiring, track team performance, and streamline your apprenticeship programme.",
   loadingIndicatorProperties: {
     color: themeColor,
     height: 2,

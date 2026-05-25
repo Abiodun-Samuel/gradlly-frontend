@@ -10,19 +10,27 @@ import { AUTH_REDIRECTS } from "@/features/auth/constants";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import { CreateOrganisationContent } from "@/features/organization/components/CreateOrganisationContent";
 import { Header } from "@/layout/dashboard/Header";
-import { MobileDrawer } from "@/layout/dashboard/MobileDrawer";
 import { Sidebar } from "@/layout/dashboard/Sidebar";
+import { cn } from "@/utils/helper";
 
 const MODAL_DELAY_MS = 2000;
 
 export function DashboardLayout({ children }) {
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const saved = localStorage.getItem("gradlly_sidebar_open");
+    return saved !== null ? saved === "true" : window.innerWidth >= 1024;
+  });
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [orgModalOpen, setOrgModalOpen] = useState(false);
 
   const { user, isLoading, isError } = useAuthUser();
 
   const needsOrg = Boolean(user && !user.activeOrganisation);
+
+  useEffect(() => {
+    localStorage.setItem("gradlly_sidebar_open", sidebarOpen);
+  }, [sidebarOpen]);
 
   useEffect(() => {
     if (!needsOrg) return;
@@ -39,18 +47,18 @@ export function DashboardLayout({ children }) {
 
   return (
     <>
-      <div className="flex h-dvh overflow-hidden bg-neutral-50">
-        <div className="hidden lg:flex lg:shrink-0 lg:flex-col">
-          <Sidebar />
-        </div>
-
-        <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-          <Sidebar onClose={() => setDrawerOpen(false)} />
-        </MobileDrawer>
-
-        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+      <div className="h-dvh overflow-hidden bg-neutral-50">
+        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <div
+          suppressHydrationWarning
+          className={cn(
+            "main-content-area flex h-dvh flex-col overflow-hidden",
+            sidebarOpen && "sidebar-open",
+          )}
+        >
           <Header
-            onMenuOpen={() => setDrawerOpen(true)}
+            sidebarOpen={sidebarOpen}
+            onMenuOpen={() => setSidebarOpen((v) => !v)}
             userMenuOpen={userMenuOpen}
             onUserMenuOpenChange={setUserMenuOpen}
           />

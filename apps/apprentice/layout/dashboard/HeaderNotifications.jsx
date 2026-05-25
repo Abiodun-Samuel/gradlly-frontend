@@ -11,22 +11,22 @@ import { cn } from "@/utils/helper";
 const PLACEHOLDER_NOTIFICATIONS = [
   {
     id: 1,
-    title: "ILR submission due",
-    desc: "October return due in 3 days. Review learner records.",
+    title: "Assignment feedback received",
+    desc: "Your tutor left feedback on your Unit 3 submission.",
     time: "30m ago",
     unread: true,
   },
   {
     id: 2,
-    title: "At-risk learner flagged",
-    desc: "Maya Chen has missed 2 consecutive check-ins.",
+    title: "Review meeting scheduled",
+    desc: "Your 12-weekly progress review is booked for Friday at 10am.",
     time: "2h ago",
     unread: true,
   },
   {
     id: 3,
-    title: "Evidence pack ready",
-    desc: "Ofsted evidence pack for Cohort 4 is ready to review.",
+    title: "New course material available",
+    desc: "Unit 5: Workplace Communication has been published.",
     time: "1d ago",
     unread: false,
   },
@@ -76,15 +76,15 @@ export function HeaderNotifications() {
       {/* Bell button */}
       <button
         onClick={() => setOpen((v) => !v)}
-        aria-label={`Notifications${unreadCount ? ` — ${unreadCount} unread` : ""}`}
+        aria-label={`Notifications${unreadCount ? ` (${unreadCount} unread)` : ""}`}
         aria-expanded={open}
         aria-haspopup="dialog"
         className={cn(
-          "relative flex h-9 w-9 items-center justify-center rounded-lg",
-          "text-neutral-500 transition-colors duration-150",
-          "hover:bg-neutral-100 hover:text-neutral-700",
+          "relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
+          "border border-neutral-200 bg-white text-neutral-500 transition-colors duration-150",
+          "hover:border-green-300 hover:bg-green-50 hover:text-green-700",
           "focus-visible:outline-2 focus-visible:outline-primary-700 focus-visible:outline-offset-2",
-          open && "bg-neutral-100 text-neutral-700",
+          open && "border-green-300 bg-green-50 text-green-700",
         )}
       >
         <Bell aria-hidden className="h-4.5 w-4.5" strokeWidth={1.75} />

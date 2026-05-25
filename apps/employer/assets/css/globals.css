@@ -467,3 +467,98 @@
 .gl-d3 {
   animation: gl-dot 1.5s ease-in-out 0.4s infinite;
 }
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100dvh;
+  width: 260px;
+  z-index: 220;
+  background-color: var(--color-primary-950);
+  border-right: 1px solid rgba(94, 164, 120, 0.18);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.sidebar-closed {
+  transform: translateX(-260px);
+}
+
+.sidebar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.025) 1px,
+    transparent 1px
+  );
+  background-size: 18px 18px;
+}
+
+.sidebar-nav {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(94, 164, 120, 0.25);
+  border-radius: 2px;
+}
+
+.sidebar-submenu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-submenu.open {
+  max-height: 320px;
+}
+
+.sidebar-submenu-inner {
+  position: relative;
+}
+
+.sidebar-submenu-inner::before {
+  content: "";
+  position: absolute;
+  left: 21px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 210;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.main-content-area {
+  transition: margin-left 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (min-width: 1024px) {
+  .main-content-area.sidebar-open {
+    margin-left: 260px;
+  }
+}

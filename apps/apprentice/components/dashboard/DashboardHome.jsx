@@ -18,8 +18,8 @@ import {
 import Link from "next/link";
 
 import { Avatar } from "@/components/ui/Avatar";
-import { Badge } from "@/components/ui/Badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
+import TextBadge from "@/components/ui/TextBadge";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import {
   capitalise,
@@ -174,7 +174,7 @@ function HeroSection({ user, activeOrganisation, greeting }) {
       className="relative overflow-hidden rounded-2xl"
       style={{
         background:
-          "linear-gradient(140deg, #060e09 0%, #0d2918 30%, #1b4f32 70%, #2a5e40 100%)",
+          "linear-gradient(135deg, #14532d 0%, #166534 45%, #15803d 80%, #16a34a 100%)",
       }}
     >
       <div
@@ -192,7 +192,7 @@ function HeroSection({ user, activeOrganisation, greeting }) {
         className="absolute inset-x-0 top-0 h-[2px] pointer-events-none"
         style={{
           background:
-            "linear-gradient(90deg, transparent 0%, rgba(165,180,252,0.65) 50%, transparent 100%)",
+            "linear-gradient(90deg, transparent 0%, rgba(94,164,120,0.65) 50%, transparent 100%)",
         }}
       />
       <div
@@ -200,7 +200,7 @@ function HeroSection({ user, activeOrganisation, greeting }) {
         className="absolute -top-24 -right-24 h-80 w-80 rounded-full pointer-events-none"
         style={{
           background:
-            "radial-gradient(circle, rgba(129,140,248,0.14), transparent 70%)",
+            "radial-gradient(circle, rgba(78,163,106,0.14), transparent 70%)",
         }}
       />
 
@@ -209,7 +209,7 @@ function HeroSection({ user, activeOrganisation, greeting }) {
           <div className="min-w-0">
             <p
               className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em]"
-              style={{ color: "#a5b4fc" }}
+              style={{ color: "#8cc4a1" }}
             >
               Learner Portal
             </p>
@@ -242,14 +242,20 @@ function HeroSection({ user, activeOrganisation, greeting }) {
               </p>
               <div className="mt-1 flex flex-wrap items-center gap-1.5">
                 {roles.map((role) => (
-                  <Badge key={role} variant="owner" className="text-[10px]">
+                  <TextBadge
+                    key={role}
+                    variant="light"
+                    color="purple"
+                    size="xs"
+                    className="text-[10px]"
+                  >
                     {capitalise(role)}
-                  </Badge>
+                  </TextBadge>
                 ))}
                 {user?.isActive && (
                   <span
                     className="flex items-center gap-1 text-[10px] font-medium"
-                    style={{ color: "#a5b4fc" }}
+                    style={{ color: "#78bf8d" }}
                   >
                     <span className="h-1.5 w-1.5 rounded-full bg-success-400" />
                     Active
@@ -268,7 +274,7 @@ function HeroSection({ user, activeOrganisation, greeting }) {
             <span className="flex items-center gap-2">
               <Users
                 className="h-3.5 w-3.5 shrink-0"
-                style={{ color: "#a5b4fc" }}
+                style={{ color: "#8cc4a1" }}
                 aria-hidden
               />
               <span className="font-semibold text-white">{org.name}</span>
@@ -341,7 +347,7 @@ function MetricCard({ stat }) {
 
         <div className="mt-4">
           <p className="text-3xl font-bold tracking-tight text-neutral-300">
-            —
+            N/A
           </p>
           <p className="mt-1 text-sm font-medium text-neutral-500">{label}</p>
         </div>
@@ -546,23 +552,23 @@ function ProfileCard({ user, activeOrganisation, profileStatus }) {
             <p className="truncate text-xs text-neutral-500">{user?.email}</p>
             <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
               {roles.map((r) => (
-                <Badge key={r} variant="owner">
+                <TextBadge key={r} variant="light" color="purple" size="xs">
                   {capitalise(r)}
-                </Badge>
+                </TextBadge>
               ))}
               {user?.isEmailVerified && (
-                <Badge variant="success">
+                <TextBadge variant="light" color="green" size="xs">
                   <CheckCircle2 className="h-3 w-3" aria-hidden />
                   Verified
-                </Badge>
+                </TextBadge>
               )}
             </div>
           </div>
         </div>
 
         <div className="mt-4 space-y-2 border-t border-neutral-100 pt-4">
-          <MiniRow label="Timezone" value={user?.timezone ?? "—"} />
-          <MiniRow label="Locale" value={user?.locale ?? "—"} />
+          <MiniRow label="Timezone" value={user?.timezone ?? "Not set"} />
+          <MiniRow label="Locale" value={user?.locale ?? "Not set"} />
           <MiniRow
             label="Last login"
             value={
@@ -573,7 +579,9 @@ function ProfileCard({ user, activeOrganisation, profileStatus }) {
           />
           <MiniRow
             label="Member since"
-            value={user?.createdAt ? formatDate(user.createdAt) : "—"}
+            value={
+              user?.createdAt ? formatDate(user.createdAt) : "Not recorded"
+            }
           />
           <MiniRow
             label="Account"

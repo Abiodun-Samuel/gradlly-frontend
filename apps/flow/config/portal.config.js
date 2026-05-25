@@ -14,7 +14,7 @@ export const PORTAL = Object.freeze({
   themeColor: themeColor,
   baseUrl: clientEnv.NEXT_PUBLIC_APP_URL || "https://flow.gradlly.com",
   defaultDescription:
-    "Gradlly Flow Portal — automate apprenticeship workflows, connect your systems and streamline levy management.",
+    "Gradlly Flow Portal: automate apprenticeship workflows, connect your systems and streamline levy management.",
   loadingIndicatorProperties: {
     color: themeColor,
     height: 2,

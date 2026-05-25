@@ -76,15 +76,15 @@ export function HeaderNotifications() {
       {/* Bell button */}
       <button
         onClick={() => setOpen((v) => !v)}
-        aria-label={`Notifications${unreadCount ? ` — ${unreadCount} unread` : ""}`}
+        aria-label={`Notifications${unreadCount ? ` (${unreadCount} unread)` : ""}`}
         aria-expanded={open}
         aria-haspopup="dialog"
         className={cn(
-          "relative flex h-9 w-9 items-center justify-center rounded-lg",
-          "text-neutral-500 transition-colors duration-150",
-          "hover:bg-neutral-100 hover:text-neutral-700",
+          "relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
+          "border border-neutral-200 bg-white text-neutral-500 transition-colors duration-150",
+          "hover:border-green-300 hover:bg-green-50 hover:text-green-700",
           "focus-visible:outline-2 focus-visible:outline-primary-700 focus-visible:outline-offset-2",
-          open && "bg-neutral-100 text-neutral-700",
+          open && "border-green-300 bg-green-50 text-green-700",
         )}
       >
         <Bell aria-hidden className="h-4.5 w-4.5" strokeWidth={1.75} />

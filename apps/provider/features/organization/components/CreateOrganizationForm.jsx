@@ -17,14 +17,10 @@ import {
 } from "@/features/organization/schemas";
 import { applyServerErrors } from "@/lib/errors";
 
-// ─── Static data (module-level so it is never recomputed) ─────────────────────
-
 const COUNTRY_OPTIONS = Country.getAllCountries().map((c) => ({
   value: c.isoCode,
   text: c.name,
 }));
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const CITY_CAP = 300;
 
@@ -37,7 +33,6 @@ function getRegionOptions(isoCode) {
       isTruncated: false,
     };
   }
-  // Fall back to cities for countries without state-level data
   const cities = City.getCitiesOfCountry(isoCode) ?? [];
   return {
     options: cities
@@ -52,8 +47,6 @@ function getRegionLabel(isoCode) {
   const states = State.getStatesOfCountry(isoCode);
   return states.length > 0 ? "State / County" : "City";
 }
-
-// ─── Component ────────────────────────────────────────────────────────────────
 
 export function CreateOrganizationForm({ onSuccess }) {
   const {
@@ -76,8 +69,6 @@ export function CreateOrganizationForm({ onSuccess }) {
   } = useCreateOrganization();
   const disabled = isSubmitting || isPending;
 
-  // useWatch subscribes via stable hooks — compatible with the React Compiler,
-  // unlike the watch() function returned from useForm().
   const selectedCountryCode = useWatch({
     control,
     name: "country",
@@ -85,7 +76,6 @@ export function CreateOrganizationForm({ onSuccess }) {
   });
   const selectedCity = useWatch({ control, name: "city", defaultValue: "" });
 
-  // Recompute region options when country changes
   const { options: regionOptions, isTruncated: regionListTruncated } = useMemo(
     () => getRegionOptions(selectedCountryCode),
     [selectedCountryCode],
@@ -95,7 +85,6 @@ export function CreateOrganizationForm({ onSuccess }) {
     [selectedCountryCode],
   );
 
-  // Reset city whenever country changes (track prev to avoid resetting on mount)
   const prevCountryRef = useRef(selectedCountryCode);
   useEffect(() => {
     if (prevCountryRef.current !== selectedCountryCode) {
@@ -106,7 +95,6 @@ export function CreateOrganizationForm({ onSuccess }) {
 
   const onSubmit = async (values) => {
     try {
-      // Resolve ISO code → full country name before sending to API
       const countryName =
         Country.getCountryByCode(values.country)?.name ?? values.country;
       const payload = {
@@ -126,6 +114,7 @@ export function CreateOrganizationForm({ onSuccess }) {
       <ServerErrorAlert showFieldList error={serverError} />
 
       <fieldset disabled={disabled} className="contents space-y-4">
+        {/* Organisation identity */}
         <InputField
           required
           name="name"
@@ -136,6 +125,29 @@ export function CreateOrganizationForm({ onSuccess }) {
           error={errors.name?.message}
         />
 
+        {/* Registration identifiers */}
+        <div className="grid grid-cols-2 gap-3">
+          <InputField
+            required
+            name="ukprn"
+            label="UKPRN"
+            placeholder="10000000"
+            inputMode="numeric"
+            maxLength={8}
+            register={register}
+            error={errors.ukprn?.message}
+          />
+          <InputField
+            required
+            name="postcode"
+            label="Postcode"
+            autoComplete="postal-code"
+            register={register}
+            error={errors.postcode?.message}
+          />
+        </div>
+
+        {/* Contact details */}
         <div className="grid grid-cols-2 gap-3">
           <InputField
             required
@@ -158,6 +170,16 @@ export function CreateOrganizationForm({ onSuccess }) {
         </div>
 
         <InputField
+          name="website"
+          label="Website"
+          type="url"
+          placeholder="https://"
+          register={register}
+          error={errors.website?.message}
+        />
+
+        {/* Location */}
+        <InputField
           required
           name="address"
           label="Address"
@@ -166,7 +188,6 @@ export function CreateOrganizationForm({ onSuccess }) {
           error={errors.address?.message}
         />
 
-        {/* Country — full width so the long list is easy to browse */}
         <SingleSelectField
           required
           name="country"
@@ -179,60 +200,28 @@ export function CreateOrganizationForm({ onSuccess }) {
           placeholder="Select country"
         />
 
-        {/* State / County — populated after country selection */}
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <SingleSelectField
-              required
-              name="city"
-              label={regionLabel}
-              options={regionOptions}
-              register={register}
-              setValue={setValue}
-              value={selectedCity}
-              disabled={!selectedCountryCode || disabled}
-              error={errors.city?.message}
-              placeholder={
-                selectedCountryCode
-                  ? `Select ${regionLabel.toLowerCase()}`
-                  : "Select a country first"
-              }
-            />
-            {regionListTruncated && (
-              <p className="mt-1 text-xs text-neutral-400">
-                Showing first {CITY_CAP} cities — type to search for yours.
-              </p>
-            )}
-          </div>
-          <InputField
-            name="website"
-            label="Website"
-            type="url"
-            placeholder="https://"
-            register={register}
-            error={errors.website?.message}
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <InputField
+        <div>
+          <SingleSelectField
             required
-            name="ukprn"
-            label="UKPRN"
-            placeholder="10000000"
-            inputMode="numeric"
-            maxLength={8}
+            name="city"
+            label={regionLabel}
+            options={regionOptions}
             register={register}
-            error={errors.ukprn?.message}
+            setValue={setValue}
+            value={selectedCity}
+            disabled={!selectedCountryCode || disabled}
+            error={errors.city?.message}
+            placeholder={
+              selectedCountryCode
+                ? `Select ${regionLabel.toLowerCase()}`
+                : "Select a country first"
+            }
           />
-          <InputField
-            required
-            name="postcode"
-            label="Postcode"
-            autoComplete="postal-code"
-            register={register}
-            error={errors.postcode?.message}
-          />
+          {regionListTruncated && (
+            <p className="mt-1 text-xs text-neutral-400">
+              Showing first {CITY_CAP} cities. Type to search for yours.
+            </p>
+          )}
         </div>
 
         <Button loading={disabled} disabled={disabled} fullWidth type="submit">

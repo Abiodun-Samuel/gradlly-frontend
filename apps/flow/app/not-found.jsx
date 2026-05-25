@@ -36,7 +36,7 @@ export default function NotFound() {
         {/* Large 404 */}
         <p
           aria-hidden="true"
-          className="mb-6 select-none bg-gradient-to-br from-primary-600 to-primary-950 bg-clip-text text-[7rem] font-black leading-none tracking-tighter text-transparent"
+          className="mb-6 select-none bg-linear-to-br from-primary-600 to-primary-950 bg-clip-text text-[7rem] font-black leading-none tracking-tighter text-transparent"
         >
           404
         </p>
