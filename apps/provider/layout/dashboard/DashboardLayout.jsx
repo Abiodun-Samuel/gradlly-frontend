@@ -1,6 +1,6 @@
 "use client";
 
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { SessionErrorScreen } from "@/components/error/SessionErrorScreen";
@@ -16,6 +16,7 @@ import { cn } from "@/utils/helper";
 const MODAL_DELAY_MS = 2000;
 
 export function DashboardLayout({ children }) {
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     if (typeof window === "undefined") return false;
     const saved = localStorage.getItem("gradlly_sidebar_open");
@@ -41,9 +42,14 @@ export function DashboardLayout({ children }) {
     };
   }, [needsOrg]);
 
-  if (isLoading) return <DashboardSkeleton />;
+  useEffect(() => {
+    if (!isLoading && !isError && !user) {
+      router.replace(AUTH_REDIRECTS.LOGIN_PAGE);
+    }
+  }, [isLoading, isError, user, router]);
+
+  if (isLoading || (!isError && !user)) return <DashboardSkeleton />;
   if (isError) return <SessionErrorScreen />;
-  if (!user) redirect(AUTH_REDIRECTS.LOGIN_PAGE);
 
   return (
     <>

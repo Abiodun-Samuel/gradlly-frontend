@@ -37,6 +37,7 @@ export function useLogin() {
     onSuccess: (data) => {
       toastSuccess(data?.message || "Welcome back!");
       qc.removeQueries({ queryKey: AUTH_QUERY_KEYS.me() });
+      router.refresh();
       router.replace(AUTH_REDIRECTS.DASHBOARD_HOME_PAGE);
     },
     onError: (error) => {
@@ -81,6 +82,7 @@ export function useVerifyEmail() {
     onSuccess: (data) => {
       toastSuccess(data?.message || "Email verified successfully!");
       qc.removeQueries({ queryKey: AUTH_QUERY_KEYS.me() });
+      router.refresh();
       router.replace(AUTH_REDIRECTS.DASHBOARD_HOME_PAGE);
     },
     onError: (error) => {
@@ -149,6 +151,7 @@ export function useLogout() {
     },
     onSettled: () => {
       qc.clear();
+      router.refresh();
       router.replace(AUTH_REDIRECTS.LOGIN_PAGE);
     },
   });

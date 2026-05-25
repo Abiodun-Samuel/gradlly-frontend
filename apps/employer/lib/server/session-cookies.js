@@ -30,7 +30,6 @@ function cookieBase() {
     secure: isProd,
     sameSite: "lax",
     path: "/",
-    domain: serverEnv.AUTH_COOKIE_DOMAIN || undefined,
   };
 }
 
