@@ -1,48 +1,37 @@
 import {
   BarChart3,
   Briefcase,
-  ClipboardList,
-  CreditCard,
   GraduationCap,
   HelpCircle,
   LayoutDashboard,
   Settings,
-  UserCircle,
-  UserPlus,
 } from "lucide-react";
 
 export const NAV_SECTIONS = [
   {
     title: "Overview",
     items: [
-      { label: "Dashboard", href: "/", icon: LayoutDashboard },
-      { label: "Analytics", href: "/analytics", icon: BarChart3 },
+      { label: "Levy Dashboard", href: "/", icon: LayoutDashboard },
+      { label: "My apprentices", href: "/apprentices", icon: BarChart3 },
+      { label: "Commitments", href: "/commitments", icon: BarChart3 },
     ],
   },
   {
-    title: "Talent",
+    title: "Finance",
     items: [
-      { label: "Apprentices", href: "/apprentices", icon: GraduationCap },
+      { label: "Reports", href: "/reports", icon: GraduationCap },
       {
-        label: "Recruitment",
-        href: "/jobs",
+        label: "Levy transfer",
+        href: "/levy-transfer",
         icon: Briefcase,
-        children: [
-          { label: "Job Posts", href: "/jobs" },
-          { label: "Applications", href: "/applications" },
-        ],
       },
-      { label: "Onboarding", href: "/onboarding", icon: UserPlus },
-      { label: "Assessments", href: "/assessments", icon: ClipboardList },
     ],
   },
   {
-    title: "Account",
+    title: "Settings",
     items: [
-      { label: "Billing", href: "/billing", icon: CreditCard },
-      { label: "Profile", href: "/profile", icon: UserCircle },
       { label: "Settings", href: "/settings", icon: Settings },
-      { label: "Help & Docs", href: "/help", icon: HelpCircle },
+      { label: "Help & support", href: "/help", icon: HelpCircle },
     ],
   },
 ];
