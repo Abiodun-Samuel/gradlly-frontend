@@ -34,6 +34,7 @@ export const STATEMENTS = [
       timestamp: "03 Mar 2024 · 18:55 GMT",
     },
     needsRenewal: false,
+    version: 1,
     documentUrl: "#",
   },
   {

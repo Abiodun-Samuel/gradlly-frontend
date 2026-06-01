@@ -9,6 +9,11 @@ export function EnrolStep1() {
       </p>
       <Field id="firstName" label="First name" />
       <Field id="lastName" label="Last name" />
+      <Field
+        id="employeeId"
+        label="Employee ID"
+        hint="Your internal HR reference"
+      />
       <Field id="dob" label="Date of birth" type="date" />
       <Field
         id="nino"
@@ -16,7 +21,11 @@ export function EnrolStep1() {
         placeholder="AB 12 34 56 C"
       />
       <Field id="jobTitle" label="Job title" />
-      <Field id="manager" label="Line manager name" />
+      <Field
+        id="manager"
+        label="Line manager name"
+        hint="Who will approve this apprentice's OTJ logs"
+      />
     </div>
   );
 }

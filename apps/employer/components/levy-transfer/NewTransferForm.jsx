@@ -185,7 +185,7 @@ export function NewTransferForm({ prefillAmount, onSuccess }) {
               </span>
             </div>
           )}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {["Transfer start date", "Transfer end date"].map((label) => (
               <div key={label}>
                 <label

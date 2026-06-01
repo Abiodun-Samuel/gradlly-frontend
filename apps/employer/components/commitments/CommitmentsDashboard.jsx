@@ -29,7 +29,7 @@ export function CommitmentsDashboard() {
       style={{ animation: "slide-up 320ms var(--ease-out) both" }}
     >
       {/* Top bar */}
-      <div className="flex items-center justify-between gap-4 flex-wrap">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <p className="text-xs" style={{ color: T.muted }}>
             Midlands Engineering → Commitments
@@ -38,7 +38,7 @@ export function CommitmentsDashboard() {
             Commitments
           </h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             type="button"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border hover:opacity-75 transition-opacity"

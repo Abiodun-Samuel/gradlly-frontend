@@ -21,6 +21,16 @@ const SORTS = [
   "Funding needed (high–low)",
   "Alphabetical",
 ];
+const PROGRAMMES = [
+  "All programmes",
+  "Engineering L3",
+  "Software Developer L4",
+  "Business Admin L3",
+  "HR Support L3",
+  "Accounting Tech L4",
+  "Site Supervisor L4",
+  "Hospitality L2",
+];
 
 function inRange(n, r) {
   if (r === "Under £5k") return n < 5000;
@@ -34,6 +44,7 @@ export function SMEFinder({ searchRef, onRequestMatch }) {
   const [sector, setSector] = useState("All");
   const [loc, setLoc] = useState("All");
   const [range, setRange] = useState("All");
+  const [programme, setProgramme] = useState("All programmes");
   const [verified, setVerified] = useState(false);
   const [sort, setSort] = useState("Best match");
 
@@ -68,7 +79,7 @@ export function SMEFinder({ searchRef, onRequestMatch }) {
       style={{ backgroundColor: T.surface, border: `1px solid ${T.border}` }}
     >
       <div
-        className="px-5 py-4 flex items-center justify-between flex-wrap gap-3"
+        className="px-5 py-4 flex items-start justify-between flex-wrap gap-3"
         style={{ borderBottom: `1px solid ${T.border}` }}
       >
         <div>
@@ -142,10 +153,11 @@ export function SMEFinder({ searchRef, onRequestMatch }) {
               </button>
             ))}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             {[
               [LOCS, loc, setLoc],
               [RANGES, range, setRange],
+              [PROGRAMMES, programme, setProgramme],
             ].map(([opts, val, setter], i) => (
               <select
                 key={i}

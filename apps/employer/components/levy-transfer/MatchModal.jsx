@@ -17,14 +17,19 @@ export function MatchModal({ open, sme, onClose, onSuccess }) {
   const [amount, setAmount] = useState(sme?.fundingNeeded ?? 0);
   const [checks, setChecks] = useState([false, false, false]);
   const [sending, setSending] = useState(false);
+  const [esfa, setEsfa] = useState(false);
   const toggle = (i) => setChecks((c) => c.map((v, j) => (j === i ? !v : v)));
   const maxAmt = Math.min(LEVY.remaining, sme?.fundingNeeded ?? 0);
   const amtOk = amount >= 1000 && amount <= maxAmt;
   const allTicked = checks.every(Boolean);
   const canSend = amtOk && allTicked && !sending;
 
-  const send = () => {
-    if (!canSend) return;
+  const handleSubmit = () => {
+    if (canSend) setEsfa(true);
+  };
+
+  const confirmEsfa = () => {
+    setEsfa(false);
     setSending(true);
     setTimeout(() => {
       setSending(false);
@@ -51,7 +56,7 @@ export function MatchModal({ open, sme, onClose, onSuccess }) {
           </button>
           <button
             type="button"
-            onClick={send}
+            onClick={handleSubmit}
             disabled={!canSend}
             className="px-5 py-2 rounded-xl text-sm font-bold hover:opacity-80 transition-all disabled:opacity-40"
             style={{
@@ -125,7 +130,7 @@ export function MatchModal({ open, sme, onClose, onSuccess }) {
                   : "⚠ Exceeds remaining allowance"}
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 ["Planned start date", "date"],
                 ["PAYE reference", "text"],
@@ -171,7 +176,7 @@ export function MatchModal({ open, sme, onClose, onSuccess }) {
                 </span>
               </label>
             ))}
-            <div className="grid grid-cols-2 gap-3 pt-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
               {[
                 ["Name", "Sarah Rahman"],
                 ["Capacity", "Head of L&D"],
@@ -195,6 +200,49 @@ export function MatchModal({ open, sme, onClose, onSuccess }) {
                   />
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      )}
+      {esfa && (
+        <div className="fixed inset-0 z-[350] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div
+            className="rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl"
+            style={{
+              backgroundColor: T.surface,
+              border: `2px solid ${T.border}`,
+            }}
+          >
+            <p
+              className="text-xs font-bold uppercase tracking-widest mb-1"
+              style={{ color: T.muted }}
+            >
+              ESFA DAS Transfer Consent
+            </p>
+            <p className="text-sm font-bold mt-2 mb-3" style={{ color: T.ink }}>
+              You are about to initiate a levy transfer of {fmt(amount)} to{" "}
+              {sme?.name} on the ESFA Digital Apprenticeship Service.
+            </p>
+            <p className="text-xs mb-4" style={{ color: T.subtle }}>
+              This action will be recorded on your DAS account.
+            </p>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setEsfa(false)}
+                className="flex-1 py-2 rounded-xl text-sm font-semibold border hover:opacity-75 transition-opacity"
+                style={{ borderColor: T.border, color: T.subtle }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmEsfa}
+                className="flex-1 py-2 rounded-xl text-sm font-bold hover:opacity-80 transition-opacity"
+                style={{ backgroundColor: T.green, color: "#fff" }}
+              >
+                Confirm on DAS →
+              </button>
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import { T } from "./tokens";
 
-export function Field({ id, label, type = "text", placeholder }) {
+export function Field({ id, label, type = "text", placeholder, hint }) {
   return (
     <div className="space-y-1.5">
       <label
@@ -21,6 +21,11 @@ export function Field({ id, label, type = "text", placeholder }) {
           color: T.ink,
         }}
       />
+      {hint && (
+        <p className="text-[11px]" style={{ color: T.muted }}>
+          {hint}
+        </p>
+      )}
     </div>
   );
 }

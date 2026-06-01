@@ -41,7 +41,20 @@ export function ProfileOverview({ a, onContact }) {
           style={{ backgroundColor: T.card, border: `1px solid ${T.border}` }}
         >
           <Row label="Provider" value={a.provider} accent={T.blue} />
-          <Row label="Contact" value={a.providerContact.name} />
+          <Row
+            label="Assigned tutor"
+            value={
+              a.tutorName
+                ? `${a.tutorName} · ${a.tutorEmail}`
+                : a.providerContact.name
+            }
+          />
+          <Row
+            label="Line manager"
+            value={
+              a.lineManager ? `${a.lineManager} · ${a.lineManagerEmail}` : "—"
+            }
+          />
           <Row label="Start date" value={a.startDate} />
           <Row label="Expected end" value={a.expectedEndDate} />
           <Row
@@ -121,6 +134,12 @@ export function ProfileOverview({ a, onContact }) {
             {a.otjHoursCompleted} hrs completed of {a.otjHoursRequired} hrs
             required
           </p>
+          {gap < 0 && (
+            <p className="text-xs font-semibold" style={{ color: T.amber }}>
+              ⚠ Current pace: 8 hrs/week · Required pace: 12 hrs/week · Falling
+              behind
+            </p>
+          )}
         </div>
       </section>
 

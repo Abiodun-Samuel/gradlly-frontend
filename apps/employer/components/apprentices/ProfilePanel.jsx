@@ -5,12 +5,24 @@ import { useState } from "react";
 
 import { ApprenticeAvatar } from "./ApprenticeAvatar";
 import { ProfileActivity } from "./ProfileActivity";
+import { ProfileDocuments } from "./ProfileDocuments";
+import { ProfileMessages } from "./ProfileMessages";
 import { ProfileMilestones } from "./ProfileMilestones";
 import { ProfileOverview } from "./ProfileOverview";
+import { ProfileReviews } from "./ProfileReviews";
+import { ProfileTimeline } from "./ProfileTimeline";
 import { StatusBadge } from "./StatusBadge";
 import { T } from "./tokens";
 
-const TABS = ["Overview", "Milestones", "Activity"];
+const TABS = [
+  "Overview",
+  "Timeline",
+  "Milestones",
+  "Reviews",
+  "Activity",
+  "Documents",
+  "Messages",
+];
 
 export function ProfilePanel({ apprentice, onClose, onContact }) {
   const [tab, setTab] = useState("Overview");
@@ -19,17 +31,13 @@ export function ProfilePanel({ apprentice, onClose, onContact }) {
 
   return (
     <>
-      {/* Backdrop */}
       <div
         className="fixed inset-0 z-[230] bg-black/30 backdrop-blur-sm"
         onClick={onClose}
       />
-
-      {/* Panel */}
       <div
-        className="fixed right-0 top-0 h-full z-[240] flex flex-col overflow-hidden shadow-2xl"
+        className="fixed right-0 top-0 h-full z-[240] flex flex-col overflow-hidden shadow-2xl w-full sm:w-[500px]"
         style={{
-          width: 480,
           backgroundColor: T.surface,
           borderLeft: `1px solid ${T.border}`,
           animation: "slide-in-right 300ms cubic-bezier(0.16,1,0.3,1) both",
@@ -51,6 +59,9 @@ export function ProfilePanel({ apprentice, onClose, onContact }) {
             </p>
             <p className="text-xs mt-0.5" style={{ color: T.muted }}>
               {a.standard}
+            </p>
+            <p className="text-[11px] mt-0.5" style={{ color: T.muted }}>
+              ID: {a.employeeId ?? "—"}
             </p>
             <div className="flex items-center gap-2 mt-1.5">
               <StatusBadge status={a.status} />
@@ -87,7 +98,7 @@ export function ProfilePanel({ apprentice, onClose, onContact }) {
 
         {/* Tabs */}
         <div
-          className="flex shrink-0 px-5"
+          className="flex shrink-0 px-3 overflow-x-auto"
           style={{ borderBottom: `1px solid ${T.border}` }}
         >
           {TABS.map((t) => (
@@ -95,7 +106,7 @@ export function ProfilePanel({ apprentice, onClose, onContact }) {
               key={t}
               type="button"
               onClick={() => setTab(t)}
-              className="px-4 py-3 text-sm font-semibold transition-colors duration-150 border-b-2 -mb-px"
+              className="px-3 py-3 text-xs font-semibold transition-colors duration-150 border-b-2 -mb-px whitespace-nowrap"
               style={{
                 color: tab === t ? T.blue : T.muted,
                 borderColor: tab === t ? T.blue : "transparent",
@@ -114,12 +125,16 @@ export function ProfilePanel({ apprentice, onClose, onContact }) {
           {tab === "Overview" && (
             <ProfileOverview a={a} onContact={onContact} />
           )}
+          {tab === "Timeline" && <ProfileTimeline a={a} />}
           {tab === "Milestones" && (
             <ProfileMilestones milestones={a.milestones} />
           )}
+          {tab === "Reviews" && <ProfileReviews />}
           {tab === "Activity" && (
             <ProfileActivity recentActivity={a.recentActivity} />
           )}
+          {tab === "Documents" && <ProfileDocuments a={a} />}
+          {tab === "Messages" && <ProfileMessages />}
         </div>
       </div>
     </>

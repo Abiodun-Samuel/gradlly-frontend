@@ -235,7 +235,12 @@ export function Sidebar({ isOpen, onClose }) {
                           : "text-white/40 group-hover:text-primary-400/70",
                       )}
                     />
-                    {item.label}
+                    <span className="flex-1">{item.label}</span>
+                    {item.badge > 0 && (
+                      <span className="flex h-4.5 min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white leading-none">
+                        {item.badge}
+                      </span>
+                    )}
                   </Link>
                 );
               })}

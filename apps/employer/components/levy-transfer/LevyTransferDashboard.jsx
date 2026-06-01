@@ -67,7 +67,7 @@ export function LevyTransferDashboard() {
       className="space-y-5"
       style={{ animation: "slide-up 320ms var(--ease-out) both" }}
     >
-      <div className="flex items-center justify-between gap-4 flex-wrap">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <p className="text-xs" style={{ color: T.muted }}>
             Midlands Engineering → Levy Transfer
@@ -76,7 +76,7 @@ export function LevyTransferDashboard() {
             Levy transfer
           </h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             type="button"
             onClick={() => setHistory(true)}
@@ -126,7 +126,7 @@ export function LevyTransferDashboard() {
         />
       )}
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_400px]">
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1fr_400px]">
         <SMEFinder searchRef={searchRef} onRequestMatch={setMatchSME} />
         <div className="space-y-5">
           <ActiveTransfers extras={extras} />

@@ -10,12 +10,26 @@ import { ReportHistoryDrawer } from "./ReportHistoryDrawer";
 import { ReportList } from "./ReportList";
 import { ReportPreviewModal } from "./ReportPreviewModal";
 import { ReportStatCards } from "./ReportStatCards";
+import { ROICards } from "./ROICards";
 import { ScheduleForm } from "./ScheduleForm";
+
+const FY_OPTIONS = [
+  "FY 2024/25",
+  "FY 2023/24",
+  "Last 12 months",
+  "Custom range",
+];
+
+const DELTAS = {
+  "FY 2024/25": ["▲ +4%", "▲ +2%", "▲ +8%", "▼ -3%"],
+  "FY 2023/24": ["▼ -4%", "▼ -2%", "▼ -8%", "▲ +3%"],
+};
 
 export function ReportsDashboard() {
   const [preview, setPreview] = useState(null);
   const [escalate, setEscalate] = useState(null);
   const [history, setHistory] = useState(false);
+  const [fy, setFy] = useState("FY 2024/25");
 
   return (
     <div
@@ -23,7 +37,7 @@ export function ReportsDashboard() {
       style={{ animation: "slide-up 320ms var(--ease-out) both" }}
     >
       {/* Top bar */}
-      <div className="flex items-center justify-between gap-4 flex-wrap">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <p className="text-xs" style={{ color: T.muted }}>
             Midlands Engineering → Reports
@@ -32,7 +46,21 @@ export function ReportsDashboard() {
             Reports
           </h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <select
+            value={fy}
+            onChange={(e) => setFy(e.target.value)}
+            className="px-3 py-1.5 rounded-xl border text-xs font-semibold cursor-pointer focus:outline-none"
+            style={{
+              borderColor: T.border,
+              color: T.ink,
+              backgroundColor: T.surface,
+            }}
+          >
+            {FY_OPTIONS.map((o) => (
+              <option key={o}>{o}</option>
+            ))}
+          </select>
           <button
             type="button"
             onClick={() => setHistory(true)}
@@ -51,7 +79,8 @@ export function ReportsDashboard() {
         </div>
       </div>
 
-      <ReportStatCards />
+      <ReportStatCards fy={fy} deltas={DELTAS[fy]} />
+      <ROICards />
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_360px]">
         <ReportList onOpen={setPreview} />

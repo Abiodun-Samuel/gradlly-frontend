@@ -5,15 +5,15 @@ import { T } from "@/components/dashboard/levy/tokens";
 
 import { KPI } from "./data";
 
-function KpiCard({ value, label, sub, accent, method, index }) {
+function KpiCard({ value, label, sub, accent, method, index, delta }) {
   const [open, setOpen] = useState(false);
   const ac = accent();
+  const isUp = delta?.startsWith("▲");
   return (
     <div
       className="rounded-2xl p-5 cursor-pointer transition-shadow hover:shadow-md"
       style={{
         backgroundColor: T.surface,
-
         animation: `slide-up 280ms var(--ease-out) ${index * 80}ms both`,
       }}
       onClick={() => setOpen((o) => !o)}
@@ -30,7 +30,15 @@ function KpiCard({ value, label, sub, accent, method, index }) {
       <p className="text-[11px] mt-0.5" style={{ color: T.muted }}>
         {sub}
       </p>
-      <p className="text-[10px] mt-2 font-semibold" style={{ color: ac }}>
+      {delta && (
+        <p
+          className="text-[10px] mt-1 font-semibold"
+          style={{ color: isUp ? T.green : T.red }}
+        >
+          {delta} vs prev year
+        </p>
+      )}
+      <p className="text-[10px] mt-1.5 font-semibold" style={{ color: ac }}>
         {open ? "▲ Hide methodology" : "▾ How is this calculated?"}
       </p>
       {open && (
@@ -49,11 +57,11 @@ function KpiCard({ value, label, sub, accent, method, index }) {
   );
 }
 
-export function ReportStatCards() {
+export function ReportStatCards({ fy: _fy, deltas }) {
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
       {KPI.map((k, i) => (
-        <KpiCard key={k.label} {...k} index={i} />
+        <KpiCard key={k.label} {...k} index={i} delta={deltas?.[i]} />
       ))}
     </div>
   );

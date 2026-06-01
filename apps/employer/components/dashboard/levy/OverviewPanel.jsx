@@ -125,7 +125,7 @@ export function OverviewPanel({ das, onExpiryModal, onExport }) {
       </div>
 
       {/* ── Stat columns ───────────────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <OverviewStat
           accent={T.blue}
           icon={<BarChart3 className="h-4 w-4" />}

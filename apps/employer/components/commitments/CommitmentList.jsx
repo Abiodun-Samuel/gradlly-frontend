@@ -14,13 +14,13 @@ function filterStatements(statements, filter) {
   return statements;
 }
 
-const COL = ({ children }) => (
-  <p
-    className="text-[10px] font-bold uppercase tracking-wider"
-    style={{ color: T.muted }}
+const COL = ({ children, w, right }) => (
+  <div
+    className={`text-[10px] font-bold uppercase tracking-wider shrink-0${right ? " text-right" : ""}`}
+    style={{ color: T.muted, width: w }}
   >
     {children}
-  </p>
+  </div>
 );
 
 export function CommitmentList({ filter = "all" }) {
@@ -30,38 +30,44 @@ export function CommitmentList({ filter = "all" }) {
       className="rounded-2xl overflow-hidden"
       style={{ backgroundColor: T.surface, border: `1px solid ${T.border}` }}
     >
-      <div
-        className="flex items-center gap-4 px-5 py-2.5"
-        style={{
-          backgroundColor: T.card,
-          borderBottom: `1px solid ${T.border}`,
-        }}
-      >
-        <div className="w-52 shrink-0">
-          <COL>Apprentice</COL>
-        </div>
-        <div className="hidden lg:block w-24 shrink-0">
-          <COL>Start date</COL>
-        </div>
-        <div className="flex-1 hidden md:block">
-          <COL>Signing status</COL>
-        </div>
-        <div className="ml-auto">
-          <COL>Actions</COL>
+      <div className="overflow-x-auto">
+        {/* min-width ensures horizontal scroll kicks in before content crushes */}
+        <div style={{ minWidth: 640 }}>
+          {/* Header */}
+          <div
+            className="flex items-center gap-3 px-4 py-2.5"
+            style={{
+              backgroundColor: T.card,
+              borderBottom: `1px solid ${T.border}`,
+            }}
+          >
+            <COL w={200}>Apprentice</COL>
+            <COL w={120}>Start date / version</COL>
+            <div
+              className="flex-1 text-[10px] font-bold uppercase tracking-wider"
+              style={{ color: T.muted }}
+            >
+              Signing status
+            </div>
+            <COL w={160} right>
+              Actions
+            </COL>
+          </div>
+
+          {/* Rows */}
+          {visible.map((s, i) => (
+            <CommitmentRow key={s.id} statement={s} index={i} />
+          ))}
+
+          {visible.length === 0 && (
+            <div className="py-12 text-center">
+              <p className="text-sm font-semibold" style={{ color: T.muted }}>
+                No statements match this filter
+              </p>
+            </div>
+          )}
         </div>
       </div>
-
-      {visible.map((s, i) => (
-        <CommitmentRow key={s.id} statement={s} index={i} />
-      ))}
-
-      {visible.length === 0 && (
-        <div className="py-12 text-center">
-          <p className="text-sm font-semibold" style={{ color: T.muted }}>
-            No statements match this filter
-          </p>
-        </div>
-      )}
     </div>
   );
 }

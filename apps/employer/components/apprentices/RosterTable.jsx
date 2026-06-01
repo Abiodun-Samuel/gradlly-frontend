@@ -5,10 +5,22 @@ import { ArrowUpDown } from "lucide-react";
 import { RosterRow } from "./RosterRow";
 import { T } from "./tokens";
 
-const TH = ({ children, sortable, onClick }) => (
+const TH = ({ children, sortable, sticky, onClick }) => (
   <th
-    className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider select-none whitespace-nowrap"
-    style={{ color: T.muted, cursor: sortable ? "pointer" : "default" }}
+    className={`px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider select-none whitespace-nowrap${sticky ? " bg-[#faf9f7]" : ""}`}
+    style={{
+      color: T.muted,
+      cursor: sortable ? "pointer" : "default",
+      ...(sticky
+        ? {
+            position: "sticky",
+            left: 0,
+            zIndex: 2,
+            backgroundColor: T.card,
+            boxShadow: "2px 0 4px rgba(0,0,0,0.06)",
+          }
+        : {}),
+    }}
     onClick={onClick}
   >
     <span className="flex items-center gap-1">
@@ -25,7 +37,7 @@ export function RosterTable({ apprentices, filter, onView, onContact }) {
       style={{ backgroundColor: T.surface, border: `1px solid ${T.border}` }}
     >
       <div className="overflow-x-auto">
-        <table className="w-full">
+        <table className="w-full" style={{ minWidth: 700 }}>
           <thead
             style={{
               backgroundColor: T.card,
@@ -33,20 +45,30 @@ export function RosterTable({ apprentices, filter, onView, onContact }) {
             }}
           >
             <tr>
-              <th className="px-4 py-3 w-10">
+              <th
+                className="px-4 py-3 w-10"
+                style={{
+                  position: "sticky",
+                  left: 0,
+                  zIndex: 2,
+                  backgroundColor: T.card,
+                }}
+              >
                 <input
                   type="checkbox"
                   className="rounded"
                   style={{ accentColor: T.blue }}
                 />
               </th>
-              <TH sortable>Apprentice</TH>
+              <TH sticky sortable>
+                Apprentice
+              </TH>
               <TH>Standard</TH>
               <TH>Provider</TH>
-              <TH sortable>Start date</TH>
               <TH sortable>OTJ progress</TH>
               <TH sortable>EPA date</TH>
               <TH sortable>Attendance</TH>
+              <TH sortable>Last activity</TH>
               <TH>Status</TH>
               <th
                 className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider"

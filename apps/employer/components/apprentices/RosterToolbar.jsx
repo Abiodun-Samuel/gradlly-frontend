@@ -1,46 +1,83 @@
 "use client";
 
-import { Download, Plus, Search } from "lucide-react";
+import { Filter, Plus, Search, X } from "lucide-react";
+import { useState } from "react";
 
 import { T } from "./tokens";
 
-const FILTERS = [
+const STATUS_FILTERS = [
   { key: "all", label: "All" },
   { key: "on_track", label: "On track" },
   { key: "at_risk", label: "At risk" },
-  { key: "epa_imminent", label: "EPA < 90 days" },
+  { key: "overdue", label: "Overdue" },
+  { key: "epa_ready", label: "EPA Ready" },
 ];
 
-const dropdownStyle = {
+const EPA_MONTHS = [
+  "All EPA months",
+  "Jul 2025",
+  "Oct 2025",
+  "Nov 2025",
+  "Jan 2026",
+  "Jun 2026",
+];
+const STANDARDS = [
+  "All standards",
+  "Software Developer L4",
+  "Data Technician L3",
+  "Business Admin L3",
+  "Accounting Technician L4",
+  "HR Support L3",
+];
+const COHORTS = [
+  "All cohorts",
+  "Sep 2023 cohort",
+  "Jan 2024 cohort",
+  "Mar 2024 cohort",
+  "Jun 2024 cohort",
+  "Sep 2024 cohort",
+];
+
+const selStyle = {
   backgroundColor: T.surface,
   color: T.subtle,
   borderColor: T.border,
-  outline: "none",
   fontSize: "0.75rem",
   fontWeight: 500,
+  outline: "none",
 };
 
 export function RosterToolbar({ filter, search, onFilter, onSearch, onEnrol }) {
+  const [moreOpen, setMoreOpen] = useState(false);
+
   return (
-    <div className="flex items-center justify-between gap-4 flex-wrap">
-      <div className="flex items-center gap-2.5">
+    <div className="space-y-2">
+      {/* Primary row — always visible */}
+      <div className="flex items-center gap-2">
+        {/* Status filter pills — scrollable strip */}
         <div
-          className="inline-flex rounded-xl overflow-hidden shrink-0"
-          style={{ border: `1px solid ${T.border}`, backgroundColor: T.card }}
+          className="flex-1 inline-flex rounded-xl overflow-x-auto min-w-0"
+          style={{
+            border: `1px solid ${T.border}`,
+            backgroundColor: T.card,
+            flexShrink: 1,
+          }}
         >
-          {FILTERS.map((f, i) => {
+          {STATUS_FILTERS.map((f, i) => {
             const active = filter === f.key;
             return (
               <button
                 key={f.key}
                 type="button"
                 onClick={() => onFilter?.(f.key)}
-                className="px-3 py-1.5 text-xs font-semibold transition-all duration-150 whitespace-nowrap"
+                className="px-3 py-1.5 text-xs font-semibold transition-all duration-150 whitespace-nowrap shrink-0"
                 style={{
                   backgroundColor: active ? T.ink : "transparent",
                   color: active ? "#fff" : T.subtle,
                   borderRight:
-                    i < FILTERS.length - 1 ? `1px solid ${T.border}` : "none",
+                    i < STATUS_FILTERS.length - 1
+                      ? `1px solid ${T.border}`
+                      : "none",
                 }}
               >
                 {f.label}
@@ -49,45 +86,46 @@ export function RosterToolbar({ filter, search, onFilter, onSearch, onEnrol }) {
           })}
         </div>
 
-        <div
-          className="h-5 w-px shrink-0"
-          style={{ backgroundColor: T.border }}
-        />
-
-        <select
-          className="px-3 py-1.5 rounded-xl border cursor-pointer"
-          style={dropdownStyle}
+        {/* Filters toggle */}
+        <button
+          type="button"
+          onClick={() => setMoreOpen((o) => !o)}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border shrink-0 hover:opacity-80 transition-opacity"
+          style={{
+            borderColor: moreOpen ? T.blue : T.border,
+            color: moreOpen ? T.blue : T.subtle,
+            backgroundColor: moreOpen ? T.blueLight : T.surface,
+          }}
         >
-          <option>All providers</option>
-          <option>Birmingham Met College</option>
-          <option>Aston Training</option>
-          <option>WMG Academy</option>
-        </select>
+          <Filter className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Filters</span>
+        </button>
 
-        <select
-          className="px-3 py-1.5 rounded-xl border cursor-pointer"
-          style={dropdownStyle}
+        {/* Enrol */}
+        <button
+          type="button"
+          onClick={onEnrol}
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold hover:opacity-80 transition-opacity shrink-0"
+          style={{ backgroundColor: T.blue, color: "#fff" }}
         >
-          <option>All cohorts</option>
-          <option>2023-C</option>
-          <option>2024-A</option>
-          <option>2024-B</option>
-          <option>2024-D</option>
-        </select>
+          <Plus className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Enrol</span>
+        </button>
       </div>
 
-      <div className="flex items-center gap-2 shrink-0">
-        <div className="relative">
+      {/* Search row */}
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1">
           <Search
             className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 pointer-events-none"
             style={{ color: T.muted }}
           />
           <input
             type="text"
-            placeholder="Search…"
+            placeholder="Search by name, standard, provider or employee ID"
             value={search}
             onChange={(e) => onSearch?.(e.target.value)}
-            className="pl-8 pr-3 py-1.5 rounded-xl text-xs border w-40 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            className="w-full pl-8 pr-3 py-1.5 rounded-xl text-xs border focus:outline-none focus:ring-2 focus:ring-blue-100"
             style={{
               backgroundColor: T.surface,
               borderColor: T.border,
@@ -95,28 +133,83 @@ export function RosterToolbar({ filter, search, onFilter, onSearch, onEnrol }) {
             }}
           />
         </div>
-
         <button
           type="button"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold hover:opacity-80 transition-opacity"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold hover:opacity-80 transition-opacity shrink-0"
           style={{
             backgroundColor: "#f5f4f2",
             color: T.subtle,
             border: `1px solid ${T.border}`,
           }}
         >
-          <Download className="h-3.5 w-3.5" /> Export
+          ↓ CSV
         </button>
-
         <button
           type="button"
-          onClick={onEnrol}
-          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold hover:opacity-80 transition-opacity"
-          style={{ backgroundColor: T.blue, color: "#fff" }}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold hover:opacity-80 transition-opacity shrink-0"
+          style={{
+            backgroundColor: "#f5f4f2",
+            color: T.subtle,
+            border: `1px solid ${T.border}`,
+          }}
         >
-          <Plus className="h-3.5 w-3.5" /> Enrol
+          ↓ PDF
         </button>
       </div>
+
+      {/* Expanded filters panel */}
+      {moreOpen && (
+        <div
+          className="rounded-xl p-3 flex flex-wrap gap-2 items-center"
+          style={{
+            backgroundColor: T.card,
+            border: `1px solid ${T.border}`,
+            animation: "slide-up 150ms ease both",
+          }}
+        >
+          <select
+            className="px-3 py-1.5 rounded-lg border text-xs cursor-pointer focus:outline-none"
+            style={selStyle}
+          >
+            <option>All providers</option>
+            <option>Birmingham Met College</option>
+            <option>Aston Training</option>
+            <option>WMG Academy</option>
+          </select>
+          <select
+            className="px-3 py-1.5 rounded-lg border text-xs cursor-pointer focus:outline-none"
+            style={selStyle}
+          >
+            {COHORTS.map((c) => (
+              <option key={c}>{c}</option>
+            ))}
+          </select>
+          <select
+            className="px-3 py-1.5 rounded-lg border text-xs cursor-pointer focus:outline-none"
+            style={selStyle}
+          >
+            {STANDARDS.map((s) => (
+              <option key={s}>{s}</option>
+            ))}
+          </select>
+          <select
+            className="px-3 py-1.5 rounded-lg border text-xs cursor-pointer focus:outline-none"
+            style={selStyle}
+          >
+            {EPA_MONTHS.map((m) => (
+              <option key={m}>{m}</option>
+            ))}
+          </select>
+          <button
+            type="button"
+            onClick={() => setMoreOpen(false)}
+            className="ml-auto p-1 rounded-lg hover:bg-neutral-100"
+            style={{ color: T.muted }}
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

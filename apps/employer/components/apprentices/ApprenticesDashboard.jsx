@@ -20,11 +20,13 @@ export function ApprenticesDashboard() {
   const [enrol, setEnrol] = useState(false);
 
   const visible = APPRENTICES.filter((a) => {
+    const q = search.toLowerCase();
     const matchSearch =
       search === "" ||
-      a.name.toLowerCase().includes(search.toLowerCase()) ||
-      a.standard.toLowerCase().includes(search.toLowerCase()) ||
-      a.provider.toLowerCase().includes(search.toLowerCase());
+      a.name.toLowerCase().includes(q) ||
+      a.standard.toLowerCase().includes(q) ||
+      a.provider.toLowerCase().includes(q) ||
+      (a.employeeId ?? "").toLowerCase().includes(q);
 
     return matchSearch;
   });

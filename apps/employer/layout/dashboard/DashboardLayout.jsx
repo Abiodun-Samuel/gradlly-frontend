@@ -33,6 +33,16 @@ export function DashboardLayout({ children }) {
     localStorage.setItem("gradlly_sidebar_open", sidebarOpen);
   }, [sidebarOpen]);
 
+  // Auto-close sidebar when viewport drops below 1024px
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) setSidebarOpen(false);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     if (!needsOrg) return;
     const timer = setTimeout(() => setOrgModalOpen(true), MODAL_DELAY_MS);

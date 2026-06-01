@@ -30,7 +30,7 @@ export function DocumentPanel({ statement, onClose }) {
       }}
     >
       <div
-        className="w-full max-w-[560px] h-full flex flex-col"
+        className="w-full sm:max-w-[560px] h-full flex flex-col"
         style={{
           backgroundColor: T.surface,
           borderLeft: `1px solid ${T.border}`,
@@ -153,17 +153,85 @@ export function DocumentPanel({ statement, onClose }) {
                     </div>
                   ))}
               </div>
+              {/* Version history */}
+              <div
+                className="mt-4 pt-4"
+                style={{ borderTop: `1px solid ${T.border}` }}
+              >
+                <p
+                  className="text-[10px] font-bold uppercase tracking-wider mb-2"
+                  style={{ color: T.muted }}
+                >
+                  Version history
+                </p>
+                {statement.version > 1 ? (
+                  <div
+                    className="rounded-lg p-2.5 text-xs"
+                    style={{
+                      backgroundColor: T.card,
+                      border: `1px solid ${T.border}`,
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span style={{ color: T.subtle }}>
+                        v1 · Signed{" "}
+                        {statement.originalSignedDate ?? "05 Mar 2024"} · All
+                        parties
+                      </span>
+                      <button
+                        type="button"
+                        className="text-[11px] font-semibold hover:underline"
+                        style={{ color: T.blue }}
+                      >
+                        ↓ Download
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-xs" style={{ color: T.muted }}>
+                    This is the original version — no prior versions
+                  </p>
+                )}
+              </div>
             </div>
           ) : (
             <div className="space-y-3">
-              {audit.map((e, i) => (
+              {[
+                {
+                  icon: "📄",
+                  color: T.blue,
+                  label: "Created",
+                  desc: `Statement ${id} created by Sarah Rahman · 27 Dec 2023 · 09:12 GMT`,
+                },
+                {
+                  icon: "✏️",
+                  color: T.muted,
+                  label: "Draft saved",
+                  desc: "Draft updated by Sarah Rahman · 28 Dec 2023 · 11:05 GMT",
+                },
+                {
+                  icon: "📤",
+                  color: T.amber,
+                  label: "Sent for signing",
+                  desc: "Sent to all parties for signing · 28 Dec 2023 · 11:22 GMT",
+                },
+                ...audit.map((e) => ({
+                  icon: "✅",
+                  color: T.green,
+                  label: `Signed — ${e.role}`,
+                  desc: `${e.name} · ${e.ts}${e.ip ? ` · IP: ${e.ip}` : ""}`,
+                })),
+                {
+                  icon: "👁️",
+                  color: T.subtle,
+                  label: "Viewed",
+                  desc: "Document viewed by Sarah Rahman · 15 Jan 2025 · 14:33 GMT",
+                },
+              ].map((e, i, arr) => (
                 <div key={i} className="flex gap-3 text-xs">
                   <div className="flex flex-col items-center shrink-0">
-                    <span
-                      className="h-2 w-2 rounded-full mt-1 shrink-0"
-                      style={{ backgroundColor: T.green }}
-                    />
-                    {i < audit.length - 1 && (
+                    <span className="text-sm mt-0.5">{e.icon}</span>
+                    {i < arr.length - 1 && (
                       <span
                         className="w-px flex-1 mt-1"
                         style={{ backgroundColor: T.border }}
@@ -171,12 +239,10 @@ export function DocumentPanel({ statement, onClose }) {
                     )}
                   </div>
                   <div className="pb-2">
-                    <p className="font-semibold" style={{ color: T.ink }}>
-                      {e.name} · {e.role}
+                    <p className="font-semibold" style={{ color: e.color }}>
+                      {e.label}
                     </p>
-                    <p style={{ color: T.muted }}>
-                      {e.ts} · Digital declaration{e.ip ? ` · IP: ${e.ip}` : ""}
-                    </p>
+                    <p style={{ color: T.muted }}>{e.desc}</p>
                   </div>
                 </div>
               ))}

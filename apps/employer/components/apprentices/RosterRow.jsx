@@ -20,12 +20,42 @@ function LevelBadge({ standard }) {
   ) : null;
 }
 
+function lastActivityColor(dateStr) {
+  if (!dateStr) return T.muted;
+  const [d, m, y] = dateStr.split(" ");
+  const months = {
+    Jan: 0,
+    Feb: 1,
+    Mar: 2,
+    Apr: 3,
+    May: 4,
+    Jun: 5,
+    Jul: 6,
+    Aug: 7,
+    Sep: 8,
+    Oct: 9,
+    Nov: 10,
+    Dec: 11,
+  };
+  const dt = new Date(+y, months[m], +d);
+  const days = Math.floor((Date.now() - dt) / 86400000);
+  return days <= 7 ? T.green : days <= 30 ? T.amber : T.red;
+}
+
 export function RosterRow({ a, index, onView, onContact, isFiltered }) {
+  const isOverdue = a.status === "overdue";
   const isAtRisk = a.status === "at_risk";
   const isEpaNear = a.epaDaysLeft < 60;
   const epa = epaDays(a.epaDaysLeft);
   const attColor = attendanceColor(a.attendance);
-  const accentColor = isAtRisk ? T.amber : isEpaNear ? T.red : "transparent";
+  const actColor = lastActivityColor(a.lastActivity);
+  const accentColor = isOverdue
+    ? T.red
+    : isAtRisk
+      ? T.amber
+      : isEpaNear
+        ? T.red
+        : "transparent";
 
   return (
     <tr
@@ -37,18 +67,39 @@ export function RosterRow({ a, index, onView, onContact, isFiltered }) {
         borderBottom: `1px solid ${T.border}`,
       }}
     >
-      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+      <td
+        className="px-4 py-3"
+        style={{
+          position: "sticky",
+          left: 0,
+          zIndex: 1,
+          backgroundColor: T.surface,
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
         <input
           type="checkbox"
           className="rounded"
           style={{ accentColor: T.blue }}
         />
       </td>
-      <td className="px-4 py-3">
+      <td
+        className="px-4 py-3"
+        style={{
+          position: "sticky",
+          left: 52,
+          zIndex: 1,
+          backgroundColor: T.surface,
+          boxShadow: "2px 0 4px rgba(0,0,0,0.06)",
+        }}
+      >
         <div className="flex items-center gap-2.5">
           <ApprenticeAvatar initials={a.initials} color={a.avatarColor} />
           <div>
-            <p className="text-sm font-semibold" style={{ color: T.ink }}>
+            <p
+              className="text-sm font-semibold whitespace-nowrap"
+              style={{ color: T.ink }}
+            >
               {a.name}
             </p>
             <span
@@ -78,11 +129,6 @@ export function RosterRow({ a, index, onView, onContact, isFiltered }) {
         >
           {a.provider}
         </button>
-      </td>
-      <td className="px-4 py-3 hidden lg:table-cell">
-        <span className="text-xs tabular-nums" style={{ color: T.subtle }}>
-          {a.startDate}
-        </span>
       </td>
       <td className="px-4 py-3">
         <OtjBar
@@ -115,6 +161,22 @@ export function RosterRow({ a, index, onView, onContact, isFiltered }) {
           <span className="text-xs tabular-nums" style={{ color: T.ink }}>
             {a.attendance}%
           </span>
+        </div>
+      </td>
+      <td className="px-4 py-3 hidden lg:table-cell">
+        <div className="flex items-center gap-1.5">
+          <span
+            className="h-2 w-2 rounded-full shrink-0"
+            style={{ backgroundColor: actColor }}
+          />
+          <span className="text-xs tabular-nums" style={{ color: T.subtle }}>
+            {a.lastActivity ?? "—"}
+          </span>
+          {actColor === T.red && (
+            <span className="text-[9px] font-bold" style={{ color: T.red }}>
+              ⚠
+            </span>
+          )}
         </div>
       </td>
       <td className="px-4 py-3">

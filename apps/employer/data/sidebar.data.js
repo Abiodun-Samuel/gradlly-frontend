@@ -1,6 +1,8 @@
 import {
   BarChart3,
   Briefcase,
+  CheckSquare,
+  ClipboardList,
   GraduationCap,
   HelpCircle,
   LayoutDashboard,
@@ -13,7 +15,18 @@ export const NAV_SECTIONS = [
     items: [
       { label: "Levy Dashboard", href: "/", icon: LayoutDashboard },
       { label: "My apprentices", href: "/apprentices", icon: BarChart3 },
-      { label: "Commitments", href: "/commitments", icon: BarChart3 },
+      {
+        label: "Commitments",
+        href: "/commitments",
+        icon: ClipboardList,
+        badge: 2,
+      },
+      {
+        label: "OTJ Approvals",
+        href: "/otj-approvals",
+        icon: CheckSquare,
+        badge: 12,
+      },
     ],
   },
   {

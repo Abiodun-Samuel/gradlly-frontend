@@ -27,7 +27,7 @@ export function CommitmentRow({ statement, index }) {
 
   return (
     <div
-      className="px-5 py-4 transition-all duration-200 cursor-pointer group"
+      className="transition-all duration-200 cursor-pointer"
       style={{
         backgroundColor: bg,
         borderLeft: bl,
@@ -35,10 +35,14 @@ export function CommitmentRow({ statement, index }) {
         animation: `slide-up 280ms var(--ease-out) ${index * 100}ms both`,
       }}
     >
-      <div className="flex items-center gap-4 flex-wrap sm:flex-nowrap">
-        <div className="flex items-center gap-3 w-52 shrink-0">
+      <div className="flex items-center gap-3 px-4 py-4">
+        {/* Apprentice — fixed 200px to match header */}
+        <div
+          className="shrink-0 flex items-center gap-3"
+          style={{ width: 200 }}
+        >
           <div
-            className="h-9 w-9 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
+            className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
             style={{ backgroundColor: apprentice.avatarColor }}
           >
             {apprentice.initials}
@@ -55,7 +59,7 @@ export function CommitmentRow({ statement, index }) {
             </p>
             <button
               type="button"
-              className="text-[11px] font-medium hover:underline"
+              className="text-[11px] font-medium hover:underline truncate max-w-full block"
               style={{ color: T.blue }}
             >
               {provider}
@@ -63,7 +67,8 @@ export function CommitmentRow({ statement, index }) {
           </div>
         </div>
 
-        <div className="hidden lg:block w-24 shrink-0">
+        {/* Date + version — 120px */}
+        <div className="shrink-0" style={{ width: 120 }}>
           <p className="text-[11px] tabular-nums" style={{ color: T.subtle }}>
             {startDate}
           </p>
@@ -73,45 +78,63 @@ export function CommitmentRow({ statement, index }) {
           >
             {id}
           </p>
-        </div>
-
-        <div className="flex-1 hidden md:block">
-          <TripartiteStatus statement={statement} />
-        </div>
-
-        {needsRenewal && (
           <span
-            title={renewalReason}
-            className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0"
-            style={{ backgroundColor: T.amberLight, color: T.amber }}
+            title={
+              statement.version > 1
+                ? `Original signed ${statement.originalSignedDate ?? ""} · Renewed ${statement.renewedDate ?? ""}`
+                : undefined
+            }
+            className="text-[10px] font-bold px-1.5 py-0.5 rounded mt-1 inline-block"
+            style={{
+              backgroundColor: statement.version > 1 ? T.amberLight : T.card,
+              color: statement.version > 1 ? T.amber : T.muted,
+            }}
           >
-            🔄 Renewal
+            v{statement.version ?? 1}
           </span>
-        )}
+        </div>
 
-        <div className="flex items-center gap-1.5 ml-auto shrink-0">
+        {/* Signing status — flex-1 */}
+        <div className="flex-1 min-w-0">
+          <TripartiteStatus statement={statement} />
+          {needsRenewal && (
+            <span
+              title={renewalReason}
+              className="text-[10px] font-bold px-2 py-0.5 rounded-full mt-1 inline-block"
+              style={{ backgroundColor: T.amberLight, color: T.amber }}
+            >
+              🔄 Renewal
+            </span>
+          )}
+        </div>
+
+        {/* Actions — 160px, right-aligned */}
+        <div
+          className="flex items-center gap-1.5 shrink-0 justify-end"
+          style={{ width: 160 }}
+        >
           {status === "pending_employer" && (
             <>
               <button
                 type="button"
-                className="px-3 py-1.5 rounded-lg text-xs font-bold hover:opacity-80 transition-opacity"
+                className="px-3 py-1.5 rounded-lg text-xs font-bold hover:opacity-80 transition-opacity whitespace-nowrap"
                 style={{ backgroundColor: T.amber, color: "#fff" }}
               >
                 Sign now
               </button>
               <button
                 type="button"
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold border hover:opacity-80 transition-opacity"
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold border hover:opacity-80 transition-opacity whitespace-nowrap"
                 style={{ borderColor: T.border2, color: T.subtle }}
               >
-                View document
+                View
               </button>
             </>
           )}
           {status === "draft" && (
             <button
               type="button"
-              className="px-3 py-1.5 rounded-lg text-xs font-bold hover:opacity-80 transition-opacity"
+              className="px-3 py-1.5 rounded-lg text-xs font-bold hover:opacity-80 transition-opacity whitespace-nowrap"
               style={{ backgroundColor: T.blue, color: "#fff" }}
             >
               Complete draft
@@ -121,14 +144,14 @@ export function CommitmentRow({ statement, index }) {
             <>
               <button
                 type="button"
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold hover:opacity-80 transition-opacity"
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold hover:opacity-80 transition-opacity whitespace-nowrap"
                 style={{ backgroundColor: T.blueLight, color: T.blue }}
               >
-                View document
+                View
               </button>
               <button
                 type="button"
-                className="flex h-7 w-7 items-center justify-center rounded-lg hover:bg-neutral-100"
+                className="flex h-7 w-7 items-center justify-center rounded-lg hover:bg-neutral-100 shrink-0"
                 style={{ color: T.muted }}
               >
                 <MoreHorizontal className="h-4 w-4" />

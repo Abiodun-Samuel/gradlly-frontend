@@ -11,25 +11,29 @@ const fmt = (n) => `£${n.toLocaleString("en-GB")}`;
 function Pipeline({ current }) {
   const idx = PIPELINE_STAGES.indexOf(current);
   return (
-    <div
-      className="flex rounded-xl overflow-hidden"
-      style={{ border: `1px solid ${T.border}` }}
-    >
-      {PIPELINE_STAGES.map((s, i) => (
-        <div
-          key={s}
-          className="flex-1 text-center py-1.5 text-[9px] font-bold tracking-wide transition-colors"
-          style={{
-            backgroundColor:
-              i < idx ? T.greenLight : i === idx ? T.green : T.card,
-            color: i < idx ? T.green : i === idx ? "#fff" : T.muted,
-            borderRight:
-              i < PIPELINE_STAGES.length - 1 ? `1px solid ${T.border}` : "none",
-          }}
-        >
-          {s}
-        </div>
-      ))}
+    <div className="overflow-x-auto">
+      <div
+        className="flex rounded-xl overflow-hidden"
+        style={{ border: `1px solid ${T.border}`, minWidth: 280 }}
+      >
+        {PIPELINE_STAGES.map((s, i) => (
+          <div
+            key={s}
+            className="flex-1 text-center py-1.5 text-[9px] font-bold tracking-wide transition-colors whitespace-nowrap"
+            style={{
+              backgroundColor:
+                i < idx ? T.greenLight : i === idx ? T.green : T.card,
+              color: i < idx ? T.green : i === idx ? "#fff" : T.muted,
+              borderRight:
+                i < PIPELINE_STAGES.length - 1
+                  ? `1px solid ${T.border}`
+                  : "none",
+            }}
+          >
+            {s}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -61,7 +65,7 @@ function TransferRow({ t }) {
       <div className="flex items-start gap-3.5 px-5 py-4">
         <Check />
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start justify-between gap-3 flex-wrap">
             <div>
               <p className="text-sm font-bold" style={{ color: T.ink }}>
                 {t.recipient}

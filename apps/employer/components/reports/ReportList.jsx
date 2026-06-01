@@ -18,7 +18,7 @@ function ReportRow({ report, onOpen, index }) {
   const isLive = badge === "Live";
   return (
     <div
-      className="flex items-center gap-4 px-5 py-4 cursor-pointer group transition-colors"
+      className="flex items-start gap-3 px-4 py-4 cursor-pointer group transition-colors flex-wrap sm:flex-nowrap sm:gap-4 sm:px-5"
       style={{
         borderBottom: `1px solid ${T.border}`,
         animation: `slide-up 220ms var(--ease-out) ${index * 55}ms both`,
@@ -46,7 +46,7 @@ function ReportRow({ report, onOpen, index }) {
           Last generated: {lastGenerated}
         </p>
       </div>
-      <div className="flex items-center gap-2.5 shrink-0">
+      <div className="flex items-center gap-2 shrink-0 ml-auto sm:ml-0">
         <span
           className="px-2 py-0.5 rounded-full text-[10px] font-bold"
           style={{ backgroundColor: bm.bg, color: bm.color }}
