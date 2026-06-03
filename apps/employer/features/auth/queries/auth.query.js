@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
 import { PORTAL } from "@/config/portal.config";
-import { AUTH_REDIRECTS } from "@/features/auth/constants";
+import { AUTH_REDIRECTS, safeRedirectPath } from "@/features/auth/constants";
 import { AUTH_QUERY_KEYS } from "@/features/auth/queries/keys";
 import {
   forgotPassword,
@@ -18,17 +18,18 @@ import {
 } from "@/features/auth/services/auth.service";
 import { toastError, toastSuccess } from "@/hooks/useToast";
 import { ERROR_CODES } from "@/lib/errors";
+import { STALE_TIMES } from "@/lib/react-query/query.config";
 
 export function useMe(options = {}) {
   return useQuery({
     queryKey: AUTH_QUERY_KEYS.me(),
     queryFn: getMe,
-    staleTime: 30_000,
+    staleTime: STALE_TIMES.USER_SESSION,
     ...options,
   });
 }
 
-export function useLogin() {
+export function useLogin({ redirectTo } = {}) {
   const router = useRouter();
   const qc = useQueryClient();
 
@@ -38,7 +39,8 @@ export function useLogin() {
       toastSuccess(data?.message || "Welcome back!");
       qc.removeQueries({ queryKey: AUTH_QUERY_KEYS.me() });
       router.refresh();
-      router.replace(AUTH_REDIRECTS.DASHBOARD_HOME_PAGE);
+      // Honour a safe post-login redirect (e.g. returning to an invite link).
+      router.replace(safeRedirectPath(redirectTo));
     },
     onError: (error) => {
       if (error.code !== ERROR_CODES.VALIDATION) {
@@ -63,6 +65,7 @@ export function useSignup() {
         String(Date.now()),
       );
       const email = encodeURIComponent(variables.email);
+      router.refresh();
       router.replace(`${AUTH_REDIRECTS.VERIFY_EMAIL_PAGE}?email=${email}`);
     },
     onError: (error) => {
@@ -148,6 +151,9 @@ export function useLogout() {
     mutationFn: logout,
     onSuccess: () => {
       toastSuccess("Signed out successfully.");
+    },
+    onError: () => {
+      toastError("Sign out failed. Redirecting for security.");
     },
     onSettled: () => {
       qc.clear();

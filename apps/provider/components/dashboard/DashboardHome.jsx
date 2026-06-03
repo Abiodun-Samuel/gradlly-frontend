@@ -712,10 +712,10 @@ function ProfileCard({ user, activeOrganisation, profileStatus }) {
             label="Account"
             value={user?.isActive ? "Active" : "Inactive"}
           />
-          {user?.membershipStatus && (
+          {activeOrganisation?.membershipStatus && (
             <MiniRow
               label="Membership"
-              value={capitalise(activeOrganisation?.membershipStatus ?? "")}
+              value={capitalise(activeOrganisation.membershipStatus)}
             />
           )}
         </div>

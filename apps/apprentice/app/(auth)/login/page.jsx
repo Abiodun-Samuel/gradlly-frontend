@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import { LoginForm } from "@/features/auth/components/LoginForm";
 import { createPageSeo } from "@/utils/metadata";
 
@@ -23,7 +25,13 @@ export default function LoginPage() {
           Enter your credentials to access your learning dashboard.
         </p>
       </div>
-      <LoginForm />
+      <Suspense
+        fallback={
+          <div className="h-72 animate-pulse rounded-xl bg-neutral-100" />
+        }
+      >
+        <LoginForm />
+      </Suspense>
     </div>
   );
 }

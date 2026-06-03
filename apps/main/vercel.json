@@ -1,6 +1,7 @@
 {
   "framework": "nextjs",
-  "installCommand": "npm install",
+  "installCommand": "cd ../.. && npm install",
+  "ignoreCommand": "cd ../.. && npx turbo-ignore @gradlly/main",
   "buildCommand": "cd ../.. && npx turbo run build --filter=@gradlly/main",
   "outputDirectory": ".next",
   "headers": [

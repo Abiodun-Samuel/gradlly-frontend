@@ -1,4 +1,4 @@
-// lib/react-query/queryConfig.js
+// lib/react-query/query.config.js
 
 function shouldRetry(failureCount, error) {
   const MAX_RETRIES = 3;
@@ -17,11 +17,16 @@ function retryDelay(attemptIndex) {
   return Math.min(1000 * 2 ** attemptIndex, 30000);
 }
 
+export const STALE_TIMES = {
+  USER_SESSION: 30 * 1000,
+  DEFAULT: 60 * 1000,
+};
+
 export const queryConfig = {
   queries: {
-    staleTime: 60 * 1000,
+    staleTime: STALE_TIMES.DEFAULT,
     gcTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
     refetchOnReconnect: true,
     retry: shouldRetry,
     retryDelay,

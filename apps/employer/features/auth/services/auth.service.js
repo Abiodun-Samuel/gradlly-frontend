@@ -24,13 +24,7 @@ export async function signup(data) {
 }
 
 export async function logout() {
-  try {
-    // Proxy reads the refresh token from the httpOnly cookie and sends it
-    // as the request payload so the backend can invalidate it immediately.
-    await $apiClient.post(AUTH_API_PATHS.LOGOUT);
-  } catch {
-    // Swallow — proxy always clears cookies regardless of upstream response
-  }
+  await $apiClient.post(AUTH_API_PATHS.LOGOUT);
 }
 
 export async function verifyEmail({ token }) {

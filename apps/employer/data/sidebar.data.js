@@ -1,48 +1,63 @@
 import {
-  BarChart3,
-  Briefcase,
-  ClipboardList,
-  CreditCard,
-  GraduationCap,
-  HelpCircle,
+  Bell,
   LayoutDashboard,
   Settings,
   UserCircle,
-  UserPlus,
+  UsersRound,
+  // ── Icons for not-yet-built sections (kept for when they are re-enabled) ──
+  // BarChart3,
+  // Briefcase,
+  // ClipboardList,
+  // CreditCard,
+  // GraduationCap,
+  // UserPlus,
 } from "lucide-react";
 
 export const NAV_SECTIONS = [
   {
     title: "Overview",
-    items: [
-      { label: "Dashboard", href: "/", icon: LayoutDashboard },
-      { label: "Analytics", href: "/analytics", icon: BarChart3 },
-    ],
+    items: [{ label: "Dashboard", href: "/", icon: LayoutDashboard }],
   },
-  {
-    title: "Talent",
-    items: [
-      { label: "Apprentices", href: "/apprentices", icon: GraduationCap },
-      {
-        label: "Recruitment",
-        href: "/jobs",
-        icon: Briefcase,
-        children: [
-          { label: "Job Posts", href: "/jobs" },
-          { label: "Applications", href: "/applications" },
-        ],
-      },
-      { label: "Onboarding", href: "/onboarding", icon: UserPlus },
-      { label: "Assessments", href: "/assessments", icon: ClipboardList },
-    ],
-  },
+  // ── Talent section: pages not yet built. Re-enable when ready. ──
+  // {
+  //   title: "Talent",
+  //   items: [
+  //     { label: "Apprentices", href: "/apprentices", icon: GraduationCap },
+  //     {
+  //       label: "Recruitment",
+  //       href: "/jobs",
+  //       icon: Briefcase,
+  //       children: [
+  //         { label: "Job Posts", href: "/jobs" },
+  //         { label: "Applications", href: "/applications" },
+  //       ],
+  //     },
+  //     { label: "Onboarding", href: "/onboarding", icon: UserPlus },
+  //     { label: "Assessments", href: "/assessments", icon: ClipboardList },
+  //   ],
+  // },
   {
     title: "Account",
     items: [
-      { label: "Billing", href: "/billing", icon: CreditCard },
       { label: "Profile", href: "/profile", icon: UserCircle },
-      { label: "Settings", href: "/settings", icon: Settings },
-      { label: "Help & Docs", href: "/help", icon: HelpCircle },
+      {
+        label: "Settings",
+        href: "/settings",
+        icon: Settings,
+        children: [
+          {
+            label: "Team & Invitations",
+            href: "/settings/team",
+            icon: UsersRound,
+          },
+          {
+            label: "Notifications",
+            href: "/settings/notifications",
+            icon: Bell,
+          },
+        ],
+      },
+      // { label: "Billing", href: "/billing", icon: CreditCard },
     ],
   },
 ];

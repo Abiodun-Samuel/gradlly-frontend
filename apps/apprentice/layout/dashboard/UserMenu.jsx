@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeftRight, Bell, HelpCircle, Settings, User } from "lucide-react";
+import { Settings, User } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
@@ -20,14 +20,7 @@ import {
 
 const MENU_ITEMS = [
   { label: "Profile", icon: User, href: "/profile" },
-  { label: "Preferences", icon: Settings, href: "/settings" },
-  {
-    label: "Notification settings",
-    icon: Bell,
-    href: "/settings/notifications",
-  },
-  { label: "Switch organisation", icon: ArrowLeftRight, href: "/organisation" },
-  { label: "Help & docs", icon: HelpCircle, href: "/help" },
+  { label: "Settings", icon: Settings, href: "/settings" },
 ];
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -36,7 +29,8 @@ export function UserMenu({ open, onClose, anchorRef }) {
   const { user, activeOrganisation } = useAuthUser();
   const initials = getInitials(user?.firstName, user?.lastName);
   const fullName = getFullName(user);
-  const role = capitalise(activeOrganisation?.roles?.[0] ?? "member");
+  const roles = activeOrganisation?.roles ?? [];
+  const roleLabel = roles.length ? capitalise(roles[0]) : null;
   const lastLogin = formatDateTime(user?.lastLoginAt);
   const ref = useRef(null);
 
@@ -98,15 +92,22 @@ export function UserMenu({ open, onClose, anchorRef }) {
           </div>
         </div>
 
-        <div className="mt-3 flex items-center gap-2">
-          <TextBadge variant="light" color="purple" size="xs">
-            {role}
-          </TextBadge>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          {roleLabel ? (
+            <TextBadge variant="light" color="purple" size="xs">
+              {roleLabel}
+            </TextBadge>
+          ) : null}
           {user?.isEmailVerified && (
             <TextBadge variant="light" color="green" size="xs">
               Verified
             </TextBadge>
           )}
+          {!roleLabel ? (
+            <TextBadge variant="light" color="gray" size="xs">
+              No organisation
+            </TextBadge>
+          ) : null}
         </div>
 
         {lastLogin && (

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, HelpCircle, Menu, Settings, X } from "lucide-react";
+import { ChevronDown, Menu, Settings, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef } from "react";
@@ -23,8 +23,23 @@ const BREADCRUMBS = {
   "/learners": { parent: "Reporting", current: "Learners" },
   "/profile": { parent: "Account", current: "Profile" },
   "/settings": { parent: "Account", current: "Settings" },
-  "/help": { parent: "Support", current: "Help & Docs" },
 };
+
+/**
+ * Resolves the breadcrumb for a pathname. Falls back to the closest parent
+ * route (e.g. /settings/foo -> /settings) before the dashboard default, so
+ * nested routes always show a sensible title.
+ */
+function resolveBreadcrumb(pathname) {
+  if (BREADCRUMBS[pathname]) return BREADCRUMBS[pathname];
+  const segments = pathname.split("/").filter(Boolean);
+  while (segments.length > 0) {
+    segments.pop();
+    const parent = `/${segments.join("/")}`;
+    if (BREADCRUMBS[parent]) return BREADCRUMBS[parent];
+  }
+  return { parent: "My Learning", current: "Dashboard" };
+}
 
 const MENU_BTN = cn(
   "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
@@ -50,13 +65,11 @@ export function Header({
   const pathname = usePathname();
   const avatarRef = useRef(null);
 
-  const breadcrumb = BREADCRUMBS[pathname] ?? {
-    parent: "My Learning",
-    current: "Dashboard",
-  };
+  const breadcrumb = resolveBreadcrumb(pathname);
   const initials = getInitials(user?.firstName, user?.lastName);
   const fullName = getFullName(user);
-  const role = capitalise(activeOrganisation?.roles?.[0] ?? "apprentice");
+  const roles = activeOrganisation?.roles ?? [];
+  const roleLabel = roles.length ? capitalise(roles[0]) : user?.email;
 
   return (
     <header
@@ -109,15 +122,6 @@ export function Header({
           <Settings aria-hidden className="h-4 w-4" strokeWidth={1.75} />
         </Link>
 
-        <Link
-          href="/help"
-          aria-label="Help and docs"
-          className={ICON_BTN}
-          title="Help & Docs"
-        >
-          <HelpCircle aria-hidden className="h-4 w-4" strokeWidth={1.75} />
-        </Link>
-
         <HeaderNotifications />
 
         <div aria-hidden className="mx-2 h-5 w-px bg-[#e5e7eb]" />
@@ -147,7 +151,9 @@ export function Header({
               <p className="text-[13px] font-semibold leading-snug text-[#111827]">
                 {fullName}
               </p>
-              <p className="text-[11px] leading-none text-[#9ca3af]">{role}</p>
+              <p className="truncate text-[11px] leading-none text-[#9ca3af]">
+                {roleLabel}
+              </p>
             </div>
             <ChevronDown
               aria-hidden

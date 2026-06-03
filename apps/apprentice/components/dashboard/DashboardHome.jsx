@@ -3,6 +3,7 @@
 import {
   BarChart3,
   BookOpen,
+  Building2,
   Check,
   CheckCircle2,
   ChevronRight,
@@ -10,7 +11,9 @@ import {
   ExternalLink,
   FileText,
   Globe,
+  Mail,
   MapPin,
+  Phone,
   Sparkles,
   TrendingUp,
   Users,
@@ -151,6 +154,119 @@ function MiniRow({ label, value }) {
         {value}
       </span>
     </div>
+  );
+}
+
+function DetailRow({ icon: Icon, label, value, href }) {
+  if (!value) return null;
+  return (
+    <div className="flex items-start gap-2.5">
+      <Icon
+        className="mt-0.5 h-3.5 w-3.5 shrink-0 text-neutral-400"
+        aria-hidden
+      />
+      <div className="min-w-0">
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-400">
+          {label}
+        </p>
+        {href ? (
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 truncate text-sm font-medium text-primary-700 hover:underline"
+          >
+            {value}
+            <ExternalLink className="h-3 w-3 shrink-0" aria-hidden />
+          </a>
+        ) : (
+          <p className="truncate text-sm font-medium text-neutral-700">
+            {value}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Organisation card ────────────────────────────────────────────────────────
+//
+// Shows the organisation the apprentice belongs to (their training provider /
+// employer), along with their role and membership status. Hidden when the
+// learner is not yet part of an organisation.
+function OrganisationCard({ activeOrganisation }) {
+  const org = activeOrganisation?.organisation;
+  if (!org) return null;
+
+  const roles = activeOrganisation?.roles ?? [];
+  const membershipStatus = activeOrganisation?.membershipStatus;
+  const location = [org.city, org.country].filter(Boolean).join(", ");
+
+  return (
+    <Card className="overflow-hidden">
+      {/* Accent header */}
+      <div
+        className="flex items-center gap-3 px-5 py-4"
+        style={{
+          background: "linear-gradient(135deg, #166534 0%, #16a34a 100%)",
+        }}
+      >
+        <div
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+          style={{ backgroundColor: "rgba(255,255,255,0.12)" }}
+        >
+          <Building2
+            className="h-4.5 w-4.5 text-white"
+            strokeWidth={1.75}
+            aria-hidden
+          />
+        </div>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-white">
+            {org.name}
+          </p>
+          <p className="text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>
+            Your organisation
+          </p>
+        </div>
+      </div>
+
+      <CardContent className="space-y-3.5">
+        <DetailRow icon={MapPin} label="Location" value={location} />
+        <DetailRow icon={Mail} label="Email" value={org.orgEmail} />
+        {org.orgPhone && (
+          <DetailRow icon={Phone} label="Phone" value={org.orgPhone} />
+        )}
+        {org.website && (
+          <DetailRow
+            icon={Globe}
+            label="Website"
+            value={org.website.replace(/^https?:\/\//, "")}
+            href={org.website}
+          />
+        )}
+
+        {/* Role + membership badges */}
+        <div className="flex flex-wrap gap-1.5 border-t border-neutral-100 pt-3.5">
+          {roles.map((r) => (
+            <TextBadge key={r} variant="light" color="purple" size="xs">
+              {capitalise(r)}
+            </TextBadge>
+          ))}
+          {membershipStatus && (
+            <TextBadge variant="light" color="green" size="xs">
+              <CheckCircle2 className="h-3 w-3" aria-hidden />
+              {capitalise(membershipStatus)}
+            </TextBadge>
+          )}
+          {org.portalType && (
+            <TextBadge variant="light" color="gray" size="xs">
+              {capitalise(org.portalType)}
+            </TextBadge>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -660,6 +776,7 @@ export function DashboardHome() {
         </div>
 
         <div className="space-y-6">
+          <OrganisationCard activeOrganisation={activeOrganisation} />
           <ProfileCard
             user={user}
             activeOrganisation={activeOrganisation}
