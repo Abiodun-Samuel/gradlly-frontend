@@ -1,4 +1,4 @@
-import { Dashboard } from "@/components/dashboard";
+import { DashboardHome } from "@/components/dashboard/DashboardHome";
 import { createPageSeo } from "@/utils/metadata";
 
 export const { metadata, viewport } = createPageSeo({
@@ -10,5 +10,5 @@ export const { metadata, viewport } = createPageSeo({
 });
 
 export default function DashboardHomePage() {
-  return <Dashboard />;
+  return <DashboardHome />;
 }
