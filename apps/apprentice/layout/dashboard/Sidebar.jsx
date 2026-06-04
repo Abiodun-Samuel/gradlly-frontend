@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, X } from "lucide-react";
+import { Building2, ChevronDown, Globe, Hash, Mail, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -12,18 +12,57 @@ import { LogoutButton } from "@/features/auth/components/LogoutButton";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import { capitalise, cn, getFullName, getInitials } from "@/utils/helper";
 
+// Compact labelled row for the sidebar organisation card.
+function OrgDetailRow({ icon: Icon, value, mono = false, href }) {
+  if (!value) return null;
+  const body = (
+    <>
+      <Icon
+        className="h-3 w-3 shrink-0 text-white/35"
+        strokeWidth={2}
+        aria-hidden
+      />
+      <span
+        className={cn(
+          "truncate text-[10.5px] text-white/55",
+          mono && "font-mono tracking-tight",
+        )}
+      >
+        {value}
+      </span>
+    </>
+  );
+  return href ? (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-1.5 transition-colors hover:text-white/85"
+    >
+      {body}
+    </a>
+  ) : (
+    <div className="flex items-center gap-1.5">{body}</div>
+  );
+}
+
 export function Sidebar({ isOpen, onClose }) {
   const [openDropdown, setOpenDropdown] = useState(null);
   const { user, activeOrganisation } = useAuthUser();
   const pathname = usePathname();
 
+  const isHrefActive = (href) => pathname === href;
+
   const org = activeOrganisation?.organisation;
   const roles = activeOrganisation?.roles ?? [];
-  const orgName = org?.name ?? "Your Provider";
-  const orgInitial = orgName[0].toUpperCase();
+  const membershipStatus = activeOrganisation?.membershipStatus ?? null;
+  const hasOrg = Boolean(org);
+  const orgName = org?.name ?? "";
+  const orgInitial = orgName ? orgName[0].toUpperCase() : "";
+  const orgWebsite = org?.website?.replace(/^https?:\/\//, "") ?? "";
+  const roleLabel = roles.length ? capitalise(roles[0]) : null;
   const initials = getInitials(user?.firstName, user?.lastName);
   const fullName = getFullName(user);
-  const role = capitalise(roles?.[0] ?? "apprentice");
 
   return (
     <>
@@ -74,44 +113,103 @@ export function Sidebar({ isOpen, onClose }) {
 
         {/* Org block */}
         <div className="shrink-0 px-4 py-3">
-          <div
-            className="rounded-xl p-3"
-            style={{
-              background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(94,164,120,0.15)",
-            }}
-          >
-            <div className="flex items-center gap-3">
-              <div
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[14px] font-extrabold text-white"
-                style={{
-                  background: "linear-gradient(145deg,#22c55e 0%,#15803d 100%)",
-                }}
-              >
-                {orgInitial}
+          {hasOrg ? (
+            <div
+              className="rounded-xl p-3"
+              style={{
+                background: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(94,164,120,0.15)",
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[14px] font-extrabold text-white"
+                  style={{
+                    background:
+                      "linear-gradient(145deg,#22c55e 0%,#15803d 100%)",
+                  }}
+                >
+                  {orgInitial}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[12.5px] font-semibold text-white">
+                    {orgName}
+                  </p>
+                  {roleLabel ? (
+                    <p className="mt-0.5 truncate text-[10.5px] font-medium text-white/45">
+                      {roleLabel}
+                    </p>
+                  ) : null}
+                </div>
+                {membershipStatus === "active" ? (
+                  <span
+                    className="flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5"
+                    style={{ background: "rgba(34,197,94,0.15)" }}
+                  >
+                    <span
+                      aria-hidden
+                      className="h-1.5 w-1.5 rounded-full bg-[#22c55e]"
+                    />
+                    <span className="text-[9px] font-bold text-[#22c55e]">
+                      Active
+                    </span>
+                  </span>
+                ) : membershipStatus ? (
+                  <span
+                    className="shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold capitalize text-white/60"
+                    style={{ background: "rgba(255,255,255,0.08)" }}
+                  >
+                    {membershipStatus}
+                  </span>
+                ) : null}
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-[12.5px] font-semibold text-white">
-                  {orgName}
-                </p>
-                <p className="mt-0.5 text-[10.5px] text-white/40">
-                  Apprentice Account
-                </p>
-              </div>
-              <span
-                className="flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5"
-                style={{ background: "rgba(34,197,94,0.15)" }}
-              >
-                <span
-                  aria-hidden
-                  className="h-1.5 w-1.5 rounded-full bg-[#22c55e]"
-                />
-                <span className="text-[9px] font-bold text-[#22c55e]">
-                  Active
-                </span>
-              </span>
+
+              {/* Org detail rows */}
+              {org?.orgEmail || org?.ukprn || orgWebsite ? (
+                <div
+                  className="mt-2 space-y-1 pt-2"
+                  style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
+                >
+                  <OrgDetailRow icon={Mail} value={org?.orgEmail} />
+                  <OrgDetailRow icon={Hash} value={org?.ukprn} mono />
+                  <OrgDetailRow
+                    icon={Globe}
+                    value={orgWebsite}
+                    href={org?.website}
+                  />
+                </div>
+              ) : null}
             </div>
-          </div>
+          ) : (
+            <div
+              className="rounded-xl p-3"
+              style={{
+                background: "rgba(255,255,255,0.03)",
+                border: "1px dashed rgba(255,255,255,0.14)",
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+                  style={{ background: "rgba(255,255,255,0.06)" }}
+                >
+                  <Building2
+                    className="h-4 w-4 text-white/40"
+                    strokeWidth={1.75}
+                    aria-hidden
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[12px] font-semibold text-white/80">
+                    No organisation yet
+                  </p>
+                  <p className="mt-0.5 text-[10.5px] leading-snug text-white/40">
+                    You will appear here once you join one.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Nav */}
@@ -127,7 +225,7 @@ export function Sidebar({ isOpen, onClose }) {
                 const isActive =
                   pathname === item.href ||
                   (hasChildren &&
-                    item.children.some((c) => pathname === c.href));
+                    item.children.some((c) => isHrefActive(c.href)));
                 const isExpanded = openDropdown === item.label;
                 const Icon = item.icon;
 
@@ -183,21 +281,31 @@ export function Sidebar({ isOpen, onClose }) {
                         className={cn("sidebar-submenu", isExpanded && "open")}
                       >
                         <div className="sidebar-submenu-inner py-0.5 pl-10 pr-2">
-                          {item.children.map((child) => (
-                            <Link
-                              key={child.href}
-                              href={child.href}
-                              className={cn(
-                                "flex rounded-lg px-3 py-2.5 text-[12.5px] font-medium transition-colors duration-150",
-                                "focus-visible:outline-2 focus-visible:outline-[#5ea478] focus-visible:-outline-offset-2",
-                                pathname === child.href
-                                  ? "text-white"
-                                  : "text-white/45 hover:text-white/75",
-                              )}
-                            >
-                              {child.label}
-                            </Link>
-                          ))}
+                          {item.children.map((child) => {
+                            const ChildIcon = child.icon;
+                            return (
+                              <Link
+                                key={child.href}
+                                href={child.href}
+                                className={cn(
+                                  "flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-[12.5px] font-medium transition-colors duration-150",
+                                  "focus-visible:outline-2 focus-visible:outline-[#5ea478] focus-visible:-outline-offset-2",
+                                  isHrefActive(child.href)
+                                    ? "text-white"
+                                    : "text-white/45 hover:text-white/75",
+                                )}
+                              >
+                                {ChildIcon ? (
+                                  <ChildIcon
+                                    aria-hidden
+                                    strokeWidth={1.75}
+                                    className="h-3.5 w-3.5 shrink-0"
+                                  />
+                                ) : null}
+                                <span>{child.label}</span>
+                              </Link>
+                            );
+                          })}
                         </div>
                       </div>
                     </div>
@@ -209,7 +317,7 @@ export function Sidebar({ isOpen, onClose }) {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "group mx-2 flex items-center gap-3 rounded-lg px-3 py-3.5",
+                      "group mx-2 flex items-center gap-3 rounded-lg px-3 py-3.5 mb-0.5",
                       "text-[13px] font-medium transition-colors duration-150",
                       "focus-visible:outline-2 focus-visible:outline-[#5ea478] focus-visible:-outline-offset-2",
                       isActive
@@ -269,7 +377,7 @@ export function Sidebar({ isOpen, onClose }) {
                 {fullName}
               </p>
               <p className="mt-0.5 truncate text-[10.5px] text-white/40">
-                {role}
+                {user?.email}
               </p>
             </div>
             <LogoutButton variant="sidebar" />

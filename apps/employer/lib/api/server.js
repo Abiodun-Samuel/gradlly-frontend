@@ -19,13 +19,13 @@ export class ApiServerError extends Error {
 
 export async function $apiServer(
   path,
-  { method = "GET", body, accessToken, headers, signal } = {},
+  { method = "GET", body, accessToken, headers, signal, portalType } = {},
 ) {
   const url = new URL(path, serverEnv.API_BASE_URL).toString();
 
   const reqHeaders = new Headers(headers);
   reqHeaders.set("Accept", "application/json");
-  reqHeaders.set("X-Portal-Type", PORTAL.key);
+  reqHeaders.set("X-Portal-Type", portalType ?? PORTAL.key);
   if (body !== undefined) reqHeaders.set("Content-Type", "application/json");
   if (accessToken) reqHeaders.set("Authorization", `Bearer ${accessToken}`);
 

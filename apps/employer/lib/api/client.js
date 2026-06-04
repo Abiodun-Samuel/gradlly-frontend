@@ -5,7 +5,7 @@ import { parseFetchResponse } from "./parse-response";
 const BFF = "/api/proxy";
 
 async function send(path, method, body, opts = {}) {
-  const { signal, params } = opts;
+  const { signal, params, headers: extraHeaders } = opts;
 
   let url = `${BFF}${path}`;
   if (params && Object.keys(params).length > 0) {
@@ -18,6 +18,11 @@ async function send(path, method, body, opts = {}) {
     "x-gradlly-csrf": "1",
   });
   if (body !== undefined) headers.set("Content-Type", "application/json");
+  if (extraHeaders) {
+    for (const [key, value] of Object.entries(extraHeaders)) {
+      if (value !== null && value !== undefined) headers.set(key, value);
+    }
+  }
 
   const response = await fetch(url, {
     method,

@@ -24,7 +24,7 @@ export function SessionErrorScreen() {
           <div className="mb-6 flex justify-center">
             <div className="relative">
               {/* Outer ring */}
-              <div className="absolute -inset-2.5 rounded-[22px] border border-danger-100/60" />
+              <div className="absolute -inset-2.5 rounded-2xl border border-danger-100/60" />
               {/* Inner container */}
               <div className="flex h-[68px] w-[68px] items-center justify-center rounded-2xl bg-danger-50">
                 <ShieldAlert

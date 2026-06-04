@@ -1,9 +1,8 @@
 "use client";
 
-import { Activity, GitBranch, Zap } from "lucide-react";
+import { Activity, GitBranch, X, Zap } from "lucide-react";
 
 import { GradllyLogo } from "@/assets/svgs/GradllyLogo";
-import { LogoutButton } from "@/features/auth/components/LogoutButton";
 
 import { CreateOrganizationForm } from "./CreateOrganizationForm";
 
@@ -108,7 +107,7 @@ function LeftPanel() {
   );
 }
 
-function FormPanel({ onOrgCreated }) {
+function FormPanel({ onOrgCreated, onClose }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col bg-white">
       <div
@@ -140,9 +139,16 @@ function FormPanel({ onOrgCreated }) {
               Step 1 of 1
             </span>
           </div>
-          <div className="shrink-0">
-            <LogoutButton variant="menu" />
-          </div>
+          {onClose ? (
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close"
+              className="-mr-1 flex size-8 shrink-0 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
+            >
+              <X className="size-4" strokeWidth={2} aria-hidden />
+            </button>
+          ) : null}
         </div>
 
         <h2 className="mb-1.5 text-xl font-bold leading-tight tracking-tight text-neutral-900 sm:text-2xl">
@@ -163,11 +169,11 @@ function FormPanel({ onOrgCreated }) {
   );
 }
 
-export function CreateOrganisationContent({ onOrgCreated }) {
+export function CreateOrganisationContent({ onOrgCreated, onClose }) {
   return (
     <>
       <LeftPanel />
-      <FormPanel onOrgCreated={onOrgCreated} />
+      <FormPanel onOrgCreated={onOrgCreated} onClose={onClose} />
     </>
   );
 }

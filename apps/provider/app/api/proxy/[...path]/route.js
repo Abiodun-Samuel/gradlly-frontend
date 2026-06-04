@@ -43,6 +43,9 @@ async function dispatch(req, ctx, method) {
   const path = (await ctx?.params)?.path ?? [];
   const upstreamPath = "/" + path?.join?.("/") + new URL(req?.url).search;
   const body = await readBody(req, method);
+  const orgId = req.headers?.get?.("x-organisation-id") ?? null;
+  // Per-request portal override (e.g. inviting an apprentice from another portal).
+  const portalType = req.headers?.get?.("x-portal-type-override") ?? null;
 
   if (upstreamPath?.startsWith?.(AUTH_API_PATHS?.LOGIN))
     return openSession(upstreamPath, method, body);
@@ -50,7 +53,18 @@ async function dispatch(req, ctx, method) {
     return openSession(upstreamPath, method, body);
   if (upstreamPath?.startsWith?.(AUTH_API_PATHS?.LOGOUT)) return closeSession();
 
-  return proxyRequest(upstreamPath, method, body);
+  // Accepting an invitation needs the current session but must NOT clear cookies
+  // if the call fails — a failed accept should never log the user out.
+  if (upstreamPath?.startsWith?.(AUTH_API_PATHS?.ACCEPT_INVITATION))
+    return proxyRequest(upstreamPath, method, body, {
+      orgId,
+      portalType,
+      clearOnAuthFail: false,
+    });
+
+  // SIGNUP intentionally falls through to proxyRequest without auth headers.
+  // The user has no session yet — cookies are only written after email verification.
+  return proxyRequest(upstreamPath, method, body, { orgId, portalType });
 }
 
 // ─── Session handlers ─────────────────────────────────────────────────────────
@@ -87,11 +101,23 @@ async function closeSession() {
 
 // ─── Authenticated proxy ──────────────────────────────────────────────────────
 
-async function proxyRequest(path, method, body) {
+async function proxyRequest(
+  path,
+  method,
+  body,
+  { orgId, portalType, clearOnAuthFail = true } = {},
+) {
   const accessToken = await readAccessToken();
+  const upstreamHeaders = orgId ? { "X-Organisation-Id": orgId } : undefined;
 
   try {
-    const result = await $apiServer(path, { method, body, accessToken });
+    const result = await $apiServer(path, {
+      method,
+      body,
+      accessToken,
+      headers: upstreamHeaders,
+      portalType,
+    });
     return resolveWith(result);
   } catch (e) {
     if (!(e instanceof ApiServerError) || e?.status !== 401)
@@ -99,7 +125,7 @@ async function proxyRequest(path, method, body) {
 
     const freshToken = await rotateTokens();
     if (!freshToken) {
-      await clearSessionCookies();
+      if (clearOnAuthFail) await clearSessionCookies();
       return rejectWith(e);
     }
 
@@ -108,6 +134,8 @@ async function proxyRequest(path, method, body) {
         method,
         body,
         accessToken: freshToken,
+        headers: upstreamHeaders,
+        portalType,
       });
       return resolveWith(retried);
     } catch (retryErr) {

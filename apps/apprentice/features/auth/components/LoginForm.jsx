@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 import { ServerErrorAlert } from "@/components/error/ServerErrorAlert";
@@ -12,6 +13,9 @@ import { loginDefaults, loginSchema } from "@/features/auth/schemas";
 import { applyServerErrors } from "@/lib/errors";
 
 export function LoginForm() {
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect");
+
   const {
     register,
     handleSubmit,
@@ -23,7 +27,11 @@ export function LoginForm() {
     mode: "onBlur",
   });
 
-  const { mutateAsync, isPending, error: serverError } = useLogin();
+  const {
+    mutateAsync,
+    isPending,
+    error: serverError,
+  } = useLogin({ redirectTo: redirect });
   const disabled = isSubmitting || isPending;
 
   const onSubmit = async (values) => {

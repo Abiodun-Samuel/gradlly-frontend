@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 import { ServerErrorAlert } from "@/components/error/ServerErrorAlert";
@@ -12,6 +13,14 @@ import { loginDefaults, loginSchema } from "@/features/auth/schemas";
 import { applyServerErrors } from "@/lib/errors";
 
 export function LoginForm() {
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect");
+  // Invited users must sign in to the account that was invited, so creating a
+  // new account here would break the flow. Hide the sign-up link in that case.
+  const hideSignup = Boolean(
+    redirect && redirect.includes("/accept-invitation"),
+  );
+
   const {
     register,
     handleSubmit,
@@ -23,7 +32,11 @@ export function LoginForm() {
     mode: "onBlur",
   });
 
-  const { mutateAsync, isPending, error: serverError } = useLogin();
+  const {
+    mutateAsync,
+    isPending,
+    error: serverError,
+  } = useLogin({ redirectTo: redirect });
   const disabled = isSubmitting || isPending;
 
   const onSubmit = async (values) => {
@@ -76,12 +89,18 @@ export function LoginForm() {
         </Button>
       </fieldset>
 
-      <p className="text-center text-sm text-gray-500 pt-2 pb-4">
-        Don&apos;t have an account?{" "}
-        <Link href="/signup" className="text-primary-700 font-semibold">
-          Sign up
-        </Link>
-      </p>
+      {hideSignup ? (
+        <p className="text-center text-sm text-gray-500 pt-2 pb-4">
+          Sign in to accept your invitation.
+        </p>
+      ) : (
+        <p className="text-center text-sm text-gray-500 pt-2 pb-4">
+          Don&apos;t have an account?{" "}
+          <Link href="/signup" className="text-primary-700 font-semibold">
+            Sign up
+          </Link>
+        </p>
+      )}
     </form>
   );
 }

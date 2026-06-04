@@ -9,11 +9,10 @@ import { Modal } from "@/components/ui/Modal";
 import { AUTH_REDIRECTS } from "@/features/auth/constants";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import { CreateOrganisationContent } from "@/features/organization/components/CreateOrganisationContent";
+import { CreateOrgBanner } from "@/features/organization/components/CreateOrgBanner";
 import { Header } from "@/layout/dashboard/Header";
 import { Sidebar } from "@/layout/dashboard/Sidebar";
 import { cn } from "@/utils/helper";
-
-const MODAL_DELAY_MS = 2000;
 
 export function DashboardLayout({ children }) {
   const router = useRouter();
@@ -32,15 +31,6 @@ export function DashboardLayout({ children }) {
   useEffect(() => {
     localStorage.setItem("gradlly_sidebar_open", sidebarOpen);
   }, [sidebarOpen]);
-
-  useEffect(() => {
-    if (!needsOrg) return;
-    const timer = setTimeout(() => setOrgModalOpen(true), MODAL_DELAY_MS);
-    return () => {
-      clearTimeout(timer);
-      setOrgModalOpen(false);
-    };
-  }, [needsOrg]);
 
   useEffect(() => {
     if (!isLoading && !isError && !user) {
@@ -74,6 +64,12 @@ export function DashboardLayout({ children }) {
             className="flex-1 overflow-y-auto focus-visible:outline-none"
           >
             <div className="mx-auto w-full max-w-360 px-8 py-8 sm:px-6 sm:py-6 max-sm:px-4 max-sm:py-4">
+              {needsOrg ? (
+                <CreateOrgBanner
+                  onCreate={() => setOrgModalOpen(true)}
+                  className="mb-6"
+                />
+              ) : null}
               {children}
             </div>
           </main>
@@ -82,12 +78,15 @@ export function DashboardLayout({ children }) {
 
       <Modal
         open={orgModalOpen}
-        closable={false}
+        onClose={() => setOrgModalOpen(false)}
+        closable
+        showCloseButton={false}
         size="4xl"
         className="flex-col lg:flex-row"
       >
         <CreateOrganisationContent
           onOrgCreated={() => setOrgModalOpen(false)}
+          onClose={() => setOrgModalOpen(false)}
         />
       </Modal>
     </>

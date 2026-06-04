@@ -14,45 +14,8 @@ export async function login(credentials) {
   }
 }
 
-export async function signup(data) {
-  try {
-    const result = await $apiClient.post(AUTH_API_PATHS.SIGNUP, data);
-    return result.data?.data ?? result.data;
-  } catch (e) {
-    throw normalizeApiClientError(e);
-  }
-}
-
 export async function logout() {
-  try {
-    // Proxy reads the refresh token from the httpOnly cookie and sends it
-    // as the request payload so the backend can invalidate it immediately.
-    await $apiClient.post(AUTH_API_PATHS.LOGOUT);
-  } catch {
-    // Swallow — proxy always clears cookies regardless of upstream response
-  }
-}
-
-export async function verifyEmail({ token }) {
-  try {
-    const result = await $apiClient.post(AUTH_API_PATHS.VERIFY_EMAIL, {
-      token,
-    });
-    return result.data?.data ?? result.data;
-  } catch (e) {
-    throw normalizeApiClientError(e);
-  }
-}
-
-export async function resendVerificationEmail({ email }) {
-  try {
-    const result = await $apiClient.post(AUTH_API_PATHS.RESEND_VERIFICATION, {
-      email,
-    });
-    return result.data?.data ?? result.data;
-  } catch (e) {
-    throw normalizeApiClientError(e);
-  }
+  await $apiClient.post(AUTH_API_PATHS.LOGOUT);
 }
 
 export async function forgotPassword({ email }) {
@@ -85,6 +48,15 @@ export async function getMe() {
   } catch (e) {
     // 401 means the session is dead (proxy already attempted refresh and failed)
     if (e instanceof ApiClientError && e.status === 401) return null;
+    throw normalizeApiClientError(e);
+  }
+}
+
+export async function updateMe(payload) {
+  try {
+    const result = await $apiClient.patch(AUTH_API_PATHS.ME, payload);
+    return result.data?.data ?? result.data;
+  } catch (e) {
     throw normalizeApiClientError(e);
   }
 }

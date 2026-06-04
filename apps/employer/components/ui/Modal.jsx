@@ -204,7 +204,7 @@ export function Modal({
             className={cn(
               "relative w-full overflow-hidden rounded-2xl bg-white shadow-xl",
               SIZES[size] ?? SIZES.lg,
-              hasTitle ? "flex flex-col" : "flex",
+              hasTitle || footer ? "flex flex-col" : "flex",
               className,
             )}
             style={{
@@ -264,7 +264,19 @@ export function Modal({
                 )}
               </>
             ) : (
-              children
+              // Untitled (custom) modal: render children, and still honour a
+              // footer when one is provided so callers like confirm dialogs
+              // keep their action buttons.
+              <>
+                <div className="min-w-0 flex-1 overflow-y-auto overscroll-contain">
+                  {children}
+                </div>
+                {footer && (
+                  <div className="flex shrink-0 items-center justify-end gap-2.5 border-t border-neutral-100 bg-neutral-50/60 px-6 py-4">
+                    {footer}
+                  </div>
+                )}
+              </>
             )}
           </MotionBox>
         </MotionBox>

@@ -24,13 +24,7 @@ export async function signup(data) {
 }
 
 export async function logout() {
-  try {
-    // Proxy reads the refresh token from the httpOnly cookie and sends it
-    // as the request payload so the backend can invalidate it immediately.
-    await $apiClient.post(AUTH_API_PATHS.LOGOUT);
-  } catch {
-    // Swallow — proxy always clears cookies regardless of upstream response
-  }
+  await $apiClient.post(AUTH_API_PATHS.LOGOUT);
 }
 
 export async function verifyEmail({ token }) {
@@ -85,6 +79,15 @@ export async function getMe() {
   } catch (e) {
     // 401 means the session is dead (proxy already attempted refresh and failed)
     if (e instanceof ApiClientError && e.status === 401) return null;
+    throw normalizeApiClientError(e);
+  }
+}
+
+export async function updateMe(payload) {
+  try {
+    const result = await $apiClient.patch(AUTH_API_PATHS.ME, payload);
+    return result.data?.data ?? result.data;
+  } catch (e) {
     throw normalizeApiClientError(e);
   }
 }

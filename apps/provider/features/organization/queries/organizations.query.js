@@ -2,8 +2,12 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import { AUTH_QUERY_KEYS } from "@/features/auth/queries/keys";
-import { createOrganization } from "@/features/organization/services/organizations.service";
+import {
+  createOrganization,
+  updateOrganization,
+} from "@/features/organization/services/organizations.service";
 import { toastError, toastSuccess } from "@/hooks/useToast";
 import { ERROR_CODES } from "@/lib/errors";
 
@@ -14,6 +18,24 @@ export function useCreateOrganization() {
     mutationFn: createOrganization,
     onSuccess: (data) => {
       toastSuccess(data?.message || "Organisation created successfully.");
+      qc.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.me() });
+    },
+    onError: (error) => {
+      if (error.code !== ERROR_CODES.VALIDATION) {
+        toastError(error.message);
+      }
+    },
+  });
+}
+
+export function useUpdateOrganization() {
+  const qc = useQueryClient();
+  const { orgId } = useAuthUser();
+
+  return useMutation({
+    mutationFn: (payload) => updateOrganization({ orgId, payload }),
+    onSuccess: (data) => {
+      toastSuccess(data?.message || "Organisation updated successfully.");
       qc.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.me() });
     },
     onError: (error) => {

@@ -1,13 +1,13 @@
 "use client";
 
-import { ChevronDown, HelpCircle, Menu, Settings, X } from "lucide-react";
+import { ChevronDown, Menu, UsersRound, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef } from "react";
 
 import { Avatar } from "@/components/ui/Avatar";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
-import { capitalise, cn, getFullName, getInitials } from "@/utils/helper";
+import { cn, getFullName, getInitials } from "@/utils/helper";
 
 import { HeaderNotifications } from "./HeaderNotifications";
 import { UserMenu } from "./UserMenu";
@@ -29,13 +29,31 @@ const BREADCRUMBS = {
   },
   "/reports": { parent: "Insights", current: "Reports" },
   "/ksb-coverage": { parent: "Insights", current: "KSB Coverage" },
-  "/settings": { parent: "Account", current: "Settings" },
   "/profile": { parent: "Account", current: "Profile" },
-  "/help": { parent: "Support", current: "Help & Docs" },
+  "/settings": { parent: "Account", current: "Settings" },
+  "/settings/organisation": { parent: "Settings", current: "Organisation" },
+  "/settings/invitations": { parent: "Settings", current: "Invitations" },
+  "/settings/notifications": { parent: "Settings", current: "Notifications" },
 };
 
+/**
+ * Resolves the breadcrumb for a pathname. Falls back to the closest parent
+ * route (e.g. /settings/invitations -> /settings) before the dashboard default, so
+ * nested routes always show a sensible title.
+ */
+function resolveBreadcrumb(pathname) {
+  if (BREADCRUMBS[pathname]) return BREADCRUMBS[pathname];
+  const segments = pathname.split("/").filter(Boolean);
+  while (segments.length > 0) {
+    segments.pop();
+    const parent = `/${segments.join("/")}`;
+    if (BREADCRUMBS[parent]) return BREADCRUMBS[parent];
+  }
+  return { parent: "Overview", current: "Dashboard" };
+}
+
 const MENU_BTN = cn(
-  "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
+  "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
   "border border-neutral-200 bg-white text-neutral-500 transition-colors duration-150",
   "hover:border-neutral-300 hover:bg-neutral-100 hover:text-neutral-700",
   "focus-visible:outline-2 focus-visible:outline-[#16a34a] focus-visible:outline-offset-2",
@@ -54,17 +72,14 @@ export function Header({
   userMenuOpen,
   onUserMenuOpenChange,
 }) {
-  const { user, activeOrganisation } = useAuthUser();
+  const { user } = useAuthUser();
   const pathname = usePathname();
   const avatarRef = useRef(null);
 
-  const breadcrumb = BREADCRUMBS[pathname] ?? {
-    parent: "Overview",
-    current: "Dashboard",
-  };
+  const breadcrumb = resolveBreadcrumb(pathname);
   const initials = getInitials(user?.firstName, user?.lastName);
   const fullName = getFullName(user);
-  const role = capitalise(activeOrganisation?.roles?.[0] ?? "member");
+  const email = user?.email;
 
   return (
     <header
@@ -90,9 +105,9 @@ export function Header({
           className={MENU_BTN}
         >
           {sidebarOpen ? (
-            <X aria-hidden className="h-4 w-4" />
+            <X aria-hidden className="h-5 w-5" />
           ) : (
-            <Menu aria-hidden className="h-4 w-4" />
+            <Menu aria-hidden className="h-5 w-5" />
           )}
         </button>
 
@@ -109,21 +124,12 @@ export function Header({
       {/* ── Right: actions + user ───────────────────── */}
       <div className="flex shrink-0 items-center gap-2">
         <Link
-          href="/settings"
-          aria-label="Settings"
+          href="/settings/invitations"
+          aria-label="Invitations"
           className={ICON_BTN}
-          title="Settings"
+          title="Invitations"
         >
-          <Settings aria-hidden className="h-4 w-4" strokeWidth={1.75} />
-        </Link>
-
-        <Link
-          href="/help"
-          aria-label="Help and docs"
-          className={ICON_BTN}
-          title="Help & Docs"
-        >
-          <HelpCircle aria-hidden className="h-4 w-4" strokeWidth={1.75} />
+          <UsersRound aria-hidden className="h-4 w-4" strokeWidth={1.75} />
         </Link>
 
         <HeaderNotifications />
@@ -155,7 +161,9 @@ export function Header({
               <p className="text-[13px] font-semibold leading-snug text-[#111827]">
                 {fullName}
               </p>
-              <p className="text-[11px] leading-none text-[#9ca3af]">{role}</p>
+              <p className="truncate text-[11px] leading-none text-[#9ca3af]">
+                {email}
+              </p>
             </div>
             <ChevronDown
               aria-hidden
