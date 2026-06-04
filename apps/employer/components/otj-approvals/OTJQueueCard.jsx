@@ -1,21 +1,49 @@
 "use client";
+
 import { Paperclip } from "lucide-react";
 import { useState } from "react";
 
 import { T } from "@/components/dashboard/levy/tokens";
 
-import { CATEGORY_COLOR } from "./data";
+// Derive a stable display colour from the last chars of any UUID-like string.
+const AVATAR_PALETTE = [
+  "#1847d4",
+  "#0d7a52",
+  "#b85c0a",
+  "#7c3aed",
+  "#c0356a",
+  "#0e7490",
+];
+function avatarColor(id = "") {
+  const code = id.charCodeAt(id.length - 1) + id.charCodeAt(id.length - 2);
+  return AVATAR_PALETTE[code % AVATAR_PALETTE.length];
+}
 
-function Avatar({ name, color }) {
+// Show first + last segment of a UUID so the card is readable without a name lookup.
+function formatApprenticeId(id = "") {
+  const parts = id.split("-");
+  if (parts.length >= 2) return `${parts[0]}…${parts[parts.length - 1]}`;
+  return id.slice(0, 12);
+}
+
+function formatDate(iso = "") {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function Avatar({ id }) {
+  const color = avatarColor(id);
+  const label = formatApprenticeId(id).slice(0, 2).toUpperCase();
   return (
     <div
       className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
       style={{ backgroundColor: color }}
     >
-      {name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")}
+      {label}
     </div>
   );
 }
@@ -28,36 +56,30 @@ export function OTJQueueCard({
   onReject,
   onEvidence,
   index,
+  isApproving,
+  isRejecting,
 }) {
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState("");
-  const [state, setState] = useState("pending"); // pending | approved | rejected
 
-  const approve = () => {
-    setState("approved");
-    onApprove(entry.id);
-  };
+  const hours = entry.minutes ? (entry.minutes / 60).toFixed(1) : "0";
+  const atRisk = entry.paceFlag !== null && entry.paceFlag !== undefined;
+  const hasEvidence = !!entry.evidence;
+  const isActing = isApproving || isRejecting;
+
   const confirmReject = () => {
     if (reason.trim().length < 10) return;
-    setState("rejected");
-    setRejecting(false);
     onReject(entry.id, reason);
+    setRejecting(false);
+    setReason("");
   };
-
-  const catColor = CATEGORY_COLOR[entry.category] ?? T.muted;
-  const isOld = entry.submitted !== "23 Mar 2025"; // simplified old check
 
   return (
     <div
       className="rounded-2xl overflow-hidden transition-all"
       style={{
-        backgroundColor:
-          state === "approved"
-            ? "#eaf6f1"
-            : state === "rejected"
-              ? "#fdecea"
-              : T.surface,
-        border: `1px solid ${state === "approved" ? T.green : state === "rejected" ? T.red : T.border}`,
+        backgroundColor: T.surface,
+        border: `1px solid ${T.border}`,
         animation: `slide-up 280ms var(--ease-out) ${index * 80}ms both`,
         boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
       }}
@@ -70,18 +92,18 @@ export function OTJQueueCard({
           className="mt-1 shrink-0"
           style={{ accentColor: "#1847d4" }}
         />
-        <Avatar name={entry.apprentice} color={entry.avatarColor} />
+        <Avatar id={entry.apprenticeId} />
 
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 flex-wrap">
             <div>
-              <p className="text-sm font-bold" style={{ color: T.ink }}>
-                {entry.apprentice}
+              <p
+                className="text-sm font-bold font-mono"
+                style={{ color: T.ink }}
+              >
+                {formatApprenticeId(entry.apprenticeId)}
               </p>
-              <p className="text-[11px]" style={{ color: T.muted }}>
-                {entry.standard}
-              </p>
-              {entry.atRisk && (
+              {atRisk && (
                 <span
                   className="text-[10px] font-bold px-2 py-0.5 rounded-full inline-block mt-1"
                   style={{ backgroundColor: T.amberLight, color: T.amber }}
@@ -92,74 +114,58 @@ export function OTJQueueCard({
             </div>
             <p
               className="text-[11px] tabular-nums shrink-0"
-              style={{ color: isOld ? T.red : T.muted }}
+              style={{ color: T.muted }}
             >
-              Submitted {entry.submitted}
+              Logged {formatDate(entry.loggedDate)}
             </p>
           </div>
-          <p className="text-xs mt-2" style={{ color: T.subtle }}>
-            {entry.activity}
-          </p>
+
+          {entry.note && (
+            <p className="text-xs mt-2" style={{ color: T.subtle }}>
+              {entry.note}
+            </p>
+          )}
+
           <div className="flex items-center gap-3 mt-2 flex-wrap">
-            <span
-              className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-              style={{ backgroundColor: `${catColor}18`, color: catColor }}
-            >
-              {entry.category}
-            </span>
             <span
               className="text-sm font-extrabold tabular-nums"
               style={{ color: "#1847d4" }}
             >
-              {entry.hours} hrs
+              {hours} hrs
             </span>
-            <span className="text-[11px]" style={{ color: T.muted }}>
-              {entry.date}
-            </span>
-            {entry.evidence && (
+            {hasEvidence && (
               <button
                 type="button"
                 onClick={() => onEvidence(entry)}
                 className="inline-flex items-center gap-1 text-[11px] font-semibold hover:underline"
                 style={{ color: T.blue }}
               >
-                <Paperclip className="h-3 w-3" /> 1 attachment
+                <Paperclip className="h-3 w-3" /> Evidence attached
               </button>
             )}
           </div>
         </div>
 
-        {state === "pending" && (
-          <div className="flex sm:flex-col flex-row gap-2 shrink-0 ml-auto sm:ml-0">
-            <button
-              type="button"
-              onClick={approve}
-              className="px-3 py-1.5 rounded-lg text-xs font-bold hover:opacity-80 transition-opacity whitespace-nowrap"
-              style={{ backgroundColor: T.green, color: "#fff" }}
-            >
-              ✓ Approve
-            </button>
-            <button
-              type="button"
-              onClick={() => setRejecting((r) => !r)}
-              className="px-3 py-1.5 rounded-lg text-xs font-bold border hover:opacity-80 transition-opacity whitespace-nowrap"
-              style={{ borderColor: T.red, color: T.red }}
-            >
-              ✗ Reject
-            </button>
-          </div>
-        )}
-        {state !== "pending" && (
-          <span
-            className="text-xs font-bold px-3 py-1.5 rounded-lg shrink-0"
-            style={{
-              backgroundColor: state === "approved" ? T.greenLight : T.redLight,
-              color: state === "approved" ? T.green : T.red,
-            }}
+        <div className="flex sm:flex-col flex-row gap-2 shrink-0 ml-auto sm:ml-0">
+          <button
+            type="button"
+            onClick={() => onApprove(entry.id)}
+            disabled={isActing}
+            className="px-3 py-1.5 rounded-lg text-xs font-bold hover:opacity-80 transition-opacity whitespace-nowrap disabled:opacity-40"
+            style={{ backgroundColor: T.green, color: "#fff" }}
           >
-            {state === "approved" ? "✓ Approved" : "✗ Rejected"}
-          </span>
-        )}
+            ✓ Approve
+          </button>
+          <button
+            type="button"
+            onClick={() => setRejecting((r) => !r)}
+            disabled={isActing}
+            className="px-3 py-1.5 rounded-lg text-xs font-bold border hover:opacity-80 transition-opacity whitespace-nowrap disabled:opacity-40"
+            style={{ borderColor: T.red, color: T.red }}
+          >
+            ✗ Reject
+          </button>
+        </div>
       </div>
 
       {rejecting && (
@@ -171,7 +177,7 @@ export function OTJQueueCard({
           }}
         >
           <textarea
-            placeholder="Reason for rejection (required)"
+            placeholder="Reason for rejection (required, 10+ characters)"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             rows={2}
@@ -193,7 +199,7 @@ export function OTJQueueCard({
             <button
               type="button"
               onClick={confirmReject}
-              disabled={reason.trim().length < 10}
+              disabled={reason.trim().length < 10 || isRejecting}
               className="px-3 py-1.5 rounded-lg text-xs font-bold hover:opacity-80 disabled:opacity-40 transition-opacity"
               style={{ backgroundColor: T.red, color: "#fff" }}
             >

@@ -44,7 +44,6 @@ export const NAV_SECTIONS = [
         label: "OTJ Approvals",
         href: "/otj-approvals",
         icon: CheckSquare,
-        badge: 12,
       },
       {
         label: "At-Risk Management",

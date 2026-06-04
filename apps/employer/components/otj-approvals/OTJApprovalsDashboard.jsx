@@ -1,11 +1,16 @@
 "use client";
-import { Bell, Settings } from "lucide-react";
+
+import { Bell, CheckSquare, Settings } from "lucide-react";
 import { useState } from "react";
-import toast from "react-hot-toast";
 
 import { T } from "@/components/dashboard/levy/tokens";
+import { OTJ_STATUSES } from "@/features/otj/constants";
+import {
+  useBulkApproveOtj,
+  useBulkRejectOtj,
+  useOtjEntries,
+} from "@/features/otj/queries/otj.query";
 
-import { OTJ_QUEUE } from "./data";
 import { OTJBulkToolbar } from "./OTJBulkToolbar";
 import { OTJEvidenceModal } from "./OTJEvidenceModal";
 import { OTJFilterBar } from "./OTJFilterBar";
@@ -13,58 +18,70 @@ import { OTJNotificationDrawer } from "./OTJNotificationDrawer";
 import { OTJQueueCard } from "./OTJQueueCard";
 import { OTJSummaryBanner } from "./OTJSummaryBanner";
 
-function EmptyState() {
+function EmptyState({ tab }) {
+  const messages = {
+    [OTJ_STATUSES.SUBMITTED]: {
+      title: "All caught up",
+      body: "No OTJ entries pending approval.",
+    },
+    [OTJ_STATUSES.APPROVED]: {
+      title: "No approved entries",
+      body: "Approved OTJ entries will appear here.",
+    },
+    [OTJ_STATUSES.REJECTED]: {
+      title: "No rejected entries",
+      body: "Rejected OTJ entries will appear here.",
+    },
+  };
+  const { title, body } = messages[tab] ?? messages[OTJ_STATUSES.SUBMITTED];
+
   return (
     <div className="flex flex-col items-center gap-3 py-20 text-center">
       <div
-        className="h-16 w-16 rounded-full flex items-center justify-center text-3xl"
+        className="h-16 w-16 rounded-full flex items-center justify-center"
         style={{ backgroundColor: T.greenLight }}
       >
-        ✓
+        <CheckSquare className="h-7 w-7" style={{ color: T.green }} />
       </div>
       <p className="text-base font-bold" style={{ color: T.ink }}>
-        All caught up
+        {title}
       </p>
       <p className="text-sm max-w-xs" style={{ color: T.muted }}>
-        No OTJ entries pending approval. Check back after the next digest on
-        Monday 07 Apr.
+        {body}
       </p>
-      <button
-        type="button"
-        className="text-sm font-semibold hover:underline mt-1"
-        style={{ color: T.blue }}
-      >
-        View approved entries →
-      </button>
     </div>
   );
 }
 
 export function OTJApprovalsDashboard() {
-  const [entries] = useState(OTJ_QUEUE);
-  const [approved, setApproved] = useState(new Set());
-  const [rejected, setRejected] = useState(new Set());
-  const [selected, setSelected] = useState(new Set());
-  const [tab, setTab] = useState("pending");
+  const [tab, setTab] = useState(OTJ_STATUSES.SUBMITTED);
   const [search, setSearch] = useState("");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [page, setPage] = useState(1);
+  const [selected, setSelected] = useState(new Set());
   const [evidence, setEvidence] = useState(null);
   const [notif, setNotif] = useState(false);
 
-  const pending = entries.filter(
-    (e) => !approved.has(e.id) && !rejected.has(e.id),
-  );
-  const visible = (
-    tab === "approved"
-      ? entries.filter((e) => approved.has(e.id))
-      : tab === "rejected"
-        ? entries.filter((e) => rejected.has(e.id))
-        : pending
-  ).filter(
-    (e) =>
-      !search ||
-      e.apprentice.toLowerCase().includes(search.toLowerCase()) ||
-      e.activity.toLowerCase().includes(search.toLowerCase()),
-  );
+  const { data, isLoading, isFetching } = useOtjEntries({
+    status: tab,
+    from: from || undefined,
+    to: to || undefined,
+    page,
+    perPage: 20,
+  });
+
+  const entries = data?.entries ?? [];
+  const meta = data?.meta ?? null;
+
+  const { mutate: bulkApprove, isPending: isApproving } = useBulkApproveOtj();
+  const { mutate: bulkReject, isPending: isRejecting } = useBulkRejectOtj();
+
+  const visible = search
+    ? entries.filter((e) =>
+        e.note?.toLowerCase().includes(search.toLowerCase()),
+      )
+    : entries;
 
   const toggleSelect = (id) =>
     setSelected((s) => {
@@ -72,19 +89,32 @@ export function OTJApprovalsDashboard() {
       n.has(id) ? n.delete(id) : n.add(id);
       return n;
     });
-  const onApprove = (id) => {
-    setApproved((s) => new Set([...s, id]));
-    toast.success("Entry approved");
+
+  const handleApprove = (id) => {
+    bulkApprove({ ids: [id], reason: "" });
   };
-  const onReject = (id) => {
-    setRejected((s) => new Set([...s, id]));
-    toast.error("Entry rejected");
+
+  const handleReject = (id, reason) => {
+    bulkReject({ ids: [id], reason });
   };
-  const bulkApprove = () => {
-    const ids = selected.size > 0 ? [...selected] : pending.map((e) => e.id);
-    setApproved((s) => new Set([...s, ...ids]));
+
+  const handleBulkApprove = () => {
+    const ids = selected.size > 0 ? [...selected] : entries.map((e) => e.id);
+    bulkApprove(
+      { ids, reason: "" },
+      { onSuccess: () => setSelected(new Set()) },
+    );
+  };
+
+  const handleBulkReject = (reason) => {
+    const ids = [...selected];
+    bulkReject({ ids, reason }, { onSuccess: () => setSelected(new Set()) });
+  };
+
+  const handleTabChange = (next) => {
+    setTab(next);
+    setPage(1);
     setSelected(new Set());
-    toast.success(`${ids.length} entries approved`);
   };
 
   return (
@@ -94,11 +124,8 @@ export function OTJApprovalsDashboard() {
     >
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <p className="text-xs" style={{ color: T.muted }}>
-            Midlands Engineering → OTJ Approvals
-          </p>
           <h1 className="text-xl font-extrabold" style={{ color: T.ink }}>
-            OTJ approvals
+            OTJ Approvals
           </h1>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
@@ -112,6 +139,7 @@ export function OTJApprovalsDashboard() {
           </button>
           <button
             type="button"
+            onClick={() => setNotif(true)}
             className="flex h-8 w-8 items-center justify-center rounded-xl border hover:opacity-75 transition-opacity"
             style={{ borderColor: T.border, color: T.subtle }}
           >
@@ -120,17 +148,45 @@ export function OTJApprovalsDashboard() {
         </div>
       </div>
 
-      <OTJSummaryBanner pending={pending.length} onBulkApprove={bulkApprove} />
+      {tab === OTJ_STATUSES.SUBMITTED && (
+        <OTJSummaryBanner
+          pending={meta?.total ?? 0}
+          total={meta?.total ?? null}
+          onBulkApprove={handleBulkApprove}
+          isLoading={isLoading}
+        />
+      )}
+
       <OTJFilterBar
         tab={tab}
-        onTab={setTab}
+        onTab={handleTabChange}
         search={search}
         onSearch={setSearch}
+        from={from}
+        onFrom={(v) => {
+          setFrom(v);
+          setPage(1);
+        }}
+        to={to}
+        onTo={(v) => {
+          setTo(v);
+          setPage(1);
+        }}
       />
 
-      <div className="space-y-3">
-        {visible.length === 0 ? (
-          <EmptyState />
+      <div
+        className="space-y-3"
+        style={{
+          opacity: isFetching && !isLoading ? 0.7 : 1,
+          transition: "opacity 150ms",
+        }}
+      >
+        {isLoading ? (
+          <div className="py-16 text-center text-sm" style={{ color: T.muted }}>
+            Loading…
+          </div>
+        ) : visible.length === 0 ? (
+          <EmptyState tab={tab} />
         ) : (
           visible.map((entry, i) => (
             <OTJQueueCard
@@ -139,20 +195,51 @@ export function OTJApprovalsDashboard() {
               index={i}
               selected={selected.has(entry.id)}
               onSelect={() => toggleSelect(entry.id)}
-              onApprove={onApprove}
-              onReject={onReject}
+              onApprove={handleApprove}
+              onReject={handleReject}
               onEvidence={setEvidence}
+              isApproving={isApproving}
+              isRejecting={isRejecting}
             />
           ))
         )}
       </div>
 
+      {meta && meta.totalPages > 1 && (
+        <div className="flex items-center justify-center gap-3 pt-2">
+          <button
+            type="button"
+            disabled={!meta.hasPreviousPage}
+            onClick={() => setPage((p) => p - 1)}
+            className="px-3 py-1.5 rounded-lg text-xs font-semibold border disabled:opacity-40 hover:opacity-75 transition-opacity"
+            style={{ borderColor: T.border, color: T.subtle }}
+          >
+            ← Previous
+          </button>
+          <span className="text-xs" style={{ color: T.muted }}>
+            Page {meta.page} of {meta.totalPages}
+          </span>
+          <button
+            type="button"
+            disabled={!meta.hasNextPage}
+            onClick={() => setPage((p) => p + 1)}
+            className="px-3 py-1.5 rounded-lg text-xs font-semibold border disabled:opacity-40 hover:opacity-75 transition-opacity"
+            style={{ borderColor: T.border, color: T.subtle }}
+          >
+            Next →
+          </button>
+        </div>
+      )}
+
       <OTJBulkToolbar
         count={selected.size}
-        onApprove={bulkApprove}
-        onReject={() => {}}
+        onApprove={handleBulkApprove}
+        onReject={handleBulkReject}
         onClear={() => setSelected(new Set())}
+        isApproving={isApproving}
+        isRejecting={isRejecting}
       />
+
       {evidence && (
         <OTJEvidenceModal entry={evidence} onClose={() => setEvidence(null)} />
       )}

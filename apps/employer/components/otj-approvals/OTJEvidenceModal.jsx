@@ -4,6 +4,9 @@ import { T } from "@/components/dashboard/levy/tokens";
 
 export function OTJEvidenceModal({ entry, onClose }) {
   if (!entry) return null;
+
+  const evidenceKeys = entry.evidence ? Object.keys(entry.evidence) : [];
+
   return (
     <div
       className="fixed inset-0 z-[350] flex items-center justify-center bg-black/50 backdrop-blur-sm"
@@ -24,11 +27,13 @@ export function OTJEvidenceModal({ entry, onClose }) {
         >
           <div>
             <p className="text-sm font-bold" style={{ color: T.ink }}>
-              Evidence — {entry.apprentice}
+              Evidence
             </p>
-            <p className="text-xs mt-0.5" style={{ color: T.muted }}>
-              {entry.activity}
-            </p>
+            {entry.note && (
+              <p className="text-xs mt-0.5" style={{ color: T.muted }}>
+                {entry.note}
+              </p>
+            )}
           </div>
           <button
             type="button"
@@ -39,31 +44,44 @@ export function OTJEvidenceModal({ entry, onClose }) {
             <X className="h-4 w-4" />
           </button>
         </div>
+
         <div className="p-5">
-          <div
-            className="w-full h-56 rounded-xl flex items-center justify-center"
-            style={{
-              backgroundColor: T.card,
-              border: `2px dashed ${T.border}`,
-            }}
-          >
-            <div className="text-center">
-              <p className="text-3xl mb-2">📎</p>
-              <p className="text-sm font-semibold" style={{ color: T.ink }}>
-                day-release-notes-20-mar.pdf
-              </p>
-              <p className="text-xs mt-1" style={{ color: T.muted }}>
-                Preview unavailable
+          {evidenceKeys.length > 0 ? (
+            <div className="space-y-2">
+              {evidenceKeys.map((key) => (
+                <div
+                  key={key}
+                  className="flex items-start gap-3 rounded-xl px-4 py-3"
+                  style={{
+                    backgroundColor: T.card,
+                    border: `1px solid ${T.border}`,
+                  }}
+                >
+                  <span
+                    className="text-xs font-semibold shrink-0"
+                    style={{ color: T.subtle }}
+                  >
+                    {key}
+                  </span>
+                  <span className="text-xs break-all" style={{ color: T.ink }}>
+                    {String(entry.evidence[key])}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div
+              className="w-full h-32 rounded-xl flex items-center justify-center"
+              style={{
+                backgroundColor: T.card,
+                border: `2px dashed ${T.border}`,
+              }}
+            >
+              <p className="text-xs" style={{ color: T.muted }}>
+                No evidence data available
               </p>
             </div>
-          </div>
-          <button
-            type="button"
-            className="w-full mt-4 py-2 rounded-xl text-sm font-semibold hover:opacity-80 transition-opacity"
-            style={{ backgroundColor: T.blueLight, color: "#1847d4" }}
-          >
-            ↓ Download full PDF
-          </button>
+          )}
         </div>
       </div>
     </div>
