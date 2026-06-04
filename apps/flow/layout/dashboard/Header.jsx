@@ -7,7 +7,7 @@ import { useRef } from "react";
 
 import { Avatar } from "@/components/ui/Avatar";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
-import { capitalise, cn, getFullName, getInitials } from "@/utils/helper";
+import { cn, getFullName, getInitials } from "@/utils/helper";
 
 import { HeaderNotifications } from "./HeaderNotifications";
 import { UserMenu } from "./UserMenu";
@@ -22,13 +22,14 @@ const BREADCRUMBS = {
   "/logs": { parent: "Analytics", current: "Activity Logs" },
   "/profile": { parent: "Account", current: "Profile" },
   "/settings": { parent: "Account", current: "Settings" },
-  "/settings/team": { parent: "Settings", current: "Team & Invitations" },
+  "/settings/organisation": { parent: "Settings", current: "Organisation" },
+  "/settings/invitations": { parent: "Settings", current: "Invitations" },
   "/settings/notifications": { parent: "Settings", current: "Notifications" },
 };
 
 /**
  * Resolves the breadcrumb for a pathname. Falls back to the closest parent
- * route (e.g. /settings/team -> /settings) before the dashboard default, so
+ * route (e.g. /settings/invitations -> /settings) before the dashboard default, so
  * nested routes always show a sensible title.
  */
 function resolveBreadcrumb(pathname) {
@@ -43,7 +44,7 @@ function resolveBreadcrumb(pathname) {
 }
 
 const MENU_BTN = cn(
-  "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
+  "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
   "border border-neutral-200 bg-white text-neutral-500 transition-colors duration-150",
   "hover:border-neutral-300 hover:bg-neutral-100 hover:text-neutral-700",
   "focus-visible:outline-2 focus-visible:outline-[#16a34a] focus-visible:outline-offset-2",
@@ -62,15 +63,14 @@ export function Header({
   userMenuOpen,
   onUserMenuOpenChange,
 }) {
-  const { user, activeOrganisation } = useAuthUser();
+  const { user } = useAuthUser();
   const pathname = usePathname();
   const avatarRef = useRef(null);
 
   const breadcrumb = resolveBreadcrumb(pathname);
   const initials = getInitials(user?.firstName, user?.lastName);
   const fullName = getFullName(user);
-  const roles = activeOrganisation?.roles ?? [];
-  const roleLabel = roles.length ? capitalise(roles[0]) : user?.email;
+  const email = user?.email;
 
   return (
     <header
@@ -96,9 +96,9 @@ export function Header({
           className={MENU_BTN}
         >
           {sidebarOpen ? (
-            <X aria-hidden className="h-4 w-4" />
+            <X aria-hidden className="h-5 w-5" />
           ) : (
-            <Menu aria-hidden className="h-4 w-4" />
+            <Menu aria-hidden className="h-5 w-5" />
           )}
         </button>
 
@@ -115,10 +115,10 @@ export function Header({
       {/* ── Right: actions + user ───────────────────── */}
       <div className="flex shrink-0 items-center gap-2">
         <Link
-          href="/settings/team"
-          aria-label="Team and invitations"
+          href="/settings/invitations"
+          aria-label="Invitations"
           className={ICON_BTN}
-          title="Team & Invitations"
+          title="Invitations"
         >
           <UsersRound aria-hidden className="h-4 w-4" strokeWidth={1.75} />
         </Link>
@@ -153,7 +153,7 @@ export function Header({
                 {fullName}
               </p>
               <p className="truncate text-[11px] leading-none text-[#9ca3af]">
-                {roleLabel}
+                {email}
               </p>
             </div>
             <ChevronDown

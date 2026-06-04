@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, ChevronDown, X } from "lucide-react";
+import { Building2, ChevronDown, Globe, Hash, Mail, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -10,23 +10,59 @@ import { Avatar } from "@/components/ui/Avatar";
 import { NAV_SECTIONS } from "@/data/sidebar.data";
 import { LogoutButton } from "@/features/auth/components/LogoutButton";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
+import { useRoleAccess } from "@/features/auth/hooks/useRoleAccess";
 import { capitalise, cn, getFullName, getInitials } from "@/utils/helper";
+
+// Compact labelled row for the sidebar organisation card.
+function OrgDetailRow({ icon: Icon, value, mono = false, href }) {
+  if (!value) return null;
+  const body = (
+    <>
+      <Icon
+        className="h-3 w-3 shrink-0 text-white/35"
+        strokeWidth={2}
+        aria-hidden
+      />
+      <span
+        className={cn(
+          "truncate text-[10.5px] text-white/55",
+          mono && "font-mono tracking-tight",
+        )}
+      >
+        {value}
+      </span>
+    </>
+  );
+  return href ? (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-1.5 transition-colors hover:text-white/85"
+    >
+      {body}
+    </a>
+  ) : (
+    <div className="flex items-center gap-1.5">{body}</div>
+  );
+}
 
 export function Sidebar({ isOpen, onClose }) {
   const { user, activeOrganisation } = useAuthUser();
+  const { can } = useRoleAccess();
   const pathname = usePathname();
 
   // Active matching for nested routes (e.g. Settings sub-pages). Bare /settings
-  // resolves to its default first sub-page (/settings/team).
+  // resolves to its default first sub-page (/settings/invitations).
   const isHrefActive = (href) =>
     pathname === href ||
-    (href === "/settings/team" && pathname === "/settings");
+    (href === "/settings/invitations" && pathname === "/settings");
 
   // Auto-open the dropdown whose child route is currently active.
   const activeParentLabel = useMemo(() => {
     const matches = (href) =>
       pathname === href ||
-      (href === "/settings/team" && pathname === "/settings");
+      (href === "/settings/invitations" && pathname === "/settings");
     for (const section of NAV_SECTIONS) {
       for (const item of section.items) {
         if (item.children?.some((c) => matches(c.href))) return item.label;
@@ -45,6 +81,7 @@ export function Sidebar({ isOpen, onClose }) {
   const hasOrg = Boolean(org);
   const orgName = org?.name ?? "";
   const orgInitial = orgName ? orgName[0].toUpperCase() : "";
+  const orgWebsite = org?.website?.replace(/^https?:\/\//, "") ?? "";
   const roleLabel = roles.length ? capitalise(roles[0]) : null;
   const initials = getInitials(user?.firstName, user?.lastName);
   const fullName = getFullName(user);
@@ -148,6 +185,22 @@ export function Sidebar({ isOpen, onClose }) {
                   </span>
                 ) : null}
               </div>
+
+              {/* Org detail rows */}
+              {org?.orgEmail || org?.ukprn || orgWebsite ? (
+                <div
+                  className="mt-2 space-y-1 pt-2"
+                  style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
+                >
+                  <OrgDetailRow icon={Mail} value={org?.orgEmail} />
+                  <OrgDetailRow icon={Hash} value={org?.ukprn} mono />
+                  <OrgDetailRow
+                    icon={Globe}
+                    value={orgWebsite}
+                    href={org?.website}
+                  />
+                </div>
+              ) : null}
             </div>
           ) : (
             <div
@@ -190,11 +243,14 @@ export function Sidebar({ isOpen, onClose }) {
               </p>
 
               {section.items.map((item) => {
-                const hasChildren = Boolean(item.children?.length);
+                const visibleChildren = (item.children ?? []).filter(
+                  (c) => !c.requiresRole || can(c.requiresRole),
+                );
+                const hasChildren = visibleChildren.length > 0;
                 const isActive =
                   pathname === item.href ||
                   (hasChildren &&
-                    item.children.some((c) => isHrefActive(c.href)));
+                    visibleChildren.some((c) => isHrefActive(c.href)));
                 const isExpanded = openDropdown === item.label;
                 const Icon = item.icon;
 
@@ -250,7 +306,7 @@ export function Sidebar({ isOpen, onClose }) {
                         className={cn("sidebar-submenu", isExpanded && "open")}
                       >
                         <div className="sidebar-submenu-inner py-0.5 pl-10 pr-2">
-                          {item.children.map((child) => {
+                          {visibleChildren.map((child) => {
                             const ChildIcon = child.icon;
                             return (
                               <Link
@@ -286,7 +342,7 @@ export function Sidebar({ isOpen, onClose }) {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "group mx-2 flex items-center gap-3 rounded-lg px-3 py-3.5",
+                      "group mx-2 flex items-center gap-3 rounded-lg px-3 py-3.5 mb-0.5",
                       "text-[13px] font-medium transition-colors duration-150",
                       "focus-visible:outline-2 focus-visible:outline-[#5ea478] focus-visible:-outline-offset-2",
                       isActive
@@ -346,7 +402,7 @@ export function Sidebar({ isOpen, onClose }) {
                 {fullName}
               </p>
               <p className="mt-0.5 truncate text-[10.5px] text-white/40">
-                {roleLabel ?? user?.email}
+                {user?.email}
               </p>
             </div>
             <LogoutButton variant="sidebar" />

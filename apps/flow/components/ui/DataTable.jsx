@@ -1,9 +1,11 @@
 "use client";
 
-import { Inbox } from "lucide-react";
+import { ChevronDown, ChevronsUpDown, ChevronUp } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import { cn } from "@/utils/helper";
 
+import { EmptyState } from "./EmptyState";
 import { Pagination } from "./Pagination";
 
 /**
@@ -13,12 +15,18 @@ import { Pagination } from "./Pagination";
  * Renders a real <table> on md+ screens and a stacked card list on mobile,
  * so it never needs horizontal scrolling on small devices.
  *
+ * Client-side sorting: any column with `sortable: true` becomes a clickable
+ * header that cycles ascending → descending. Provide `sortValue(row)` to control
+ * the comparison value (defaults to the row's value at `col.key`).
+ *
  * Column shape:
  *   {
  *     key:       string,                 // unique id
  *     header:    string,                 // column heading
  *     cell:      (row) => ReactNode,     // cell renderer
  *     align?:    "left" | "right" | "center",
+ *     sortable?: boolean,                // enable client-side sorting on this column
+ *     sortValue?: (row) => string|number|Date, // value used for comparison
  *     headerClassName?: string,
  *     cellClassName?:   string,
  *     hideOnMobile?:    boolean,         // omit from the mobile card
@@ -29,12 +37,13 @@ import { Pagination } from "./Pagination";
  * @param {object}   props
  * @param {Array}    props.columns
  * @param {Array}    props.data
- * @param {Function} [props.rowKey]        (row) => string | number  (defaults to row.id)
+ * @param {Function} [props.rowKey]         (row) => string | number  (defaults to row.id)
  * @param {boolean}  [props.isLoading]
  * @param {number}   [props.skeletonRows]
- * @param {object}   [props.empty]         { icon, title, description, action }
- * @param {object}   [props.meta]          API meta for pagination
+ * @param {object}   [props.empty]          { icon, title, description, action }
+ * @param {object}   [props.meta]           API meta for pagination
  * @param {Function} [props.onPageChange]
+ * @param {Function} [props.onPerPageChange] enables the rows-per-page selector
  * @param {string}   [props.className]
  */
 export function DataTable({
@@ -46,8 +55,42 @@ export function DataTable({
   empty,
   meta,
   onPageChange,
+  onPerPageChange,
   className,
 }) {
+  // ── Sort state ──────────────────────────────────────────────────────────────
+  // { key, direction: "asc" | "desc" } | null
+  const [sort, setSort] = useState(null);
+
+  const toggleSort = (col) => {
+    if (!col.sortable) return;
+    setSort((prev) => {
+      if (!prev || prev.key !== col.key)
+        return { key: col.key, direction: "asc" };
+      if (prev.direction === "asc") return { key: col.key, direction: "desc" };
+      return null; // third click clears sorting
+    });
+  };
+
+  const sortedData = useMemo(() => {
+    if (!sort) return data;
+    const col = columns.find((c) => c.key === sort.key);
+    if (!col) return data;
+    const accessor = col.sortValue ?? ((row) => row?.[col.key]);
+    const dir = sort.direction === "asc" ? 1 : -1;
+
+    // Stable sort: decorate with original index as a tiebreaker.
+    return data
+      .map((row, index) => ({ row, index }))
+      .sort((a, b) => {
+        const av = accessor(a.row);
+        const bv = accessor(b.row);
+        const cmp = compareValues(av, bv);
+        return cmp !== 0 ? cmp * dir : a.index - b.index;
+      })
+      .map((d) => d.row);
+  }, [data, sort, columns]);
+
   const alignClass = {
     left: "text-left",
     right: "text-right",
@@ -72,23 +115,45 @@ export function DataTable({
               <table className="w-full border-collapse text-sm">
                 <thead>
                   <tr className="border-b border-neutral-200 bg-neutral-50">
-                    {columns.map((col) => (
-                      <th
-                        key={col.key}
-                        scope="col"
-                        className={cn(
-                          "px-5 py-3.5 text-xs font-semibold uppercase tracking-wide text-neutral-500",
-                          alignClass[col.align ?? "left"],
-                          col.headerClassName,
-                        )}
-                      >
-                        {col.header}
-                      </th>
-                    ))}
+                    {columns.map((col) => {
+                      const active = sort?.key === col.key;
+                      const headingBase = cn(
+                        "px-5 py-3.5 text-xs font-semibold uppercase tracking-wide text-neutral-500",
+                        alignClass[col.align ?? "left"],
+                        col.headerClassName,
+                      );
+                      if (!col.sortable) {
+                        return (
+                          <th key={col.key} scope="col" className={headingBase}>
+                            {col.header}
+                          </th>
+                        );
+                      }
+                      return (
+                        <th key={col.key} scope="col" className={headingBase}>
+                          <button
+                            type="button"
+                            onClick={() => toggleSort(col)}
+                            aria-label={`Sort by ${col.header}`}
+                            className={cn(
+                              "group inline-flex items-center gap-1.5 rounded transition-colors hover:text-neutral-800",
+                              col.align === "right" && "flex-row-reverse",
+                              active && "text-neutral-800",
+                            )}
+                          >
+                            <span>{col.header}</span>
+                            <SortIcon
+                              active={active}
+                              direction={sort?.direction}
+                            />
+                          </button>
+                        </th>
+                      );
+                    })}
                   </tr>
                 </thead>
                 <tbody>
-                  {data.map((row) => (
+                  {sortedData.map((row) => (
                     <tr
                       key={rowKey(row)}
                       className="border-b border-neutral-100 transition-colors duration-100 last:border-0 hover:bg-neutral-50/70"
@@ -113,7 +178,7 @@ export function DataTable({
 
             {/* ── Mobile cards ── */}
             <ul className="divide-y divide-neutral-100 md:hidden">
-              {data.map((row) => (
+              {sortedData.map((row) => (
                 <li key={rowKey(row)} className="space-y-3 p-4">
                   {primaryCol ? (
                     <div className="min-w-0">{primaryCol.cell(row)}</div>
@@ -141,9 +206,54 @@ export function DataTable({
       </div>
 
       {!isLoading && meta ? (
-        <Pagination meta={meta} onPageChange={onPageChange} />
+        <Pagination
+          meta={meta}
+          onPageChange={onPageChange}
+          onPerPageChange={onPerPageChange}
+        />
       ) : null}
     </div>
+  );
+}
+
+// ─── Sort helpers ─────────────────────────────────────────────────────────────
+
+function isNullish(v) {
+  return v === null || v === undefined;
+}
+
+function compareValues(a, b) {
+  // Nullish values sort last.
+  const aNull = isNullish(a);
+  const bNull = isNullish(b);
+  if (aNull && bNull) return 0;
+  if (aNull) return 1;
+  if (bNull) return -1;
+
+  // Dates → timestamps.
+  if (a instanceof Date && b instanceof Date) return a.getTime() - b.getTime();
+
+  if (typeof a === "number" && typeof b === "number") return a - b;
+
+  return String(a).localeCompare(String(b), undefined, {
+    sensitivity: "base",
+    numeric: true,
+  });
+}
+
+function SortIcon({ active, direction }) {
+  if (!active) {
+    return (
+      <ChevronsUpDown
+        className="size-3.5 text-neutral-300 transition-colors group-hover:text-neutral-400"
+        aria-hidden
+      />
+    );
+  }
+  return direction === "asc" ? (
+    <ChevronUp className="size-3.5 text-primary-600" aria-hidden />
+  ) : (
+    <ChevronDown className="size-3.5 text-primary-600" aria-hidden />
   );
 }
 
@@ -170,23 +280,12 @@ function SkeletonBody({ columns, rows }) {
 // ─── Empty state ──────────────────────────────────────────────────────────────
 
 function EmptyBody({ empty }) {
-  const Icon = empty?.icon ?? Inbox;
   return (
-    <div className="flex flex-col items-center gap-4 px-6 py-16 text-center">
-      <div className="flex size-14 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 ring-1 ring-primary-100">
-        <Icon aria-hidden className="size-6.5" strokeWidth={1.5} />
-      </div>
-      <div className="space-y-1">
-        <p className="text-sm font-semibold text-neutral-900">
-          {empty?.title ?? "Nothing here yet"}
-        </p>
-        {empty?.description ? (
-          <p className="max-w-sm text-sm text-neutral-500">
-            {empty.description}
-          </p>
-        ) : null}
-      </div>
-      {empty?.action ?? null}
-    </div>
+    <EmptyState
+      icon={empty?.icon}
+      title={empty?.title ?? "Nothing here yet"}
+      description={empty?.description}
+      action={empty?.action}
+    />
   );
 }

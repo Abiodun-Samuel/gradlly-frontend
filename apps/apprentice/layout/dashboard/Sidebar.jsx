@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, ChevronDown, X } from "lucide-react";
+import { Building2, ChevronDown, Globe, Hash, Mail, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -11,6 +11,40 @@ import { NAV_SECTIONS } from "@/data/sidebar.data";
 import { LogoutButton } from "@/features/auth/components/LogoutButton";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import { capitalise, cn, getFullName, getInitials } from "@/utils/helper";
+
+// Compact labelled row for the sidebar organisation card.
+function OrgDetailRow({ icon: Icon, value, mono = false, href }) {
+  if (!value) return null;
+  const body = (
+    <>
+      <Icon
+        className="h-3 w-3 shrink-0 text-white/35"
+        strokeWidth={2}
+        aria-hidden
+      />
+      <span
+        className={cn(
+          "truncate text-[10.5px] text-white/55",
+          mono && "font-mono tracking-tight",
+        )}
+      >
+        {value}
+      </span>
+    </>
+  );
+  return href ? (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-1.5 transition-colors hover:text-white/85"
+    >
+      {body}
+    </a>
+  ) : (
+    <div className="flex items-center gap-1.5">{body}</div>
+  );
+}
 
 export function Sidebar({ isOpen, onClose }) {
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -25,6 +59,7 @@ export function Sidebar({ isOpen, onClose }) {
   const hasOrg = Boolean(org);
   const orgName = org?.name ?? "";
   const orgInitial = orgName ? orgName[0].toUpperCase() : "";
+  const orgWebsite = org?.website?.replace(/^https?:\/\//, "") ?? "";
   const roleLabel = roles.length ? capitalise(roles[0]) : null;
   const initials = getInitials(user?.firstName, user?.lastName);
   const fullName = getFullName(user);
@@ -128,6 +163,22 @@ export function Sidebar({ isOpen, onClose }) {
                   </span>
                 ) : null}
               </div>
+
+              {/* Org detail rows */}
+              {org?.orgEmail || org?.ukprn || orgWebsite ? (
+                <div
+                  className="mt-2 space-y-1 pt-2"
+                  style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
+                >
+                  <OrgDetailRow icon={Mail} value={org?.orgEmail} />
+                  <OrgDetailRow icon={Hash} value={org?.ukprn} mono />
+                  <OrgDetailRow
+                    icon={Globe}
+                    value={orgWebsite}
+                    href={org?.website}
+                  />
+                </div>
+              ) : null}
             </div>
           ) : (
             <div
@@ -266,7 +317,7 @@ export function Sidebar({ isOpen, onClose }) {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "group mx-2 flex items-center gap-3 rounded-lg px-3 py-3.5",
+                      "group mx-2 flex items-center gap-3 rounded-lg px-3 py-3.5 mb-0.5",
                       "text-[13px] font-medium transition-colors duration-150",
                       "focus-visible:outline-2 focus-visible:outline-[#5ea478] focus-visible:-outline-offset-2",
                       isActive
@@ -326,7 +377,7 @@ export function Sidebar({ isOpen, onClose }) {
                 {fullName}
               </p>
               <p className="mt-0.5 truncate text-[10.5px] text-white/40">
-                {roleLabel ?? user?.email}
+                {user?.email}
               </p>
             </div>
             <LogoutButton variant="sidebar" />

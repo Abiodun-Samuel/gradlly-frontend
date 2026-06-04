@@ -13,6 +13,9 @@ node_modules/
 .yarn/build-state.yml
 .yarn/install-state.gz
 
+gradlly-task-tracker_files/
+gradlly-task-tracker.xls
+auth-flow-article.doc
 # -----------------------------------------------------------------------------
 # Turbo
 # -----------------------------------------------------------------------------

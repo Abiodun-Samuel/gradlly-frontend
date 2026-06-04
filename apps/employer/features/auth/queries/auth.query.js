@@ -14,6 +14,7 @@ import {
   resendVerificationEmail,
   resetPassword,
   signup,
+  updateMe,
   verifyEmail,
 } from "@/features/auth/services/auth.service";
 import { toastError, toastSuccess } from "@/hooks/useToast";
@@ -26,6 +27,22 @@ export function useMe(options = {}) {
     queryFn: getMe,
     staleTime: STALE_TIMES.USER_SESSION,
     ...options,
+  });
+}
+
+export function useUpdateProfile() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateMe,
+    onSuccess: (data) => {
+      toastSuccess(data?.message || "Profile updated successfully.");
+      // Refresh the cached profile so every surface reflects the new details.
+      qc.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.me() });
+    },
+    onError: (error) => {
+      if (error.code !== ERROR_CODES.VALIDATION) toastError(error.message);
+    },
   });
 }
 

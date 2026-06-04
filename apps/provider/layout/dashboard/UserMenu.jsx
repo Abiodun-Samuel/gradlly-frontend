@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Settings, User } from "lucide-react";
+import { Bell, Building2, Settings, User } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
@@ -20,13 +20,77 @@ import {
 
 const MENU_ITEMS = [
   { label: "Profile", icon: User, href: "/profile" },
-  { label: "Team & Invitations", icon: Settings, href: "/settings/team" },
+  { label: "Invitations", icon: Settings, href: "/settings/invitations" },
   {
-    label: "Notification settings",
+    label: "Notifications",
     icon: Bell,
     href: "/settings/notifications",
   },
 ];
+
+// ─── Organisation mini-box ────────────────────────────────────────────────────
+//
+// Mirrors the sidebar organisation card. Role + membership belong to the
+// organisation context, so they live here rather than under user details.
+function OrgMiniBox({ activeOrganisation }) {
+  const org = activeOrganisation?.organisation;
+  const roles = activeOrganisation?.roles ?? [];
+  const roleLabel = roles.length ? capitalise(roles[0]) : null;
+  const membershipStatus = activeOrganisation?.membershipStatus ?? null;
+
+  if (!org) {
+    return (
+      <div className="px-4 py-3">
+        <div className="flex items-center gap-3 rounded-xl border border-dashed border-neutral-200 bg-neutral-50 px-3 py-2.5">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-neutral-100 text-neutral-400">
+            <Building2 className="size-4" strokeWidth={1.75} aria-hidden />
+          </span>
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-neutral-700">
+              No organisation yet
+            </p>
+            <p className="truncate text-[11px] text-neutral-400">
+              You are not part of an organisation.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const initial = org.name?.[0]?.toUpperCase() ?? "?";
+
+  return (
+    <div className="px-4 py-3">
+      <div className="rounded-xl border border-neutral-200 bg-neutral-50/70 px-3 py-2.5">
+        <div className="flex items-center gap-3">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-primary-500 to-primary-700 text-[13px] font-bold text-white shadow-sm">
+            {initial}
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-xs font-semibold text-neutral-900">
+              {org.name}
+            </p>
+            {roleLabel ? (
+              <p className="truncate text-[11px] font-medium text-neutral-500">
+                {roleLabel}
+              </p>
+            ) : null}
+          </div>
+          {membershipStatus === "active" ? (
+            <span className="flex shrink-0 items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-700">
+              <span
+                className="size-1.5 rounded-full bg-green-500"
+                aria-hidden
+              />
+              Active
+            </span>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -34,8 +98,6 @@ export function UserMenu({ open, onClose, anchorRef }) {
   const { user, activeOrganisation } = useAuthUser();
   const initials = getInitials(user?.firstName, user?.lastName);
   const fullName = getFullName(user);
-  const roles = activeOrganisation?.roles ?? [];
-  const roleLabel = roles.length ? capitalise(roles[0]) : null;
   const lastLogin = formatDateTime(user?.lastLoginAt);
   const ref = useRef(null);
 
@@ -80,8 +142,8 @@ export function UserMenu({ open, onClose, anchorRef }) {
         "animate-[slide-up_200ms_cubic-bezier(0.16,1,0.3,1)_forwards]",
       )}
     >
-      {/* User identity header */}
-      <div className="border-b border-neutral-100 px-4 py-4">
+      {/* User identity header (no role — role belongs to the org box below) */}
+      <div className="px-4 py-4">
         <div className="flex items-center gap-3">
           <Avatar
             initials={initials}
@@ -98,32 +160,30 @@ export function UserMenu({ open, onClose, anchorRef }) {
         </div>
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          {roleLabel ? (
-            <TextBadge variant="light" color="purple" size="xs">
-              {roleLabel}
-            </TextBadge>
-          ) : null}
-          {user?.isEmailVerified && (
+          {user?.isEmailVerified ? (
             <TextBadge variant="light" color="green" size="xs">
               Verified
             </TextBadge>
-          )}
-          {!roleLabel ? (
-            <TextBadge variant="light" color="gray" size="xs">
-              No organisation
+          ) : (
+            <TextBadge variant="light" color="amber" size="xs">
+              Unverified
             </TextBadge>
+          )}
+          {lastLogin ? (
+            <span className="text-[11px] tabular-nums text-neutral-400">
+              Last login · {lastLogin}
+            </span>
           ) : null}
         </div>
+      </div>
 
-        {lastLogin && (
-          <p className="mt-2 text-[11px] tabular-nums text-neutral-400">
-            Last login · {lastLogin}
-          </p>
-        )}
+      {/* Organisation mini-box */}
+      <div className="border-t border-neutral-100">
+        <OrgMiniBox activeOrganisation={activeOrganisation} />
       </div>
 
       {/* Menu items */}
-      <div className="py-1">
+      <div className="border-t border-neutral-100 py-1">
         {MENU_ITEMS.map((item) => (
           <Link
             key={item.href + item.label}

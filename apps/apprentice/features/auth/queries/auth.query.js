@@ -11,6 +11,7 @@ import {
   login,
   logout,
   resetPassword,
+  updateMe,
 } from "@/features/auth/services/auth.service";
 import { toastError, toastSuccess } from "@/hooks/useToast";
 import { ERROR_CODES } from "@/lib/errors";
@@ -22,6 +23,21 @@ export function useMe(options = {}) {
     queryFn: getMe,
     staleTime: STALE_TIMES.USER_SESSION,
     ...options,
+  });
+}
+
+export function useUpdateProfile() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateMe,
+    onSuccess: (data) => {
+      toastSuccess(data?.message || "Profile updated successfully.");
+      qc.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.me() });
+    },
+    onError: (error) => {
+      if (error.code !== ERROR_CODES.VALIDATION) toastError(error.message);
+    },
   });
 }
 

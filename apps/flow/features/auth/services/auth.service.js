@@ -86,3 +86,12 @@ export async function getMe() {
     throw normalizeApiClientError(e);
   }
 }
+
+export async function updateMe(payload) {
+  try {
+    const result = await $apiClient.patch(AUTH_API_PATHS.ME, payload);
+    return result.data?.data ?? result.data;
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}

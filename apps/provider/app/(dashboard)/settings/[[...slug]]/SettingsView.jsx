@@ -1,38 +1,79 @@
 "use client";
 
-import { Bell, Settings2, UsersRound } from "lucide-react";
+import { Bell, Building2, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 
-import { EmptyPage } from "@/components/ui/EmptyPage";
 import { PageSubheader } from "@/components/ui/PageSubheader";
 import { TabNav } from "@/components/ui/TabNav";
+import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
+import { useRoleAccess } from "@/features/auth/hooks/useRoleAccess";
 import { InvitationsTable } from "@/features/invitations/components/InvitationsTable";
+import { NotificationsPanel } from "@/features/notifications/components/NotificationsPanel";
+import { UpdateOrganizationForm } from "@/features/organization/components/UpdateOrganizationForm";
 
-const TABS = [
-  { value: "team", label: "Team & Invitations", icon: UsersRound },
-  { value: "notifications", label: "Notifications", icon: Bell },
-];
+const TAB_META = {
+  organisation: {
+    label: "Organisation",
+    icon: Building2,
+    description: "Manage your organisation's details and contact information.",
+  },
+  invitations: {
+    label: "Invitations",
+    icon: UserPlus,
+    description:
+      "Invite people to your organisation and manage pending invites.",
+  },
+  notifications: {
+    label: "Notifications",
+    icon: Bell,
+    description: "Your latest activity, alerts and updates.",
+  },
+};
 
-export function SettingsView({ activeTab = "team" }) {
+export function SettingsView({ activeTab = "invitations" }) {
   const router = useRouter();
+  const { isOwner } = useRoleAccess();
+  const { activeOrganisation } = useAuthUser();
+  const hasOrg = Boolean(activeOrganisation?.organisation);
+
+  // The Organisation tab is only available to owners of an existing org.
+  const tabs = useMemo(() => {
+    const base = [
+      { value: "invitations", ...TAB_META.invitations },
+      { value: "notifications", ...TAB_META.notifications },
+    ];
+    if (isOwner && hasOrg) {
+      base.unshift({ value: "organisation", ...TAB_META.organisation });
+    }
+    return base;
+  }, [isOwner, hasOrg]);
+
+  // Page protection: fall back to a permitted tab if the requested one is not
+  // available to this user (e.g. a non-owner deep-linking to /settings/organisation).
+  const resolvedTab = tabs.some((t) => t.value === activeTab)
+    ? activeTab
+    : "invitations";
+
+  const current = TAB_META[resolvedTab];
   const setTab = (value) => router.push(`/settings/${value}`);
 
   return (
     <div className="space-y-6">
       <PageSubheader
-        icon={Settings2}
-        eyebrow="Workspace"
-        title="Settings"
-        description="Manage your organisation preferences, team members, and notifications."
+        icon={current.icon}
+        eyebrow="Settings"
+        title={current.label}
+        description={current.description}
       />
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
         {/* Tab rail: horizontal on small screens, vertical on large screens. */}
         <aside className="lg:w-60 lg:shrink-0">
-          <div className="rounded-2xl border border-neutral-200 bg-white p-2 shadow-sm lg:sticky lg:top-4">
+          <div className="rounded-xl border border-neutral-200 bg-white p-2 shadow-sm lg:sticky lg:top-4">
             <TabNav
-              tabs={TABS}
-              value={activeTab}
+              tabs={tabs}
+              value={resolvedTab}
               onChange={setTab}
               ariaLabel="Settings sections"
             />
@@ -43,15 +84,14 @@ export function SettingsView({ activeTab = "team" }) {
         <section
           className="min-w-0 flex-1"
           role="tabpanel"
-          aria-label={activeTab}
+          aria-label={resolvedTab}
         >
-          {activeTab === "team" ? (
+          {resolvedTab === "organisation" ? (
+            <UpdateOrganizationForm />
+          ) : resolvedTab === "invitations" ? (
             <InvitationsTable />
           ) : (
-            <EmptyPage
-              title="Notifications"
-              description="Notification preferences are coming soon. You will be able to choose which events email you and which appear in-app."
-            />
+            <NotificationsPanel />
           )}
         </section>
       </div>

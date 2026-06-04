@@ -23,6 +23,11 @@ function isExpired(expiresAt) {
   return new Date(expiresAt) < new Date();
 }
 
+function expiryTimestamp(expiresAt) {
+  // Sort accessor: missing expiry sorts last (treated as +Infinity).
+  return expiresAt ? new Date(expiresAt).getTime() : Number.POSITIVE_INFINITY;
+}
+
 function formatExpiry(expiresAt) {
   if (!expiresAt) return "No expiry";
   const date = new Date(expiresAt);
@@ -39,6 +44,11 @@ function formatExpiry(expiresAt) {
 
 function getInitials(firstName, lastName) {
   return `${(firstName ?? "")[0] ?? ""}${(lastName ?? "")[0] ?? ""}`.toUpperCase();
+}
+
+function invitedByName(invitedBy) {
+  if (!invitedBy) return "";
+  return `${invitedBy.firstName ?? ""} ${invitedBy.lastName ?? ""}`.trim();
 }
 
 const ROLE_STYLES = {
@@ -98,6 +108,25 @@ function EmailCell({ invitation }) {
   );
 }
 
+function InvitedByCell({ invitedBy }) {
+  if (!invitedBy) {
+    return <span className="text-neutral-400">Unknown</span>;
+  }
+  const name = invitedByName(invitedBy);
+  return (
+    <div className="flex flex-col gap-0.5">
+      <span className="truncate font-medium text-neutral-800">
+        {name || "Unknown"}
+      </span>
+      {invitedBy.email ? (
+        <span className="truncate text-xs text-neutral-400">
+          {invitedBy.email}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
 function RowActions({ invitation, onRevoke }) {
   const { mutate: resend, isPending: isResending } = useResendInvitation();
   const expired = isExpired(invitation.expiresAt);
@@ -141,39 +170,50 @@ function RowActions({ invitation, onRevoke }) {
 export function InvitationsTable() {
   const { canManageInvitations } = useAuthUser();
   const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(20);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [revokeTarget, setRevokeTarget] = useState(null);
 
-  const { data, isLoading, isFetching } = useInvitations({ page });
+  const { data, isLoading, isFetching } = useInvitations({ page, perPage });
   const invitations = data?.invitations ?? [];
   const meta = data?.meta ?? null;
+
+  const handlePerPageChange = (next) => {
+    setPerPage(next);
+    setPage(1); // reset to the first page when page size changes
+  };
 
   const columns = [
     {
       key: "email",
       header: "Member",
       primary: true,
+      sortable: true,
+      sortValue: (row) => row.email,
       cell: (row) => <EmailCell invitation={row} />,
     },
     {
       key: "role",
       header: "Role",
       mobileLabel: "Role",
+      sortable: true,
+      sortValue: (row) => row.role,
       cell: (row) => <RoleBadge role={row.role} />,
     },
     {
       key: "invitedBy",
       header: "Invited by",
       mobileLabel: "Invited by",
-      cell: (row) =>
-        row.invitedBy
-          ? `${row.invitedBy.firstName} ${row.invitedBy.lastName}`
-          : "Unknown",
+      sortable: true,
+      sortValue: (row) => invitedByName(row.invitedBy),
+      cell: (row) => <InvitedByCell invitedBy={row.invitedBy} />,
     },
     {
       key: "status",
       header: "Status",
       mobileLabel: "Status",
+      sortable: true,
+      sortValue: (row) => expiryTimestamp(row.expiresAt),
       cell: (row) => <StatusCell expiresAt={row.expiresAt} />,
     },
     ...(canManageInvitations
@@ -222,6 +262,7 @@ export function InvitationsTable() {
         isLoading={isLoading}
         meta={meta}
         onPageChange={setPage}
+        onPerPageChange={handlePerPageChange}
         empty={{
           icon: Users,
           title: "No pending invitations",

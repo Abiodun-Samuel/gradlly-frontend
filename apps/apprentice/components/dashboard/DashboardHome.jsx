@@ -11,6 +11,7 @@ import {
   ExternalLink,
   FileText,
   Globe,
+  Hash,
   Mail,
   MapPin,
   Phone,
@@ -275,8 +276,9 @@ function OrganisationCard({ activeOrganisation }) {
 function HeroSection({ user, activeOrganisation, greeting }) {
   const org = activeOrganisation?.organisation;
   const roles = activeOrganisation?.roles ?? [];
-  const initials = getInitials(user?.firstName, user?.lastName);
-  const fullName = getFullName(user);
+  const membershipStatus = activeOrganisation?.membershipStatus ?? null;
+  const orgInitial = org?.name ? org.name[0].toUpperCase() : "";
+  const orgLocation = [org?.city, org?.country].filter(Boolean).join(", ");
   const today = new Date().toLocaleDateString("en-GB", {
     weekday: "long",
     year: "numeric",
@@ -321,118 +323,106 @@ function HeroSection({ user, activeOrganisation, greeting }) {
       />
 
       <div className="relative z-10 p-6 sm:p-8 lg:p-10">
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
-            <p
-              className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em]"
-              style={{ color: "#8cc4a1" }}
-            >
-              Learner Portal
-            </p>
-            <h1 className="text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl lg:text-[2.75rem]">
-              {greeting},
-              <br />
-              <span className="text-white">{user?.firstName ?? "there"}</span>
-            </h1>
-            <p
-              className="mt-2 text-sm"
-              style={{ color: "rgba(255,255,255,0.45)" }}
-            >
-              {today}
-            </p>
-          </div>
-
-          <div
-            className="flex shrink-0 items-center gap-3 self-start rounded-xl px-4 py-3"
-            style={{ backgroundColor: "rgba(255,255,255,0.08)" }}
+        {/* Greeting */}
+        <div className="min-w-0">
+          <p
+            className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em]"
+            style={{ color: "#8cc4a1" }}
           >
-            <Avatar
-              initials={initials}
-              src={user?.avatarUrl}
-              size="md"
-              className="ring-2 ring-white/20"
-            />
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-white">
-                {fullName}
-              </p>
-              <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                {roles.map((role) => (
-                  <TextBadge
-                    key={role}
-                    variant="light"
-                    color="purple"
-                    size="xs"
-                    className="text-[10px]"
-                  >
-                    {capitalise(role)}
-                  </TextBadge>
-                ))}
-                {user?.isActive && (
-                  <span
-                    className="flex items-center gap-1 text-[10px] font-medium"
-                    style={{ color: "#78bf8d" }}
-                  >
-                    <span className="h-1.5 w-1.5 rounded-full bg-success-400" />
-                    Active
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
+            Learner Portal
+          </p>
+          <h1 className="text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl lg:text-[2.75rem]">
+            {greeting},
+            <br />
+            <span className="text-white">{user?.firstName ?? "there"}</span>
+          </h1>
+          <p
+            className="mt-2 text-sm"
+            style={{ color: "rgba(255,255,255,0.45)" }}
+          >
+            {today}
+          </p>
         </div>
 
+        {/* Organisation panel */}
         {org && (
           <div
-            className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl px-4 py-3.5 text-sm"
-            style={{ backgroundColor: "rgba(255,255,255,0.06)" }}
+            className="mt-6 flex flex-col gap-4 rounded-2xl px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5"
+            style={{
+              backgroundColor: "rgba(255,255,255,0.08)",
+              border: "1px solid rgba(255,255,255,0.08)",
+            }}
           >
-            <span className="flex items-center gap-2">
-              <Users
-                className="h-3.5 w-3.5 shrink-0"
-                style={{ color: "#8cc4a1" }}
-                aria-hidden
-              />
-              <span className="font-semibold text-white">{org.name}</span>
-            </span>
+            <div className="flex min-w-0 items-center gap-3.5">
+              <div
+                className="flex size-11 shrink-0 items-center justify-center rounded-xl text-base font-bold text-white"
+                style={{
+                  background: "rgba(255,255,255,0.14)",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                }}
+              >
+                {orgInitial}
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-bold text-white sm:text-[15px]">
+                  {org.name}
+                </p>
+                <div
+                  className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs"
+                  style={{ color: "rgba(255,255,255,0.6)" }}
+                >
+                  {org.ukprn && (
+                    <span className="flex items-center gap-1">
+                      <Hash className="h-3 w-3" aria-hidden />
+                      <span className="font-mono">{org.ukprn}</span>
+                    </span>
+                  )}
+                  {orgLocation && (
+                    <span className="flex items-center gap-1">
+                      <MapPin className="h-3 w-3" aria-hidden />
+                      {orgLocation}
+                    </span>
+                  )}
+                  {org.website && (
+                    <a
+                      href={org.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 transition-colors hover:text-white hover:underline"
+                    >
+                      <Globe className="h-3 w-3" aria-hidden />
+                      {org.website.replace(/^https?:\/\//, "")}
+                      <ExternalLink className="h-2.5 w-2.5" aria-hidden />
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
 
-            <span style={{ color: "rgba(255,255,255,0.25)" }}>·</span>
-            <span
-              className="text-xs"
-              style={{ color: "rgba(255,255,255,0.55)" }}
-            >
-              Enrolled learner
-            </span>
-
-            {org.city && (
-              <>
-                <span style={{ color: "rgba(255,255,255,0.25)" }}>·</span>
+            {/* Role + membership (org context) */}
+            <div className="flex shrink-0 flex-wrap items-center gap-1.5">
+              {roles.map((role) => (
                 <span
-                  className="flex items-center gap-1 text-xs"
-                  style={{ color: "rgba(255,255,255,0.55)" }}
+                  key={role}
+                  className="rounded-full px-2.5 py-1 text-[11px] font-semibold text-white"
+                  style={{ background: "rgba(255,255,255,0.15)" }}
                 >
-                  <MapPin className="h-3 w-3" aria-hidden />
-                  {org.city}, {org.country}
+                  {capitalise(role)}
                 </span>
-              </>
-            )}
-
-            {org.website && (
-              <>
-                <span style={{ color: "rgba(255,255,255,0.25)" }}>·</span>
-                <a
-                  href={org.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-xs transition-colors hover:underline"
-                  style={{ color: "rgba(255,255,255,0.55)" }}
+              ))}
+              {membershipStatus === "active" && (
+                <span
+                  className="flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold"
+                  style={{
+                    background: "rgba(34,197,94,0.2)",
+                    color: "#86efac",
+                  }}
                 >
-                  <Globe className="h-3 w-3" aria-hidden />
-                  {org.website.replace(/^https?:\/\//, "")}
-                  <ExternalLink className="h-2.5 w-2.5" aria-hidden />
-                </a>
-              </>
-            )}
+                  <span className="h-1.5 w-1.5 rounded-full bg-success-400" />
+                  Active
+                </span>
+              )}
+            </div>
           </div>
         )}
       </div>

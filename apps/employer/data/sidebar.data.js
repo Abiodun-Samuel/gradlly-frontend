@@ -1,16 +1,17 @@
 import {
   Bell,
+  Building2,
   LayoutDashboard,
   Settings,
   UserCircle,
-  UsersRound,
+  UserPlus,
   // ── Icons for not-yet-built sections (kept for when they are re-enabled) ──
   // BarChart3,
   // Briefcase,
   // ClipboardList,
   // CreditCard,
   // GraduationCap,
-  // UserPlus,
+  // UsersRound,
 } from "lucide-react";
 
 export const NAV_SECTIONS = [
@@ -46,9 +47,15 @@ export const NAV_SECTIONS = [
         icon: Settings,
         children: [
           {
-            label: "Team & Invitations",
-            href: "/settings/team",
-            icon: UsersRound,
+            label: "Organisation",
+            href: "/settings/organisation",
+            icon: Building2,
+            requiresRole: "owner",
+          },
+          {
+            label: "Invitations",
+            href: "/settings/invitations",
+            icon: UserPlus,
           },
           {
             label: "Notifications",

@@ -19,7 +19,7 @@ export function RevokeConfirmDialog({ invitation, open, onClose }) {
     <Modal
       open={open}
       onClose={onClose}
-      size="sm"
+      size="lg"
       footer={
         <>
           <Button

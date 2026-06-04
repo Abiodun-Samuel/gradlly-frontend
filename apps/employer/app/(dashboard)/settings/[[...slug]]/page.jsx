@@ -4,18 +4,17 @@ import { SettingsView } from "./SettingsView";
 
 export const { metadata } = createPageSeo({
   title: "Settings",
-  description:
-    "Manage your organisation settings, team members, and invitations.",
+  description: "Manage your organisation invitations and notifications.",
   path: "/settings",
   noIndex: true,
 });
 
-const VALID_TABS = ["team", "notifications"];
+const VALID_TABS = ["organisation", "invitations", "notifications"];
 
 export default async function SettingsPage({ params }) {
   const { slug } = await params;
   const requested = Array.isArray(slug) ? slug[0] : undefined;
-  const activeTab = VALID_TABS.includes(requested) ? requested : "team";
+  const activeTab = VALID_TABS.includes(requested) ? requested : "invitations";
 
   return <SettingsView activeTab={activeTab} />;
 }

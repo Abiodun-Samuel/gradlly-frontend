@@ -126,8 +126,6 @@ export function InviteModal({ open, onClose }) {
           <span className="font-semibold text-neutral-700">
             Role permissions:{" "}
           </span>
-          <span className="font-medium text-neutral-700">Owner</span> has full
-          access including billing.{" "}
           <span className="font-medium text-neutral-700">Admin</span> manages
           the team and settings.{" "}
           <span className="font-medium text-neutral-700">Member</span> has

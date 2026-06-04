@@ -30,7 +30,7 @@ export const INVITE_ROLE_OPTIONS = [
   { value: INVITATION_ROLES.MEMBER, text: "Member" },
   { value: APPRENTICE_ROLE, text: "Apprentice" },
   { value: INVITATION_ROLES.ADMIN, text: "Admin" },
-  { value: INVITATION_ROLES.OWNER, text: "Owner" },
+  // { value: INVITATION_ROLES.OWNER, text: "Owner" },
 ];
 
 /**
