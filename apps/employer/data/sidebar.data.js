@@ -1,4 +1,5 @@
 import {
+  AlertTriangle,
   BarChart3,
   Briefcase,
   CheckSquare,
@@ -37,6 +38,12 @@ export const NAV_SECTIONS = [
         href: "/otj-approvals",
         icon: CheckSquare,
         badge: 12,
+      },
+      {
+        label: "At-Risk Management",
+        href: "/at-risk",
+        icon: AlertTriangle,
+        badge: 5,
       },
     ],
   },
