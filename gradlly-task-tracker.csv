@@ -1,0 +1,263 @@
+Section,Portal,Module,Task / Feature,Status,Pri,Route / Page,API Endpoint(s)
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,API Client,"Auto-inject X-Organisation-Id header on every authenticated request (active org from /me), mirroring X-Portal-Type; per-call header still overrides",Done,1,"lib/api/active-org.js, lib/api/client.js",* (all proxied calls)
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,Storage,S3 presigned-upload service - request upload-url (proxy) + direct S3 PUT via fetch with Content-Type; durable URL derived from uploadUrl (query stripped),Done,1,features/storage/,POST /api/v1/storage/upload-url -> PUT {uploadUrl}
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,Storage,"useUploadFile TanStack mutation - returns durable public URL, error toasts; CORS handled by S3 bucket policy",Done,1,features/storage/queries/,PUT {presigned S3 url}
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,UI / Avatar,"Avatar refactor - optional async upload, optimistic preview, spinner loading, auto-revert on error, S3/next-image host handling (backward compatible)",Done,1,components/ui/Avatar.jsx,-
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,Profile,"User avatar upload - upload to S3 then persist avatarUrl (provider, employer, flow, apprentice)",Done,1,/settings/profile,PATCH /api/v1/auth/me { avatarUrl }
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Provider/Employer/Flow,Organisation,Organisation logo upload - upload to S3 then persist logoUrl (apprentice excluded - no org),Done,1,/settings/organisation,PATCH /api/v1/organisations/{id} { logoUrl }
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Provider/Employer/Flow,Organisation,"Create-organisation modal redesign - removed broken green side panel, compact single-column layout, portal-aware brand label",Done,2,dashboard (modal),POST /api/v1/organisations
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,Notifications,Notifications feature - service + TanStack Query hooks (list/unread-count/mark-read/mark-all-read),Done,1,features/notifications/,GET /api/v1/notifications
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,Notifications,"Notifications panel - All/Unread filter, mark-as-read, mark-all, paginated, per-page",Done,1,/settings/notifications,GET /api/v1/notifications?organisationId=&unreadOnly=&page=&perPage=
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,Notifications,Mark single notification as read (row click),Done,1,/settings/notifications,PATCH /api/v1/notifications/:id/read
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,Notifications,Mark all notifications as read,Done,1,/settings/notifications,PATCH /api/v1/notifications/read-all
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,Notifications,Header bell live unread-count badge (60s poll + focus refetch),Done,1,layout/dashboard/HeaderNotifications.jsx,GET /api/v1/notifications?unreadOnly=true
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,Auth,"Profile update (title, name, phone, DOB, gender, bio, job, dept, locale, timezone)",Done,1,/profile,PATCH /api/v1/auth/me
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,RBAC,useRoleAccess hook (owner>admin>member hierarchy) for page/component/action gating,Done,1,features/auth/hooks/useRoleAccess.js,-
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,UI,"DataTable - reusable, responsive, client-side sortable, paginated",Done,1,components/ui/DataTable.jsx,-
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,UI,"Pagination - reusable, meta-driven, rows-per-page selector",Done,1,components/ui/Pagination.jsx,-
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,UI,TabNav - reusable vertical/horizontal responsive tabs,Done,1,components/ui/TabNav.jsx,-
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,UI,PageSubheader - reusable dashboard page hero,Done,1,components/ui/PageSubheader.jsx,-
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,UI,EmptyState - reusable no-content component,Done,1,components/ui/EmptyState.jsx,-
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,UI,Modal - footer support for titleless confirm dialogs (revoke fix),Done,1,components/ui/Modal.jsx,-
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,Design,Tightened radius design-token scale (uniform across product),Done,2,assets/css/globals.css,-
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Employer,Invitations,Send invitation (email + role; apprentice role -> portal override),Done,1,/settings/invitations,POST /api/v1/invitations
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Employer,Invitations,"List pending invitations - paginated, sortable, per-page, invited-by name+email",Done,1,/settings/invitations,GET /api/v1/invitations?page=&perPage=
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Employer,Invitations,Resend invitation,Done,1,/settings/invitations,POST /api/v1/invitations/:id/resend
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Employer,Invitations,Revoke invitation (confirm dialog),Done,1,/settings/invitations,DELETE /api/v1/invitations/:id
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Employer,Invitations,"Accept invitation (auth-protected, token from email)",Done,1,/accept-invitation,POST /api/v1/invitations/accept
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Employer,Organisation,Update organisation details (owner-only),Done,1,/settings/organisation,PATCH /api/v1/organisations/:id
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Employer,Settings,"Path-based settings tabs (Organisation/Invitations/Notifications), owner-gated",Done,1,/settings/[tab],-
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Provider,Invitations,Send invitation (email + role; apprentice role -> portal override),Done,1,/settings/invitations,POST /api/v1/invitations
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Provider,Invitations,"List pending invitations - paginated, sortable, per-page, invited-by name+email",Done,1,/settings/invitations,GET /api/v1/invitations?page=&perPage=
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Provider,Invitations,Resend invitation,Done,1,/settings/invitations,POST /api/v1/invitations/:id/resend
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Provider,Invitations,Revoke invitation (confirm dialog),Done,1,/settings/invitations,DELETE /api/v1/invitations/:id
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Provider,Invitations,"Accept invitation (auth-protected, token from email)",Done,1,/accept-invitation,POST /api/v1/invitations/accept
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Provider,Organisation,Update organisation details (owner-only),Done,1,/settings/organisation,PATCH /api/v1/organisations/:id
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Provider,Settings,"Path-based settings tabs (Organisation/Invitations/Notifications), owner-gated",Done,1,/settings/[tab],-
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Flow,Invitations,Send invitation (email + role; apprentice role -> portal override),Done,1,/settings/invitations,POST /api/v1/invitations
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Flow,Invitations,"List pending invitations - paginated, sortable, per-page, invited-by name+email",Done,1,/settings/invitations,GET /api/v1/invitations?page=&perPage=
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Flow,Invitations,Resend invitation,Done,1,/settings/invitations,POST /api/v1/invitations/:id/resend
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Flow,Invitations,Revoke invitation (confirm dialog),Done,1,/settings/invitations,DELETE /api/v1/invitations/:id
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Flow,Invitations,"Accept invitation (auth-protected, token from email)",Done,1,/accept-invitation,POST /api/v1/invitations/accept
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Flow,Organisation,Update organisation details (owner-only),Done,1,/settings/organisation,PATCH /api/v1/organisations/:id
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Flow,Settings,"Path-based settings tabs (Organisation/Invitations/Notifications), owner-gated",Done,1,/settings/[tab],-
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Apprentice,Invitations,"Accept invitation (auth-protected, token from email)",Done,1,/accept-invitation,POST /api/v1/invitations/accept
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Apprentice,Dashboard,Organisation card on dashboard (org the learner belongs to),Done,2,/,GET /api/v1/auth/me
+SHARED - All Portals,All,Infrastructure,BFF proxy route (request forwarding),Done,1,/api/proxy/[...path],-
+SHARED - All Portals,All,Infrastructure,$apiClient browser fetch wrapper,Done,1,lib/api/client.js,-
+SHARED - All Portals,All,Infrastructure,$apiServer server-side fetch wrapper,Done,1,lib/api/server.js,-
+SHARED - All Portals,All,Infrastructure,httpOnly session cookie read/write/clear,Done,1,lib/server/session-cookies.js,-
+SHARED - All Portals,All,Infrastructure,ApiClientError class + normalizeApiClientError,Done,1,lib/errors/index.js,-
+SHARED - All Portals,All,Infrastructure,applyServerErrors (maps API field errors to form),Done,1,lib/errors/index.js,-
+SHARED - All Portals,All,Infrastructure,TanStack Query client + global 401 session guard,Done,1,lib/react-query/queryClient.js,-
+SHARED - All Portals,All,Infrastructure,Silent token rotation with deduplication,Done,1,app/api/proxy/[...path]/route.js,POST /api/v1/auth/refresh
+SHARED - All Portals,All,Infrastructure,CSRF header enforcement on all mutating requests,Done,1,app/api/proxy/[...path]/route.js,-
+SHARED - All Portals,All,Layout,"Dashboard layout (Sidebar, Header, NotificationBell, ProfileDropdown)",Done,1,layout/dashboard/,-
+SHARED - All Portals,All,Layout,"Sidebar nav data per portal (items, labels, portal meta)",Done,1,data/sidebar.data.js,-
+SHARED - All Portals,All,Notifications,Notification bell UI (icon + badge),Done,2,layout/dashboard/NotificationBell,-
+SHARED - All Portals,All,Notifications,Notification panel - fetch and display notifications,To Do,2,layout/dashboard/NotificationBell,"GET /api/v1/notifications, PATCH /api/v1/notifications/:id/read, DELETE /api/v1/notifications/:id"
+SHARED - All Portals,All,Notifications,Real-time notification updates (WebSocket or polling),To Do,3,layout/dashboard/NotificationBell,WS /ws/notifications or GET /api/v1/notifications (poll)
+SHARED - All Portals,All,Profile,"Edit profile form (name, phone, timezone, locale, bio)",Done,2,/profile,PATCH /api/v1/users/me
+SHARED - All Portals,All,Profile,Avatar upload (crop + upload),To Do,3,/profile,POST /api/v1/users/me/avatar
+SHARED - All Portals,All,Profile,Change password form (current + new + confirm),To Do,2,/profile,POST /api/v1/auth/change-password
+SHARED - All Portals,All,Settings,Notification preferences (email/in-app toggles),To Do,3,/settings,"GET /api/v1/settings/notifications, PATCH /api/v1/settings/notifications"
+SHARED - All Portals,All,Settings,Language and date format preferences,To Do,3,/settings,PATCH /api/v1/users/me
+APPRENTICE PORTAL - Learning,Apprentice,Auth,Login page + form + Zod validation,Done,1,/login,POST /api/v1/auth/login
+APPRENTICE PORTAL - Learning,Apprentice,Auth,Forgot password page + form + success state,Done,1,/forgot-password,POST /api/v1/auth/forgot-password
+APPRENTICE PORTAL - Learning,Apprentice,Auth,Reset password page + form + invalid token state,Done,1,/reset-password,POST /api/v1/auth/reset-password
+APPRENTICE PORTAL - Learning,Apprentice,Auth,Logout button + session clear,Done,1,-,POST /api/v1/auth/logout
+APPRENTICE PORTAL - Learning,Apprentice,Auth,getMe query + useAuthUser hook,Done,1,-,GET /api/v1/auth/me
+APPRENTICE PORTAL - Learning,Apprentice,Dashboard,"Dashboard home page (layout, quick actions, getting started)",Done,1,/,-
+APPRENTICE PORTAL - Learning,Apprentice,Dashboard,"Wire metric cards (Courses In Progress, Assessments Due, Progress %, Reports)",To Do,1,/,GET /api/v1/apprentice/dashboard/summary
+APPRENTICE PORTAL - Learning,Apprentice,Courses,Course list with status tab filters (All / Live / Drafts / Archived),To Do,1,/courses,GET /api/v1/courses?status=&page=&limit=
+APPRENTICE PORTAL - Learning,Apprentice,Courses,Live courses filtered list,To Do,1,/courses/live,GET /api/v1/courses?status=live
+APPRENTICE PORTAL - Learning,Apprentice,Courses,Draft courses filtered list,To Do,1,/courses/drafts,GET /api/v1/courses?status=draft
+APPRENTICE PORTAL - Learning,Apprentice,Courses,Archived courses filtered list,To Do,1,/courses/archived,GET /api/v1/courses?status=archived
+APPRENTICE PORTAL - Learning,Apprentice,Courses,"Create course form (title, description, objectives, standard, duration)",To Do,1,/courses,POST /api/v1/courses
+APPRENTICE PORTAL - Learning,Apprentice,Courses,Edit course form (pre-filled),To Do,1,/courses/:id,"GET /api/v1/courses/:id, PATCH /api/v1/courses/:id"
+APPRENTICE PORTAL - Learning,Apprentice,Courses,Publish / archive / restore course action,To Do,1,/courses/:id,PATCH /api/v1/courses/:id/status
+APPRENTICE PORTAL - Learning,Apprentice,Courses,Delete draft course,To Do,2,/courses/:id,DELETE /api/v1/courses/:id
+APPRENTICE PORTAL - Learning,Apprentice,Courses,"Course detail view (modules list, learner count, progress)",To Do,1,/courses/:id,GET /api/v1/courses/:id
+APPRENTICE PORTAL - Learning,Apprentice,Courses,Course builder - add / edit / delete modules,To Do,1,/courses/:id/builder,"POST /api/v1/courses/:id/modules, PATCH /api/v1/courses/:id/modules/:mid, DELETE /api/v1/courses/:id/modules/:mid"
+APPRENTICE PORTAL - Learning,Apprentice,Courses,Module reorder (drag-and-drop),To Do,2,/courses/:id/builder,PATCH /api/v1/courses/:id/modules/order
+APPRENTICE PORTAL - Learning,Apprentice,Courses,"Module content upload (video, document, quiz)",To Do,2,/courses/:id/builder,POST /api/v1/courses/:id/modules/:mid/content
+APPRENTICE PORTAL - Learning,Apprentice,Courses,SCORM package upload and player,To Do,3,/courses/:id/builder,POST /api/v1/courses/:id/modules/:mid/scorm
+APPRENTICE PORTAL - Learning,Apprentice,Courses,Duplicate course,To Do,3,/courses,POST /api/v1/courses/:id/duplicate
+APPRENTICE PORTAL - Learning,Apprentice,Curriculum,Curriculum list,To Do,2,/curriculum,GET /api/v1/curriculums
+APPRENTICE PORTAL - Learning,Apprentice,Curriculum,Create / edit curriculum with phases,To Do,2,/curriculum,"POST /api/v1/curriculums, PATCH /api/v1/curriculums/:id"
+APPRENTICE PORTAL - Learning,Apprentice,Curriculum,Map KSBs to curriculum units,To Do,2,/curriculum/:id,"GET /api/v1/ksbs, PATCH /api/v1/curriculums/:id/ksb-mappings"
+APPRENTICE PORTAL - Learning,Apprentice,Learners,"Learner roster table (name, cohort, progress, status)",To Do,1,/learners,GET /api/v1/learners?page=&status=&cohort=
+APPRENTICE PORTAL - Learning,Apprentice,Learners,Enrol learner (assign to cohort/course),To Do,1,/learners,POST /api/v1/learners
+APPRENTICE PORTAL - Learning,Apprentice,Learners,"Learner detail page (courses, assessments, attendance, notes)",To Do,1,/learners/:id,GET /api/v1/learners/:id
+APPRENTICE PORTAL - Learning,Apprentice,Learners,Withdraw / suspend learner with reason,To Do,2,/learners/:id,PATCH /api/v1/learners/:id/status
+APPRENTICE PORTAL - Learning,Apprentice,Learners,Learner progress breakdown (per course/module),To Do,2,/learners/:id,GET /api/v1/learners/:id/progress
+APPRENTICE PORTAL - Learning,Apprentice,Learners,Bulk CSV learner enrolment / import,To Do,3,/learners,POST /api/v1/learners/bulk-import
+APPRENTICE PORTAL - Learning,Apprentice,Learners,Off-the-job hours log per learner,To Do,2,/learners/:id,"GET /api/v1/learners/:id/otj-hours, POST /api/v1/learners/:id/otj-hours"
+APPRENTICE PORTAL - Learning,Apprentice,Learners,Attendance tracking per learner,To Do,2,/learners/:id,"GET /api/v1/learners/:id/attendance, POST /api/v1/learners/:id/attendance"
+APPRENTICE PORTAL - Learning,Apprentice,Assessments,"Assessment list (title, type, due date, submissions count)",To Do,1,/assessments,GET /api/v1/assessments?courseId=&status=
+APPRENTICE PORTAL - Learning,Apprentice,Assessments,"Create assessment (quiz, assignment, observation, rubric)",To Do,1,/assessments,POST /api/v1/assessments
+APPRENTICE PORTAL - Learning,Apprentice,Assessments,Question bank / assessment templates,To Do,3,/assessments,GET /api/v1/assessments/question-bank
+APPRENTICE PORTAL - Learning,Apprentice,Assessments,Submissions inbox (learner submissions awaiting grading),To Do,1,/assessments/:id/submissions,GET /api/v1/assessments/:id/submissions
+APPRENTICE PORTAL - Learning,Apprentice,Assessments,Grade submission + add feedback,To Do,1,/assessments/:id/submissions/:sid,PATCH /api/v1/assessments/:id/submissions/:sid/grade
+APPRENTICE PORTAL - Learning,Apprentice,Assessments,Assessment results summary per cohort,To Do,2,/assessments/:id,GET /api/v1/assessments/:id/results
+APPRENTICE PORTAL - Learning,Apprentice,Progress,"Programme-level progress overview (cohort %, on-track vs at-risk)",To Do,1,/progress,GET /api/v1/progress/overview
+APPRENTICE PORTAL - Learning,Apprentice,Progress,Per-learner progress list with risk flag,To Do,1,/progress,GET /api/v1/progress/learners
+APPRENTICE PORTAL - Learning,Apprentice,Progress,Upcoming review and EPA milestone dates,To Do,2,/progress,GET /api/v1/progress/milestones
+APPRENTICE PORTAL - Learning,Apprentice,Reports,"Reports hub (links to sub-reports, saved reports list)",To Do,2,/reports,-
+APPRENTICE PORTAL - Learning,Apprentice,Reports,"Completion report (rates by cohort/period, certificates, leavers)",To Do,2,/reports/completion,GET /api/v1/reports/completion?cohortId=&dateFrom=&dateTo=
+APPRENTICE PORTAL - Learning,Apprentice,Reports,"Engagement report (logins, time on platform, content interactions)",To Do,2,/reports/engagement,GET /api/v1/reports/engagement?cohortId=&dateFrom=&dateTo=
+APPRENTICE PORTAL - Learning,Apprentice,Reports,Export report to CSV or PDF,To Do,3,/reports,POST /api/v1/reports/export
+APPRENTICE PORTAL - Learning,Apprentice,Analytics,"Programme analytics (enrolment trends, pass rates, achievement rates)",To Do,2,/analytics,GET /api/v1/analytics/apprentice/programme?dateFrom=&dateTo=
+APPRENTICE PORTAL - Learning,Apprentice,Analytics,Learner performance distribution (grade histogram),To Do,3,/analytics,GET /api/v1/analytics/apprentice/performance
+APPRENTICE PORTAL - Learning,Apprentice,Profile,Edit profile form + avatar upload + change password,Partial,2,/profile,"PATCH /api/v1/users/me, POST /api/v1/users/me/avatar, POST /api/v1/auth/change-password"
+APPRENTICE PORTAL - Learning,Apprentice,Settings,Notification preferences,To Do,3,/settings,"GET /api/v1/settings/notifications, PATCH /api/v1/settings/notifications"
+EMPLOYER PORTAL - Talent Hub,Employer,Auth,Signup page + form + Zod validation,Done,1,/signup,POST /api/v1/auth/signup
+EMPLOYER PORTAL - Talent Hub,Employer,Auth,Verify email page + auto-verify + resend with 5-min cooldown,Done,1,/verify-email,"POST /api/v1/auth/verify-email, POST /api/v1/auth/resend-verification"
+EMPLOYER PORTAL - Talent Hub,Employer,Auth,Login page + form,Done,1,/login,POST /api/v1/auth/login
+EMPLOYER PORTAL - Talent Hub,Employer,Auth,Forgot password page + form + success state,Done,1,/forgot-password,POST /api/v1/auth/forgot-password
+EMPLOYER PORTAL - Talent Hub,Employer,Auth,Reset password page + form + invalid token state,Done,1,/reset-password,POST /api/v1/auth/reset-password
+EMPLOYER PORTAL - Talent Hub,Employer,Auth,Logout button + session clear,Done,1,-,POST /api/v1/auth/logout
+EMPLOYER PORTAL - Talent Hub,Employer,Auth,getMe query + useAuthUser hook,Done,1,-,GET /api/v1/auth/me
+EMPLOYER PORTAL - Talent Hub,Employer,Organisation,"Create organisation form (name, UKPRN, address, contact, website)",Done,1,/onboarding,POST /api/v1/organisations
+EMPLOYER PORTAL - Talent Hub,Employer,Dashboard,"Dashboard home (layout, quick actions, getting started, org card, profile card)",Done,1,/,-
+EMPLOYER PORTAL - Talent Hub,Employer,Dashboard,"Wire metric cards (Open Positions, New Applications, Active Apprentices, Interviews Booked)",To Do,1,/,GET /api/v1/employer/dashboard/summary
+EMPLOYER PORTAL - Talent Hub,Employer,Dashboard,Getting started checklist wired to real completion states,To Do,2,/,GET /api/v1/employer/onboarding/status
+EMPLOYER PORTAL - Talent Hub,Employer,Jobs,"Job listings table (title, status, applicant count, posted date)",To Do,1,/jobs,GET /api/v1/jobs?status=&page=&limit=
+EMPLOYER PORTAL - Talent Hub,Employer,Jobs,"Create job form (title, description, location, salary, standard, deadline)",To Do,1,/jobs,POST /api/v1/jobs
+EMPLOYER PORTAL - Talent Hub,Employer,Jobs,Edit job form (pre-filled),To Do,1,/jobs/:id,"GET /api/v1/jobs/:id, PATCH /api/v1/jobs/:id"
+EMPLOYER PORTAL - Talent Hub,Employer,Jobs,Publish / archive / close job status action,To Do,1,/jobs/:id,PATCH /api/v1/jobs/:id/status
+EMPLOYER PORTAL - Talent Hub,Employer,Jobs,Delete draft job,To Do,2,/jobs/:id,DELETE /api/v1/jobs/:id
+EMPLOYER PORTAL - Talent Hub,Employer,Jobs,Job detail view with applicant count and stage breakdown,To Do,1,/jobs/:id,GET /api/v1/jobs/:id
+EMPLOYER PORTAL - Talent Hub,Employer,Jobs,Multi-channel job board syndication,To Do,3,/jobs/:id,POST /api/v1/jobs/:id/publish-external
+EMPLOYER PORTAL - Talent Hub,Employer,Applications,All applications list with search and status filter,To Do,1,/applications,GET /api/v1/applications?status=&jobId=&search=&page=
+EMPLOYER PORTAL - Talent Hub,Employer,Applications,Under review applications list,To Do,1,/applications/review,GET /api/v1/applications?status=review
+EMPLOYER PORTAL - Talent Hub,Employer,Applications,Shortlisted applications list,To Do,1,/applications/shortlisted,GET /api/v1/applications?status=shortlisted
+EMPLOYER PORTAL - Talent Hub,Employer,Applications,Rejected applications list,To Do,1,/applications/rejected,GET /api/v1/applications?status=rejected
+EMPLOYER PORTAL - Talent Hub,Employer,Applications,"Application detail (CV, cover letter, contact, timeline)",To Do,1,/applications/:id,"GET /api/v1/applications/:id, GET /api/v1/applications/:id/timeline"
+EMPLOYER PORTAL - Talent Hub,Employer,Applications,Move application stage (review / shortlist / reject / interview),To Do,1,/applications/:id,PATCH /api/v1/applications/:id/status
+EMPLOYER PORTAL - Talent Hub,Employer,Applications,"Interview scheduling (date/time, interviewer, video/room link)",To Do,2,/applications/:id,POST /api/v1/applications/:id/interview
+EMPLOYER PORTAL - Talent Hub,Employer,Applications,Interview feedback / scorecard,To Do,2,/applications/:id/interview,PATCH /api/v1/applications/:id/interview/:iid/feedback
+EMPLOYER PORTAL - Talent Hub,Employer,Applications,Offer letter generation + send + track acceptance,To Do,2,/applications/:id,POST /api/v1/applications/:id/offer
+EMPLOYER PORTAL - Talent Hub,Employer,Applications,Bulk reject / export selected applications,To Do,3,/applications,POST /api/v1/applications/bulk-action
+EMPLOYER PORTAL - Talent Hub,Employer,Apprentices,"Active apprentice roster (name, role, programme, cohort, progress)",To Do,1,/apprentices,GET /api/v1/apprentices?status=&page=
+EMPLOYER PORTAL - Talent Hub,Employer,Apprentices,"Apprentice detail (progress, assessments due, attendance, notes)",To Do,1,/apprentices/:id,"GET /api/v1/apprentices/:id, GET /api/v1/apprentices/:id/progress"
+EMPLOYER PORTAL - Talent Hub,Employer,Apprentices,Invite apprentice by email (send onboarding invite),To Do,2,/apprentices,POST /api/v1/apprentices/invite
+EMPLOYER PORTAL - Talent Hub,Employer,Onboarding,"Onboarding checklist list per apprentice (status, steps)",To Do,2,/onboarding,GET /api/v1/onboarding/checklists
+EMPLOYER PORTAL - Talent Hub,Employer,Onboarding,Mark onboarding step complete / upload document,To Do,2,/onboarding,PATCH /api/v1/onboarding/checklists/:id/step
+EMPLOYER PORTAL - Talent Hub,Employer,Analytics,"Analytics overview (applications over time, funnel, time-to-hire)",To Do,2,/analytics,GET /api/v1/analytics/employer/hiring?dateFrom=&dateTo=
+EMPLOYER PORTAL - Talent Hub,Employer,Analytics,"Hiring funnel (stage conversion rates, drop-off, source breakdown)",To Do,2,/analytics/hiring,GET /api/v1/analytics/employer/hiring
+EMPLOYER PORTAL - Talent Hub,Employer,Analytics,"Cost analytics (cost-per-hire, levy spend, training costs, budget vs actual)",To Do,3,/analytics/cost,GET /api/v1/analytics/employer/cost
+EMPLOYER PORTAL - Talent Hub,Employer,Analytics,"Performance analytics (apprentice completion, attendance, EPA pass rates)",To Do,3,/analytics/performance,GET /api/v1/analytics/employer/performance
+EMPLOYER PORTAL - Talent Hub,Employer,Billing,"Current subscription plan display (plan, renewal date, seats)",To Do,2,/billing,GET /api/v1/billing/subscription
+EMPLOYER PORTAL - Talent Hub,Employer,Billing,Invoice list with PDF download,To Do,2,/billing,GET /api/v1/billing/invoices
+EMPLOYER PORTAL - Talent Hub,Employer,Billing,Add / remove payment methods (Stripe),To Do,2,/billing,"GET /api/v1/billing/payment-methods, POST /api/v1/billing/payment-methods, DELETE /api/v1/billing/payment-methods/:id"
+EMPLOYER PORTAL - Talent Hub,Employer,Billing,Apprenticeship levy balance tracker,To Do,3,/billing,GET /api/v1/billing/levy
+EMPLOYER PORTAL - Talent Hub,Employer,Profile,Edit profile + avatar upload + change password,To Do,2,/profile,"PATCH /api/v1/users/me, POST /api/v1/users/me/avatar, POST /api/v1/auth/change-password"
+EMPLOYER PORTAL - Talent Hub,Employer,Settings,Notification preferences,To Do,3,/settings,"GET /api/v1/settings/notifications, PATCH /api/v1/settings/notifications"
+EMPLOYER PORTAL - Talent Hub,Employer,Settings,"Update organisation details (name, contact, logo)",Done,2,/settings,"PATCH /api/v1/organisations/:id, POST /api/v1/organisations/:id/logo"
+EMPLOYER PORTAL - Talent Hub,Employer,Settings,"Team member management (invite, assign roles, remove)",Partial,2,/settings,"GET /api/v1/organisations/:id/members, POST /api/v1/organisations/:id/members/invite, DELETE /api/v1/organisations/:id/members/:uid"
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Auth,Signup page + form,Done,1,/signup,POST /api/v1/auth/signup
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Auth,Verify email page + resend cooldown,Done,1,/verify-email,"POST /api/v1/auth/verify-email, POST /api/v1/auth/resend-verification"
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Auth,Login page + form,Done,1,/login,POST /api/v1/auth/login
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Auth,Forgot password + Reset password,Done,1,"/forgot-password, /reset-password","POST /api/v1/auth/forgot-password, POST /api/v1/auth/reset-password"
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Auth,Logout,Done,1,-,POST /api/v1/auth/logout
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Organisation,"Create organisation form (name, UKPRN, address, contact)",Done,1,/onboarding,POST /api/v1/organisations
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Dashboard,"Dashboard home (layout, quick actions, getting started, org card)",Done,1,/,-
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Dashboard,"Wire metric cards (Active Learners, Reviews Due, ILR Readiness %, Ofsted Score)",To Do,1,/,GET /api/v1/provider/dashboard/summary
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Cohorts,"Cohort list (name, standard, employer, learner count, status)",New Page,1,/cohort,GET /api/v1/cohorts?page=&status=
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Cohorts,"Create cohort form (standard, employer partner, planned dates)",New Page,1,/cohort,POST /api/v1/cohorts
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Cohorts,"Cohort detail (learners, funding, milestones, progress)",New Page,1,/cohort/:id,GET /api/v1/cohorts/:id
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Cohorts,Assign / remove learners from cohort,New Page,1,/cohort/:id,PATCH /api/v1/cohorts/:id/learners
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,At-Risk,"At-risk learner list (name, cohort, risk reason, RAG level)",New Page,1,/at-risk,GET /api/v1/learners/at-risk
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,At-Risk,Log intervention action per at-risk learner,New Page,1,/at-risk,POST /api/v1/learners/:id/interventions
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,At-Risk,Resolve / update risk flag,New Page,2,/at-risk,PATCH /api/v1/learners/:id/risk-flag
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Ofsted Hub,SAR (Self-Assessment Report) builder with grade inputs per inspection area,New Page,2,/ofsted,"GET /api/v1/ofsted/sar, POST /api/v1/ofsted/sar"
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Ofsted Hub,SAR history (previous submissions),New Page,3,/ofsted,GET /api/v1/ofsted/sar/history
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Ofsted Hub,Inspection readiness checklist,New Page,2,/ofsted,"GET /api/v1/ofsted/checklist, PATCH /api/v1/ofsted/checklist/:id"
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,QIP,"QIP action list (improvement area, owner, target date, RAG status)",New Page,2,/qip,GET /api/v1/qip/actions
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,QIP,Create / edit QIP action + log progress note,New Page,2,/qip,"POST /api/v1/qip/actions, PATCH /api/v1/qip/actions/:id"
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,ILR & DAS,"ILR submission status (return period, deadline, records, errors)",New Page,1,/ilr-das,GET /api/v1/ilr/status
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,ILR & DAS,"ILR data review table (per-learner fields, validation flags)",New Page,1,/ilr-das,GET /api/v1/ilr/records
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,ILR & DAS,Correct ILR record field,New Page,1,/ilr-das,PATCH /api/v1/ilr/records/:id
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,ILR & DAS,Submit ILR return to ESFA,New Page,1,/ilr-das,POST /api/v1/ilr/submit
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,ILR & DAS,"DAS funding summary (claimed, available, co-investment)",New Page,2,/ilr-das,GET /api/v1/das/funding
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Evidence Vault,"Evidence list (upload, tag by type and KSB, search)",New Page,1,/evidence,GET /api/v1/evidence?learnerId=&type=&ksbId=
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Evidence Vault,"Upload evidence document (multipart, tag, link to KSB)",New Page,1,/evidence,POST /api/v1/evidence
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Evidence Vault,"Update evidence metadata (tags, KSB link)",New Page,2,/evidence/:id,PATCH /api/v1/evidence/:id
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Evidence Vault,Delete evidence file,New Page,3,/evidence/:id,DELETE /api/v1/evidence/:id
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Evidence Vault,Download evidence package as ZIP (EPA submission),New Page,2,/evidence,POST /api/v1/evidence/export
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Reviews,Progress review schedule (upcoming and overdue 12-weekly reviews),New Page,1,/reviews,GET /api/v1/reviews
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Reviews,"Conduct / record review form (date, attendees, progress rating, actions, notes)",New Page,1,/reviews,POST /api/v1/reviews
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Reviews,Review history per learner,New Page,2,/reviews,GET /api/v1/reviews/:learnerId
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Reviews,Calendar view of upcoming reviews,New Page,3,/reviews,GET /api/v1/reviews/calendar
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Tutors,"Tutor roster (name, caseload count, assigned learners)",New Page,2,/tutors,GET /api/v1/tutors
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Tutors,Invite tutor by email,New Page,2,/tutors,POST /api/v1/tutors/invite
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Tutors,Assign / reassign learners to tutor,New Page,2,/tutors/:id,PATCH /api/v1/tutors/:id/learners
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Tutors,Remove tutor from organisation,New Page,3,/tutors/:id,DELETE /api/v1/tutors/:id
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Employer Partners,"Employer partner list (linked cohorts, learner count)",New Page,2,/employers,GET /api/v1/provider/employers
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Employer Partners,Invite employer to partner (generate invite link),New Page,2,/employers,POST /api/v1/provider/employers/invite
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Employer Partners,Unlink employer partner,New Page,3,/employers/:id,DELETE /api/v1/provider/employers/:id
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Commitment Statements,"Commitment statement list (learner, status: draft / signed / expired)",New Page,1,/commitment-statements,GET /api/v1/commitment-statements
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Commitment Statements,Generate commitment statement from template,New Page,1,/commitment-statements,POST /api/v1/commitment-statements
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Commitment Statements,Send for digital signing + track signature status,New Page,1,/commitment-statements/:id,POST /api/v1/commitment-statements/:id/send
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Commitment Statements,Download signed PDF,New Page,2,/commitment-statements/:id,GET /api/v1/commitment-statements/:id/download
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,KSB Coverage,"KSB coverage matrix (rows = KSB items, columns = learners, cells = coverage %)",New Page,2,/ksb-coverage,GET /api/v1/ksb-coverage
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,KSB Coverage,Gap highlighting (KSBs with no evidence),New Page,2,/ksb-coverage,GET /api/v1/ksb-coverage/gaps
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,KSB Coverage,Click cell to see linked evidence for learner + KSB,New Page,3,/ksb-coverage,GET /api/v1/ksb-coverage/:learnerId/:ksbId/evidence
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Reports,"Reports hub (ILR summary, Ofsted KPIs, completion, funding)",New Page,2,/reports,GET /api/v1/provider/reports
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Reports,"Generate and download report (ILR, Ofsted, completion, funding)",New Page,2,/reports,"POST /api/v1/provider/reports/generate, GET /api/v1/provider/reports/:id/download"
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Reports,Schedule report for email delivery,New Page,3,/reports,POST /api/v1/provider/reports/schedule
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Profile,Edit profile + avatar upload + change password,To Do,2,/profile,"PATCH /api/v1/users/me, POST /api/v1/users/me/avatar, POST /api/v1/auth/change-password"
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Settings,Notification preferences,To Do,3,/settings,"GET /api/v1/settings/notifications, PATCH /api/v1/settings/notifications"
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Settings,"Update org (UKPRN, Ofsted URN, logo)",To Do,2,/settings,PATCH /api/v1/organisations/:id
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Settings,DAS account connection,To Do,2,/settings,POST /api/v1/organisations/:id/das-connect
+PROVIDER PORTAL - Course Hub (UK Apprenticeship Training Provider),Provider,Settings,"Team member management (invite, roles, remove)",Partial,2,/settings,"GET /api/v1/organisations/:id/members, POST /api/v1/organisations/:id/members/invite, DELETE /api/v1/organisations/:id/members/:uid"
+FLOW PORTAL - Automation,Flow,Auth,Signup page + form,Done,1,/signup,POST /api/v1/auth/signup
+FLOW PORTAL - Automation,Flow,Auth,Verify email page + resend cooldown,Done,1,/verify-email,"POST /api/v1/auth/verify-email, POST /api/v1/auth/resend-verification"
+FLOW PORTAL - Automation,Flow,Auth,"Login, Forgot password, Reset password, Logout",Done,1,"/login, /forgot-password, /reset-password","POST /api/v1/auth/login, /logout, /forgot-password, /reset-password"
+FLOW PORTAL - Automation,Flow,Organisation,Create organisation form,Done,1,/onboarding,POST /api/v1/organisations
+FLOW PORTAL - Automation,Flow,Dashboard,"Dashboard home (layout, quick actions, workspace card)",Done,1,/,-
+FLOW PORTAL - Automation,Flow,Dashboard,"Wire metric cards (Active Flows, Webhook Endpoints, Success Rate, Connections)",To Do,1,/,GET /api/v1/flow/dashboard/summary
+FLOW PORTAL - Automation,Flow,Dashboard,"Rename / replace mismatched sub-page routes (currently /courses, /assessments, etc.)",To Do,1,-,-
+FLOW PORTAL - Automation,Flow,Flows,"Flow list (name, trigger type, last run, status, run count)",To Do,1,/flows,GET /api/v1/flows?status=&page=
+FLOW PORTAL - Automation,Flow,Flows,Toggle flow active / paused,To Do,1,/flows/:id,PATCH /api/v1/flows/:id/status
+FLOW PORTAL - Automation,Flow,Flows,Duplicate flow,To Do,2,/flows/:id,POST /api/v1/flows/:id/duplicate
+FLOW PORTAL - Automation,Flow,Flows,Delete flow,To Do,2,/flows/:id,DELETE /api/v1/flows/:id
+FLOW PORTAL - Automation,Flow,Flows,Flow templates library (browse and use pre-built templates),To Do,3,/flows/templates,GET /api/v1/flows/templates
+FLOW PORTAL - Automation,Flow,Flow Builder,Visual node-based canvas (React Flow or similar),To Do,1,/builder,GET /api/v1/flows/:id/definition
+FLOW PORTAL - Automation,Flow,Flow Builder,"Trigger node (event-based, scheduled/cron, webhook received)",To Do,1,/builder,GET /api/v1/flows/triggers
+FLOW PORTAL - Automation,Flow,Flow Builder,"Action nodes (send email, Slack, Teams, call webhook, update field, create task)",To Do,1,/builder,GET /api/v1/flows/actions
+FLOW PORTAL - Automation,Flow,Flow Builder,Condition / branching node (if/then/else),To Do,2,/builder,-
+FLOW PORTAL - Automation,Flow,Flow Builder,Delay / wait node,To Do,2,/builder,-
+FLOW PORTAL - Automation,Flow,Flow Builder,Loop / iteration node,To Do,3,/builder,-
+FLOW PORTAL - Automation,Flow,Flow Builder,Save and auto-save flow definition,To Do,1,/builder,PUT /api/v1/flows/:id/definition
+FLOW PORTAL - Automation,Flow,Flow Builder,Test flow with sample data (show step-by-step trace),To Do,2,/builder,POST /api/v1/flows/:id/test
+FLOW PORTAL - Automation,Flow,Flow Builder,Node configuration panel (right sidebar for each node type),To Do,1,/builder,-
+FLOW PORTAL - Automation,Flow,Flow Builder,Flow versioning / history and rollback,To Do,3,/builder,"GET /api/v1/flows/:id/versions, POST /api/v1/flows/:id/rollback"
+FLOW PORTAL - Automation,Flow,Connections,"Integration catalog (Slack, Teams, Sheets, Notion, email SMTP, custom API)",To Do,1,/connections,GET /api/v1/connections/catalog
+FLOW PORTAL - Automation,Flow,Connections,"Connected integrations list (name, account, status, last used)",To Do,1,/connections,GET /api/v1/connections
+FLOW PORTAL - Automation,Flow,Connections,"Connect integration (OAuth for Slack/Teams, API key for others)",To Do,1,/connections,POST /api/v1/connections/:type/connect
+FLOW PORTAL - Automation,Flow,Connections,Disconnect / remove integration,To Do,2,/connections/:id,DELETE /api/v1/connections/:id
+FLOW PORTAL - Automation,Flow,Connections,Test connection health,To Do,2,/connections/:id,POST /api/v1/connections/:id/test
+FLOW PORTAL - Automation,Flow,Webhooks,"Webhook endpoint list (URL, secret, created date, last triggered)",To Do,1,/webhooks,GET /api/v1/webhooks
+FLOW PORTAL - Automation,Flow,Webhooks,"Create webhook endpoint (URL, description, event subscriptions)",To Do,1,/webhooks,POST /api/v1/webhooks
+FLOW PORTAL - Automation,Flow,Webhooks,"Webhook delivery log (timestamp, event, payload, response, latency)",To Do,2,/webhooks/:id/deliveries,GET /api/v1/webhooks/:id/deliveries
+FLOW PORTAL - Automation,Flow,Webhooks,Re-trigger failed webhook delivery,To Do,2,/webhooks/:id/deliveries,POST /api/v1/webhooks/:id/deliveries/:did/redeliver
+FLOW PORTAL - Automation,Flow,Webhooks,Rotate webhook signing secret,To Do,3,/webhooks/:id,POST /api/v1/webhooks/:id/rotate-secret
+FLOW PORTAL - Automation,Flow,Activity Logs,"Execution history list (flow name, trigger, started, duration, status)",To Do,1,/activity,GET /api/v1/flows/executions?flowId=&status=&page=
+FLOW PORTAL - Automation,Flow,Activity Logs,Execution detail - step-by-step trace with inputs/outputs per node,To Do,1,/activity/:id,GET /api/v1/flows/executions/:id
+FLOW PORTAL - Automation,Flow,Activity Logs,Error highlighting on failed steps,To Do,2,/activity/:id,-
+FLOW PORTAL - Automation,Flow,Activity Logs,Re-run failed execution,To Do,2,/activity/:id,POST /api/v1/flows/executions/:id/rerun
+FLOW PORTAL - Automation,Flow,Analytics,"Flow analytics (run volume over time, success/failure rate, top flows)",To Do,2,/analytics,GET /api/v1/flow/analytics?dateFrom=&dateTo=
+FLOW PORTAL - Automation,Flow,Analytics,Average execution duration per flow,To Do,3,/analytics,GET /api/v1/flow/analytics/duration
+FLOW PORTAL - Automation,Flow,Reports,"Automation audit report (all executions with outcomes, for compliance)",To Do,3,/reports,POST /api/v1/flow/reports/generate
+FLOW PORTAL - Automation,Flow,Profile,Edit profile + avatar upload + change password,To Do,2,/profile,"PATCH /api/v1/users/me, POST /api/v1/users/me/avatar, POST /api/v1/auth/change-password"
+FLOW PORTAL - Automation,Flow,Settings,Notification preferences,To Do,3,/settings,"GET /api/v1/settings/notifications, PATCH /api/v1/settings/notifications"
+FLOW PORTAL - Automation,Flow,Settings,"API key management (generate, list, revoke)",To Do,2,/settings,"GET /api/v1/api-keys, POST /api/v1/api-keys, DELETE /api/v1/api-keys/:id"
+FLOW PORTAL - Automation,Flow,Settings,Team workspace settings and member management,To Do,2,/settings,"GET /api/v1/organisations/:id/members, POST /api/v1/organisations/:id/members/invite, DELETE /api/v1/organisations/:id/members/:uid"RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Provider/Employer/Flow,Organisation,"Org logo included in create payload (logoUrl optional, added to create schema + RHF-managed in form)",Done,1,create-organisation modal,"POST /api/v1/organisations { ..., logoUrl, portalType }"
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,Storage,Fixed S3 upload: switched XHR to fetch with matching Content-Type; root-caused CORS + bucket/region + presigner CRC32 checksum issues (server-side),Done,1,features/storage/services/,PUT {presigned S3 url}
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,Organisation,"Display org logoUrl via Avatar in Sidebar, User dropdown, Dashboard hero + organisation card (initials fallback)",Done,1,"sidebar, user menu, dashboard",from /api/v1/auth/me (activeOrganisation.organisation.logoUrl)
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,All,UI / Modal,"Standardised Modal: always icon + title + description + close, scrollable body, sticky footer with default Cancel (callers pass action only)",Done,1,components/ui/Modal.jsx,-
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Provider/Employer/Flow,UI / Modal,"Renamed modal consumers to *Modal.jsx convention (CreateOrganisationModal, RevokeInvitationModal); redesigned to standard header",Done,1,features/*/components/,-
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Provider/Employer/Flow,Invitations,"InviteModal: compiler-safe useWatch for role field (replaces watch()), header icon, busy-aware footer",Done,1,/settings/invitations,POST /api/v1/invitations
+RECENTLY COMPLETED - Major API-integrated features shipped this cycle,Provider/Employer/Flow,Organisation,"Org logo included in create payload (logoUrl optional, added to create schema + RHF-managed in form)",Done,1,create-organisation modal,"POST /api/v1/organisations { ..., logoUrl, portalType }"

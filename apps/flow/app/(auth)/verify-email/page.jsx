@@ -32,8 +32,7 @@ export default function VerifyEmailPage() {
         </h1>
         <p className="text-sm sm:text-base leading-relaxed text-[#6b7280]">
           We&apos;ve sent a verification link to your email. Click the link to
-          activate your account, if you&apos;ve already clicked it, we&apos;ll
-          verify you automatically.
+          activate your account.
         </p>
       </div>
 

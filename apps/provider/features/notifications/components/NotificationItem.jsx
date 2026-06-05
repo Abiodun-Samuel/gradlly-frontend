@@ -75,7 +75,9 @@ export function NotificationItem({ notification, onMarkRead, isUpdating }) {
             <span
               aria-label="Unread"
               className="mt-1.5 size-2 shrink-0 rounded-full bg-primary-600"
-            />
+            >
+              {""}
+            </span>
           ) : null}
         </div>
         {body ? (

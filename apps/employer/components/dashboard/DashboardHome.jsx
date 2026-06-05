@@ -274,15 +274,14 @@ function HeroSection({ user, activeOrganisation, greeting }) {
             }}
           >
             <div className="flex min-w-0 items-center gap-3.5">
-              <div
-                className="flex size-11 shrink-0 items-center justify-center rounded-xl text-base font-bold text-white"
-                style={{
-                  background: "rgba(255,255,255,0.14)",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                }}
-              >
-                {orgInitial}
-              </div>
+              <Avatar
+                src={org.logoUrl}
+                initials={orgInitial}
+                alt={`${org.name} logo`}
+                size="xl"
+                shape="square"
+                className="border border-white/15"
+              />
               <div className="min-w-0">
                 <p className="truncate text-sm font-bold text-white sm:text-[15px]">
                   {org.name}
@@ -573,16 +572,26 @@ function CompanyCard({ activeOrganisation }) {
           background: "linear-gradient(135deg, #0d1e3a 0%, #1e3a8a 100%)",
         }}
       >
-        <div
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
-          style={{ backgroundColor: "rgba(255,255,255,0.12)" }}
-        >
-          <Building2
-            className="h-4.5 w-4.5 text-white"
-            strokeWidth={1.75}
-            aria-hidden
+        {org.logoUrl ? (
+          <Avatar
+            src={org.logoUrl}
+            alt={`${org.name} logo`}
+            initials={org.name?.slice(0, 2) ?? ""}
+            size="md"
+            shape="square"
           />
-        </div>
+        ) : (
+          <div
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+            style={{ backgroundColor: "rgba(255,255,255,0.12)" }}
+          >
+            <Building2
+              className="h-4.5 w-4.5 text-white"
+              strokeWidth={1.75}
+              aria-hidden
+            />
+          </div>
+        )}
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold text-white">
             {org.name}

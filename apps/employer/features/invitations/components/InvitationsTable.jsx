@@ -10,7 +10,7 @@ import { cn } from "@/utils/helper";
 
 import { INVITATION_ROLE_LABELS } from "../constants";
 import { InviteModal } from "./InviteModal";
-import { RevokeConfirmDialog } from "./RevokeConfirmDialog";
+import { RevokeInvitationModal } from "./RevokeInvitationModal";
 import {
   useInvitations,
   useResendInvitation,
@@ -286,7 +286,7 @@ export function InvitationsTable() {
       />
 
       <InviteModal open={inviteOpen} onClose={() => setInviteOpen(false)} />
-      <RevokeConfirmDialog
+      <RevokeInvitationModal
         invitation={revokeTarget}
         open={Boolean(revokeTarget)}
         onClose={() => setRevokeTarget(null)}

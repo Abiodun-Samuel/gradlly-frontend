@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Building2, Settings, User } from "lucide-react";
+import { Bell, Building2, LayoutDashboard, User } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
@@ -19,8 +19,8 @@ import {
 // ─── Menu items ───────────────────────────────────────────────────────────────
 
 const MENU_ITEMS = [
+  { label: "Dashboard", icon: LayoutDashboard, href: "/" },
   { label: "Profile", icon: User, href: "/profile" },
-  { label: "Invitations", icon: Settings, href: "/settings/invitations" },
   {
     label: "Notifications",
     icon: Bell,
@@ -64,9 +64,14 @@ function OrgMiniBox({ activeOrganisation }) {
     <div className="px-4 py-3">
       <div className="rounded-xl border border-neutral-200 bg-neutral-50/70 px-3 py-2.5">
         <div className="flex items-center gap-3">
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-primary-500 to-primary-700 text-[13px] font-bold text-white shadow-sm">
-            {initial}
-          </span>
+          <Avatar
+            src={org.logoUrl}
+            initials={initial}
+            alt={`${org.name} logo`}
+            size="sm"
+            shape="square"
+            className="shadow-sm"
+          />
           <div className="min-w-0 flex-1">
             <p className="truncate text-xs font-semibold text-neutral-900">
               {org.name}

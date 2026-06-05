@@ -144,15 +144,13 @@ export function Sidebar({ isOpen, onClose }) {
               }}
             >
               <div className="flex items-center gap-3">
-                <div
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[14px] font-extrabold text-white"
-                  style={{
-                    background:
-                      "linear-gradient(145deg,#22c55e 0%,#15803d 100%)",
-                  }}
-                >
-                  {orgInitial}
-                </div>
+                <Avatar
+                  src={org?.logoUrl}
+                  initials={orgInitial}
+                  alt={`${orgName} logo`}
+                  size="md"
+                  shape="square"
+                />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[12.5px] font-semibold text-white">
                     {orgName}

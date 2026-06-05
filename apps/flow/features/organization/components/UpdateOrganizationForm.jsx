@@ -9,6 +9,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { ServerErrorAlert } from "@/components/error/ServerErrorAlert";
 import { InputField } from "@/components/form/InputField";
 import { SingleSelectField } from "@/components/form/SingleSelectField";
+import { Avatar } from "@/components/ui/Avatar";
 import Button from "@/components/ui/Button";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
@@ -17,6 +18,8 @@ import {
   updateOrganizationDefaultsFromOrg,
   updateOrganizationSchema,
 } from "@/features/organization/schemas";
+import { useUploadFile } from "@/features/storage/queries/storage.query";
+import { STORAGE_CATEGORY } from "@/features/storage/services/storage.service";
 import { applyServerErrors } from "@/lib/errors";
 
 const COUNTRY_OPTIONS = Country.getAllCountries().map((c) => ({
@@ -67,9 +70,23 @@ export function UpdateOrganizationForm() {
     isPending,
     error: serverError,
   } = useUpdateOrganization();
+  const { mutateAsync: saveLogo, isPending: isSavingLogo } =
+    useUpdateOrganization();
+  const { upload, isUploading } = useUploadFile({
+    category: STORAGE_CATEGORY.LOGO,
+    silent: true,
+  });
   const disabled = isSubmitting || isPending;
+  const logoBusy = isUploading || isSavingLogo;
 
   const countryOptions = useMemo(() => COUNTRY_OPTIONS, []);
+
+  // Upload the logo to S3, then persist its durable URL on the organisation.
+  // Throwing reverts the Avatar's optimistic preview.
+  const handleLogoSelect = async (file) => {
+    const logoUrl = await upload(file);
+    await saveLogo({ logoUrl });
+  };
 
   const onSubmit = async (values) => {
     try {
@@ -83,6 +100,34 @@ export function UpdateOrganizationForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6">
       <ServerErrorAlert showFieldList error={serverError} />
+
+      {/* Logo — uploads independently of the form fields below. */}
+      <Card>
+        <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center">
+          <Avatar
+            src={org?.logoUrl}
+            initials={org?.name?.slice(0, 2) ?? ""}
+            alt={`${org?.name ?? "Organisation"} logo`}
+            size="2xl"
+            shape="square"
+            className="ring-2 ring-primary-100"
+            uploadable
+            onFileSelect={handleLogoSelect}
+            loading={logoBusy}
+          />
+          <div className="min-w-0">
+            <h2 className="text-base font-semibold text-neutral-900">
+              Organisation logo
+            </h2>
+            <p className="mt-0.5 text-sm text-neutral-500">
+              Click the logo to upload a new one.
+            </p>
+            <p className="mt-1 text-xs text-neutral-400">
+              PNG, JPG, SVG or WEBP, up to 5&nbsp;MB.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
       <fieldset disabled={disabled} className="contents space-y-6">
         {/* Identity */}
