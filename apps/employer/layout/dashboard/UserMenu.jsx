@@ -7,6 +7,7 @@ import { useEffect, useRef } from "react";
 import { Avatar } from "@/components/ui/Avatar";
 import TextBadge from "@/components/ui/TextBadge";
 import { LogoutButton } from "@/features/auth/components/LogoutButton";
+import { OrgSwitcher } from "@/features/auth/components/OrgSwitcher";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import {
   capitalise,
@@ -185,6 +186,8 @@ export function UserMenu({ open, onClose, anchorRef }) {
       {/* Organisation mini-box */}
       <div className="border-t border-neutral-100">
         <OrgMiniBox activeOrganisation={activeOrganisation} />
+        {/* Switcher appears only when the user has >1 org on this portal */}
+        <OrgSwitcher variant="menu" />
       </div>
 
       {/* Menu items */}

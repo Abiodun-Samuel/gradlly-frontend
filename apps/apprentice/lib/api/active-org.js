@@ -1,22 +1,50 @@
 // ============================================================
-// Active-organisation holder
+// Active-organisation cookie
 // ============================================================
 //
 // The API client is a plain module and cannot read React Query state, yet every
-// authenticated request should carry the caller's active organisation as the
+// authenticated request must carry the caller's active organisation as the
 // `X-Organisation-Id` header — analogous to how `X-Portal-Type` is always sent.
 //
-// We keep the active org id in a tiny module-level holder that is kept in sync
-// with the `me` query (see useAuthUser). The client reads it on each request and
-// attaches the header automatically, while still letting an explicit per-call
-// header override it (e.g. invitations acting on a specific org).
+// We persist the active org id in a first-party JS cookie. This makes it:
+//   • the single source of truth read on every request (no React dependency),
+//   • durable across hard reloads and new tabs of the same portal,
+//   • available to the client before `useMe` resolves on a cold load.
+//
+// `useAuthUser` keeps the cookie in sync with the `me` query, and the org
+// switcher writes it directly before refetching `me`. An explicit per-call
+// header still overrides it (see invitations).
 
-let activeOrgId = null;
+const ACTIVE_ORG_COOKIE = "gradlly_active_org";
+// Persist for a year; the value is non-sensitive (an org id the user belongs to)
+// and the backend still authorises every request against the session.
+const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
 
-export function setActiveOrgId(orgId) {
-  activeOrgId = orgId ?? null;
+function isBrowser() {
+  return typeof document !== "undefined";
 }
 
 export function getActiveOrgId() {
-  return activeOrgId;
+  if (!isBrowser()) return null;
+  const match = document.cookie.match(
+    new RegExp(`(?:^|;\\s*)${ACTIVE_ORG_COOKIE}=([^;]*)`),
+  );
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+export function setActiveOrgId(orgId) {
+  if (!isBrowser()) return;
+
+  // Clearing the cookie (logout / no org) — expire it immediately.
+  if (!orgId) {
+    document.cookie = `${ACTIVE_ORG_COOKIE}=; path=/; max-age=0; SameSite=Lax`;
+    return;
+  }
+
+  // No-op when unchanged so we don't rewrite the cookie on every render.
+  if (getActiveOrgId() === orgId) return;
+
+  document.cookie =
+    `${ACTIVE_ORG_COOKIE}=${encodeURIComponent(orgId)}; ` +
+    `path=/; max-age=${ONE_YEAR_SECONDS}; SameSite=Lax`;
 }

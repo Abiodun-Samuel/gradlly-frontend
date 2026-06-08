@@ -9,6 +9,7 @@ import { GradllyLogo } from "@/assets/svgs/GradllyLogo";
 import { Avatar } from "@/components/ui/Avatar";
 import { NAV_SECTIONS } from "@/data/sidebar.data";
 import { LogoutButton } from "@/features/auth/components/LogoutButton";
+import { OrgSwitcher } from "@/features/auth/components/OrgSwitcher";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import { useRoleAccess } from "@/features/auth/hooks/useRoleAccess";
 import { capitalise, cn, getFullName, getInitials } from "@/utils/helper";
@@ -231,6 +232,9 @@ export function Sidebar({ isOpen, onClose }) {
             </div>
           )}
         </div>
+
+        {/* Organisation switcher (only when the user has >1 org on this portal) */}
+        <OrgSwitcher variant="sidebar" />
 
         {/* Nav */}
         <nav aria-label="Primary navigation" className="sidebar-nav py-2">
