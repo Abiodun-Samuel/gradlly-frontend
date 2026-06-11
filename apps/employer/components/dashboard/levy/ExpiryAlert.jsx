@@ -1,22 +1,21 @@
 "use client";
-// F1.1.2 — Levy Expiry & Funds at Risk Alert
-// Amber if < 90 days · Red if < 30 days · Dismissible per session
 
 import { X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-import { LEVY } from "./data";
 import { fmt } from "./helpers";
 import { T } from "./tokens";
 
 const SESSION_KEY = "levy_expiry_alert_v1";
 
-export function ExpiryAlert() {
+export function ExpiryAlert({ levy }) {
   const [dismissed, setDismissed] = useState(
     () => sessionStorage.getItem(SESSION_KEY) === "1",
   );
-  const days = LEVY.expiringDays;
+
+  const days = levy?.expiringDays ?? 91;
+  const expiring = levy?.expiring ?? 0;
 
   if (dismissed || days > 90) return null;
 
@@ -38,12 +37,11 @@ export function ExpiryAlert() {
         <span className="text-lg mt-px shrink-0">{urgent ? "🔴" : "⚠️"}</span>
         <div className="min-w-0">
           <p className="text-sm font-bold" style={{ color }}>
-            {urgent ? "Urgent" : "Warning"}: {fmt(LEVY.expiring)} expires in{" "}
-            {days} days
+            {urgent ? "Urgent" : "Warning"}: {fmt(expiring)} expires in {days}{" "}
+            days
           </p>
           <p className="text-xs mt-0.5" style={{ color: T.subtle }}>
-            Jun 2025 allocation — allocate before expiry to protect your levy
-            investment.
+            Allocate before expiry to protect your levy investment.
           </p>
         </div>
       </div>

@@ -1,44 +1,62 @@
 "use client";
-// F1.1.3 — Monthly bar chart: contribution vs spend (last 12 months)
 
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 
-import { MONTHLY_BARS } from "./data";
 import { fmt } from "./helpers";
 import { T } from "./tokens";
 
-const MAX = 4000,
-  CH = 90,
+const CH = 90,
   BW = 22,
   GAP = 11,
   YW = 36;
-const avg = Math.round(
-  MONTHLY_BARS.reduce((s, b) => s + b.value, 0) / MONTHLY_BARS.length,
-);
-const totalW = YW + MONTHLY_BARS.length * (BW + GAP) - GAP + 4;
 
-export function MonthlyChart() {
-  const [heights, setHeights] = useState(MONTHLY_BARS.map(() => 0));
+export function MonthlyChart({ levy }) {
+  const bars = useMemo(
+    () => levy?.monthlyBreakdown ?? [],
+    [levy?.monthlyBreakdown],
+  );
+  const [heights, setHeights] = useState(() => bars.map(() => 0));
   const [hovered, setHovered] = useState(null);
 
   useEffect(() => {
-    const t = setTimeout(
-      () => setHeights(MONTHLY_BARS.map((b) => b.value)),
-      350,
-    );
+    const t = setTimeout(() => setHeights(bars.map((b) => b.value ?? 0)), 350);
     return () => clearTimeout(t);
-  }, []);
+  }, [bars]);
+
+  if (bars.length === 0) {
+    return (
+      <Card className="h-full flex flex-col">
+        <CardHeader>
+          <p className="eyebrow">Monthly Levy Drawdown</p>
+          <h2 className="mt-0.5 text-base font-semibold text-neutral-900">
+            Last 8 months
+          </h2>
+        </CardHeader>
+        <CardContent className="flex flex-1 items-center justify-center">
+          <p className="text-sm" style={{ color: T.muted }}>
+            Monthly breakdown not available
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const maxVal = Math.max(...bars.map((b) => b.value ?? 0), 1);
+  const avg = Math.round(
+    bars.reduce((s, b) => s + (b.value ?? 0), 0) / bars.length,
+  );
+  const totalW = YW + bars.length * (BW + GAP) - GAP + 4;
 
   return (
     <Card className="h-full flex flex-col">
       <CardHeader>
         <p className="eyebrow">Monthly Levy Drawdown</p>
         <h2 className="mt-0.5 text-base font-semibold text-neutral-900">
-          Last 8 months
+          Last {bars.length} months
         </h2>
       </CardHeader>
       <CardContent className="flex flex-col flex-1 justify-between">
@@ -50,8 +68,8 @@ export function MonthlyChart() {
             preserveAspectRatio="none"
             style={{ display: "block", minWidth: `${totalW}px` }}
           >
-            {[0, 2000, 4000].map((v) => {
-              const y = CH - (v / MAX) * CH;
+            {[0, Math.round(maxVal / 2), maxVal].map((v) => {
+              const y = CH - (v / maxVal) * CH;
               return (
                 <g key={v}>
                   <text
@@ -62,7 +80,7 @@ export function MonthlyChart() {
                     fill={T.muted}
                     fontFamily="inherit"
                   >
-                    {v ? `£${v / 1000}k` : "£0"}
+                    {v ? `£${Math.round(v / 1000)}k` : "£0"}
                   </text>
                   <line
                     x1={YW}
@@ -78,20 +96,20 @@ export function MonthlyChart() {
             })}
             <line
               x1={YW}
-              y1={CH - (avg / MAX) * CH}
+              y1={CH - (avg / maxVal) * CH}
               x2={totalW}
-              y2={CH - (avg / MAX) * CH}
+              y2={CH - (avg / maxVal) * CH}
               stroke={T.amber}
               strokeWidth="1.5"
               strokeDasharray="4 3"
               opacity="0.7"
             />
-            {MONTHLY_BARS.map((bar, i) => {
+            {bars.map((bar, i) => {
               const x = YW + i * (BW + GAP);
-              const bh = (heights[i] / MAX) * CH;
+              const bh = (heights[i] / maxVal) * CH;
               const isH = hovered === i;
               return (
-                <g key={bar.month}>
+                <g key={bar.month ?? i}>
                   <rect
                     x={x}
                     y={CH - bh}
@@ -126,7 +144,7 @@ export function MonthlyChart() {
                         fontFamily="inherit"
                         fontWeight="600"
                       >
-                        {fmt(bar.value)}
+                        {fmt(bar.value ?? 0)}
                       </text>
                     </g>
                   )}
@@ -139,7 +157,7 @@ export function MonthlyChart() {
                     fontWeight={bar.current ? "700" : "400"}
                     fontFamily="inherit"
                   >
-                    {bar.month}
+                    {bar.month ?? ""}
                   </text>
                 </g>
               );
@@ -149,9 +167,6 @@ export function MonthlyChart() {
         <div className="mt-3 flex items-center justify-between flex-wrap gap-2">
           <p className="text-xs" style={{ color: T.subtle }}>
             Avg: <strong style={{ color: T.ink }}>{fmt(avg)}</strong>
-            <span className="ml-2 font-semibold" style={{ color: T.green }}>
-              ↑ +12% MoM
-            </span>
           </p>
           <Link
             href="/analytics"

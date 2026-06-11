@@ -4,7 +4,6 @@ import { BarChart3, ChevronRight, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-import { LEVY } from "./data";
 import { fmt } from "./helpers";
 import { T } from "./tokens";
 
@@ -27,9 +26,12 @@ function BreakdownRow({ label, value, color }) {
   );
 }
 
-export function BalanceCard({ balance }) {
+export function BalanceCard({ levy }) {
   const [open, setOpen] = useState(false);
-  const bal = balance ?? LEVY.balance;
+  const bal = levy?.balance ?? 0;
+  const committed = levy?.committed ?? 0;
+  const expiring = levy?.expiring ?? 0;
+  const free = levy?.free ?? 0;
 
   return (
     <div
@@ -82,39 +84,41 @@ export function BalanceCard({ balance }) {
           className="px-5 pb-4 pt-3 space-y-2"
           style={{ borderTop: `1px solid ${T.border}` }}
         >
-          <div className="flex h-2 rounded-full overflow-hidden mb-3 gap-0.5">
-            <div
-              style={{
-                width: `${(LEVY.committed / bal) * 100}%`,
-                backgroundColor: T.blue,
-                borderRadius: "4px 0 0 4px",
-              }}
-            />
-            <div
-              style={{
-                width: `${(LEVY.expiring / bal) * 100}%`,
-                backgroundColor: T.amber,
-              }}
-            />
-            <div
-              style={{
-                width: `${(LEVY.free / bal) * 100}%`,
-                backgroundColor: T.green,
-                borderRadius: "0 4px 4px 0",
-              }}
-            />
-          </div>
+          {bal > 0 && (
+            <div className="flex h-2 rounded-full overflow-hidden mb-3 gap-0.5">
+              <div
+                style={{
+                  width: `${(committed / bal) * 100}%`,
+                  backgroundColor: T.blue,
+                  borderRadius: "4px 0 0 4px",
+                }}
+              />
+              <div
+                style={{
+                  width: `${(expiring / bal) * 100}%`,
+                  backgroundColor: T.amber,
+                }}
+              />
+              <div
+                style={{
+                  width: `${(free / bal) * 100}%`,
+                  backgroundColor: T.green,
+                  borderRadius: "0 4px 4px 0",
+                }}
+              />
+            </div>
+          )}
           <BreakdownRow
             label="Committed"
-            value={fmt(LEVY.committed)}
+            value={fmt(committed)}
             color={T.blue}
           />
           <BreakdownRow
             label="Expiring"
-            value={fmt(LEVY.expiring)}
+            value={fmt(expiring)}
             color={T.amber}
           />
-          <BreakdownRow label="Free" value={fmt(LEVY.free)} color={T.green} />
+          <BreakdownRow label="Free" value={fmt(free)} color={T.green} />
           <Link
             href="/billing"
             onClick={(e) => e.stopPropagation()}

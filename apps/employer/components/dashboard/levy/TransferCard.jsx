@@ -4,12 +4,13 @@ import { ArrowRight, PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-import { LEVY, TRANSFERS } from "./data";
 import { fmt } from "./helpers";
 import { T } from "./tokens";
 
-export function TransferCard() {
+export function TransferCard({ levy, transfers = [] }) {
   const [open, setOpen] = useState(false);
+  const transferred = levy?.transferred ?? 0;
+
   return (
     <div
       onClick={() => setOpen((v) => !v)}
@@ -34,20 +35,21 @@ export function TransferCard() {
             className="text-[10px] font-semibold uppercase tracking-wider"
             style={{ color: T.muted }}
           >
-            2 active
+            {transfers.length > 0 ? `${transfers.length} active` : "—"}
           </span>
         </div>
         <p
           className="text-[26px] font-extrabold tabular-nums leading-none"
           style={{ color: T.green }}
         >
-          {fmt(LEVY.transferred)}
+          {fmt(transferred)}
         </p>
         <p className="mt-1.5 text-xs font-semibold" style={{ color: T.muted }}>
           Transferred to SMEs
         </p>
         <p className="mt-2 text-xs" style={{ color: T.subtle }}>
-          2 active transfers this year
+          {transfers.length} active transfer{transfers.length !== 1 ? "s" : ""}{" "}
+          this year
         </p>
       </div>
       <div
@@ -58,30 +60,42 @@ export function TransferCard() {
           className="px-5 pb-4 pt-3 space-y-2.5"
           style={{ borderTop: `1px solid ${T.border}` }}
         >
-          {TRANSFERS.map((t) => (
-            <div key={t.id} className="flex items-center justify-between gap-2">
-              <span
-                className="text-xs font-medium truncate"
-                style={{ color: T.ink }}
+          {transfers.length === 0 ? (
+            <p className="text-xs" style={{ color: T.muted }}>
+              No active transfers
+            </p>
+          ) : (
+            transfers.slice(0, 3).map((t) => (
+              <div
+                key={t.id}
+                className="flex items-center justify-between gap-2"
               >
-                {t.org}
-              </span>
-              <div className="flex items-center gap-1.5 shrink-0">
                 <span
-                  className="text-xs font-bold tabular-nums"
-                  style={{ color: T.green }}
+                  className="text-xs font-medium truncate"
+                  style={{ color: T.ink }}
                 >
-                  {fmt(t.amount)}
+                  {t.recipientOrgName ??
+                    t.org ??
+                    t.recipientName ??
+                    "SME partner"}
                 </span>
-                <span
-                  className="text-[10px] px-1.5 py-0.5 rounded-full font-bold"
-                  style={{ backgroundColor: T.greenLight, color: T.green }}
-                >
-                  {t.stage}
-                </span>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span
+                    className="text-xs font-bold tabular-nums"
+                    style={{ color: T.green }}
+                  >
+                    {fmt(t.amount ?? 0)}
+                  </span>
+                  <span
+                    className="text-[10px] px-1.5 py-0.5 rounded-full font-bold"
+                    style={{ backgroundColor: T.greenLight, color: T.green }}
+                  >
+                    {t.status ?? t.stage ?? "Active"}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
           <Link
             href="/billing"
             onClick={(e) => e.stopPropagation()}

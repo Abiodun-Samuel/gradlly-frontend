@@ -2,60 +2,75 @@
 
 import { CheckCircle2, X } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { toastSuccess } from "@/hooks/useToast";
 
-import { LEVY } from "./data";
 import { fmt } from "./helpers";
 import { T } from "./tokens";
 
-const INITIAL = [
-  {
-    id: "expiry",
-    icon: "🔴",
-    label: `Allocate ${fmt(LEVY.expiring)} before expiry`,
-    detail: "67 days · action required",
-    btn: "Transfer now",
-    href: "/billing",
-    color: T.red,
-  },
-  {
-    id: "surplus",
-    icon: "🟡",
-    label: `Projected surplus of ${fmt(LEVY.projectedSurplus)}`,
-    detail: "Consider new enrolment",
-    btn: "Plan now",
-    href: "/apprentices",
-    color: T.amber,
-  },
-  {
+function buildActions(levy) {
+  const actions = [];
+  const expiring = levy?.expiring ?? 0;
+  const expiringDays = levy?.expiringDays ?? 91;
+  const projectedSurplus = levy?.projectedSurplus ?? 0;
+
+  if (expiring > 0 && expiringDays <= 90) {
+    actions.push({
+      id: "expiry",
+      icon: "🔴",
+      label: `Allocate ${fmt(expiring)} before expiry`,
+      detail: `${expiringDays} days · action required`,
+      btn: "Transfer now",
+      href: "/billing",
+      color: T.red,
+    });
+  }
+
+  if (projectedSurplus > 0) {
+    actions.push({
+      id: "surplus",
+      icon: "🟡",
+      label: `Projected surplus of ${fmt(projectedSurplus)}`,
+      detail: "Consider new enrolment",
+      btn: "Plan now",
+      href: "/apprentices",
+      color: T.amber,
+    });
+  }
+
+  actions.push({
     id: "das",
     icon: "🔵",
-    label: "DAS balance unconfirmed",
-    detail: "Last synced 2 hours ago",
+    label: "Sync DAS balance",
+    detail: "Keep your levy balance up to date",
     btn: "Sync now",
     href: null,
     color: T.blue,
-  },
-];
+  });
 
-export function ActionCentre({ onSync }) {
-  const [actions, setActions] = useState(INITIAL);
+  return actions;
+}
+
+export function ActionCentre({ levy, onSync }) {
+  const initial = useMemo(() => buildActions(levy), [levy]);
+  const [dismissed, setDismissed] = useState(new Set());
   const [dismissing, setDismissing] = useState([]);
+
+  const actions = initial.filter((a) => !dismissed.has(a.id));
 
   function dismiss(id) {
     setDismissing((d) => [...d, id]);
     setTimeout(() => {
-      setActions((a) => a.filter((x) => x.id !== id));
+      setDismissed((s) => new Set([...s, id]));
       setDismissing((d) => d.filter((x) => x !== id));
     }, 320);
   }
 
   function handleDas() {
     onSync?.();
-    toastSuccess("DAS synced");
+    toastSuccess("DAS sync triggered.");
     dismiss("das");
   }
 

@@ -1,16 +1,23 @@
 "use client";
-// F1.1.4 — Levy Transfer Hub: pipeline view + SME matching link
 
 import { ExternalLink, PlusCircle } from "lucide-react";
 import Link from "next/link";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 
-import { LEVY, TRANSFERS } from "./data";
 import { fmt } from "./helpers";
 import { T } from "./tokens";
 
 const STAGES = ["Initiated", "Pending ESFA", "Confirmed", "Active"];
+
+function normaliseStage(status) {
+  const map = {
+    pending: "Initiated",
+    confirmed: "Confirmed",
+    active: "Active",
+  };
+  return map[status?.toLowerCase()] ?? status ?? "Initiated";
+}
 
 function Pipeline({ stage }) {
   const idx = STAGES.indexOf(stage);
@@ -54,8 +61,11 @@ function PipelineLabel({ stage }) {
   );
 }
 
-export function TransferHub() {
-  const transferable = Math.round(LEVY.monthly * 12 * 0.5); // F1.1.4: 50% cap
+export function TransferHub({ levy, transfers = [] }) {
+  const monthly = levy?.monthly ?? 0;
+  const transferred = levy?.transferred ?? 0;
+  const transferable = Math.round(monthly * 12 * 0.5);
+
   return (
     <Card>
       <CardHeader>
@@ -63,7 +73,7 @@ export function TransferHub() {
           <div>
             <p className="eyebrow">Levy Transfer Hub</p>
             <h2 className="mt-0.5 text-base font-semibold text-neutral-900">
-              F1.1.4 · Active SME transfers
+              Active SME transfers
             </h2>
           </div>
           <Link
@@ -98,42 +108,60 @@ export function TransferHub() {
             </p>
           </div>
           <div className="text-right text-xs" style={{ color: T.subtle }}>
-            <p>Used: {fmt(LEVY.transferred)}</p>
-            <p>Remaining: {fmt(transferable - LEVY.transferred)}</p>
+            <p>Used: {fmt(transferred)}</p>
+            <p>Remaining: {fmt(Math.max(0, transferable - transferred))}</p>
           </div>
         </div>
 
-        <div className="space-y-4">
-          {TRANSFERS.map((t) => (
-            <div
-              key={t.id}
-              className="rounded-xl p-3.5 space-y-2"
-              style={{
-                backgroundColor: T.card,
-                border: `1px solid ${T.border}`,
-              }}
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="text-sm font-semibold" style={{ color: T.ink }}>
-                    {t.org}
-                  </p>
-                  <p className="text-xs" style={{ color: T.muted }}>
-                    {t.sector}
-                  </p>
-                </div>
-                <span
-                  className="text-sm font-bold tabular-nums shrink-0"
-                  style={{ color: T.green }}
+        {transfers.length === 0 ? (
+          <p className="text-sm text-center py-4" style={{ color: T.muted }}>
+            No active transfers
+          </p>
+        ) : (
+          <div className="space-y-4">
+            {transfers.map((t) => {
+              const stage = normaliseStage(t.status ?? t.stage);
+              const orgName =
+                t.recipientOrgName ?? t.org ?? t.recipientName ?? "SME partner";
+              const amount = t.amount ?? t.monthlyDrawdown ?? 0;
+              const sector = t.standard ?? t.sector ?? "";
+              return (
+                <div
+                  key={t.id}
+                  className="rounded-xl p-3.5 space-y-2"
+                  style={{
+                    backgroundColor: T.card,
+                    border: `1px solid ${T.border}`,
+                  }}
                 >
-                  {fmt(t.amount)}
-                </span>
-              </div>
-              <Pipeline stage={t.stage} />
-              <PipelineLabel stage={t.stage} />
-            </div>
-          ))}
-        </div>
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p
+                        className="text-sm font-semibold"
+                        style={{ color: T.ink }}
+                      >
+                        {orgName}
+                      </p>
+                      {sector && (
+                        <p className="text-xs" style={{ color: T.muted }}>
+                          {sector}
+                        </p>
+                      )}
+                    </div>
+                    <span
+                      className="text-sm font-bold tabular-nums shrink-0"
+                      style={{ color: T.green }}
+                    >
+                      {fmt(amount)}
+                    </span>
+                  </div>
+                  <Pipeline stage={stage} />
+                  <PipelineLabel stage={stage} />
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         <a
           href="https://flowportal.co.uk"

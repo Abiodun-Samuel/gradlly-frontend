@@ -4,11 +4,8 @@ import { useState } from "react";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 
-import { EXPIRY_MONTHS } from "./data";
 import { fmt, urgencyStyle } from "./helpers";
 import { T } from "./tokens";
-
-const MAX_AMT = Math.max(...EXPIRY_MONTHS.map((m) => m.amount));
 
 function Dot({ color, label }) {
   return (
@@ -24,8 +21,30 @@ function Dot({ color, label }) {
   );
 }
 
-export function ExpiryTimeline({ onExpiryModal }) {
+export function ExpiryTimeline({ expiryCalendar = [], onExpiryModal }) {
   const [hovered, setHovered] = useState(null);
+  const maxAmt = Math.max(...expiryCalendar.map((m) => m.amount ?? 0), 1);
+
+  if (expiryCalendar.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <p className="eyebrow">Levy Expiry Schedule</p>
+          <h2 className="mt-0.5 text-base font-semibold text-neutral-900">
+            Next 24 months
+          </h2>
+        </CardHeader>
+        <CardContent>
+          <div className="h-24 flex items-center justify-center">
+            <p className="text-sm" style={{ color: T.muted }}>
+              No expiry data available
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -33,7 +52,7 @@ export function ExpiryTimeline({ onExpiryModal }) {
           <div>
             <p className="eyebrow">Levy Expiry Schedule</p>
             <h2 className="mt-0.5 text-base font-semibold text-neutral-900">
-              Next 24 months — Apr 2025 to Mar 2027
+              Next 24 months
             </h2>
           </div>
           <div className="flex items-center gap-4 flex-wrap">
@@ -52,11 +71,11 @@ export function ExpiryTimeline({ onExpiryModal }) {
               animation: "levy-slide-in 700ms cubic-bezier(0.16,1,0.3,1) both",
             }}
           >
-            {EXPIRY_MONTHS.map((m, i) => {
+            {expiryCalendar.map((m, i) => {
               const s = urgencyStyle(m.urgency);
               const bh =
                 m.amount > 0
-                  ? Math.max(12, Math.round((m.amount / MAX_AMT) * 60))
+                  ? Math.max(12, Math.round((m.amount / maxAmt) * 60))
                   : 0;
               return (
                 <div

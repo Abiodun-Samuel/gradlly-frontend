@@ -1,5 +1,4 @@
 "use client";
-// F1.1.3 — 12-month spend forecast + F1.1.5 export trigger
 
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -7,7 +6,6 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 
 import { AnimatedBar } from "./AnimatedBar";
-import { LEVY } from "./data";
 import { fmt } from "./helpers";
 import { T } from "./tokens";
 
@@ -30,9 +28,16 @@ function Chip({ icon, label, href, onClick, color, bg }) {
   );
 }
 
-export function YearEndForecast({ onExport }) {
-  const spendPct = Math.round((LEVY.projectedSpend / LEVY.annualPot) * 100);
-  const actualPct = Math.round((LEVY.usedThisYear / LEVY.annualPot) * 100);
+export function YearEndForecast({ levy, onExport }) {
+  const projectedSpend = levy?.projectedSpend ?? 0;
+  const annualPot = levy?.annualPot ?? 0;
+  const usedThisYear = levy?.usedThisYear ?? 0;
+  const projectedSurplus = levy?.projectedSurplus ?? 0;
+
+  const spendPct =
+    annualPot > 0 ? Math.round((projectedSpend / annualPot) * 100) : 0;
+  const actualPct =
+    annualPot > 0 ? Math.round((usedThisYear / annualPot) * 100) : 0;
 
   return (
     <Card className="h-full flex flex-col">
@@ -47,10 +52,10 @@ export function YearEndForecast({ onExport }) {
           {[
             {
               label: "Projected annual spend",
-              val: LEVY.projectedSpend,
+              val: projectedSpend,
               color: T.blue,
             },
-            { label: "Annual levy pot", val: LEVY.annualPot, color: T.muted },
+            { label: "Annual levy pot", val: annualPot, color: T.muted },
           ].map((r) => (
             <div
               key={r.label}
@@ -98,23 +103,25 @@ export function YearEndForecast({ onExport }) {
           </div>
         </div>
 
-        <div
-          className="flex items-center gap-2.5 rounded-xl px-4 py-3.5"
-          style={{
-            backgroundColor: T.greenLight,
-            border: `1px solid ${T.green}18`,
-          }}
-        >
-          <Sparkles className="h-4 w-4 shrink-0" style={{ color: T.green }} />
-          <div>
-            <p className="text-sm font-bold" style={{ color: T.green }}>
-              Projected surplus: {fmt(LEVY.projectedSurplus)}
-            </p>
-            <p className="text-xs" style={{ color: T.green }}>
-              Allocate before year-end
-            </p>
+        {projectedSurplus > 0 && (
+          <div
+            className="flex items-center gap-2.5 rounded-xl px-4 py-3.5"
+            style={{
+              backgroundColor: T.greenLight,
+              border: `1px solid ${T.green}18`,
+            }}
+          >
+            <Sparkles className="h-4 w-4 shrink-0" style={{ color: T.green }} />
+            <div>
+              <p className="text-sm font-bold" style={{ color: T.green }}>
+                Projected surplus: {fmt(projectedSurplus)}
+              </p>
+              <p className="text-xs" style={{ color: T.green }}>
+                Allocate before year-end
+              </p>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="flex flex-wrap gap-2">
           <Chip

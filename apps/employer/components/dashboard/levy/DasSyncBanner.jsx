@@ -1,13 +1,11 @@
 "use client";
-// F1.1.1 — Degraded mode banner when DAS API is unavailable
 
 import { AlertCircle, RefreshCw } from "lucide-react";
 
-import { LEVY } from "./data";
 import { fmt } from "./helpers";
 import { T } from "./tokens";
 
-export function DasSyncBanner({ isDegraded, fmtLastSynced, onSync }) {
+export function DasSyncBanner({ levy, isDegraded, fmtLastSynced, onSync }) {
   if (!isDegraded) return null;
 
   return (
@@ -25,8 +23,8 @@ export function DasSyncBanner({ isDegraded, fmtLastSynced, onSync }) {
             DAS API unavailable — displaying last known data
           </p>
           <p className="text-xs mt-0.5" style={{ color: T.subtle }}>
-            Balance {fmt(LEVY.balance)} accurate as of {fmtLastSynced?.()}. Live
-            sync failed.
+            Balance {fmt(levy?.balance ?? 0)} accurate as of {fmtLastSynced?.()}
+            . Live sync failed.
           </p>
         </div>
       </div>

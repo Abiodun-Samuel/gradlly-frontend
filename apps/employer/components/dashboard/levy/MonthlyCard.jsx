@@ -4,12 +4,15 @@ import { ChevronRight, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-import { LEVY } from "./data";
 import { fmt } from "./helpers";
 import { T } from "./tokens";
 
-export function MonthlyCard() {
+export function MonthlyCard({ levy }) {
   const [open, setOpen] = useState(false);
+  const monthly = levy?.monthly ?? 0;
+  const payroll = levy?.payroll ?? 0;
+  const breakdown = levy?.monthlyBreakdown ?? [];
+
   return (
     <div
       onClick={() => setOpen((v) => !v)}
@@ -41,14 +44,16 @@ export function MonthlyCard() {
           className="text-[26px] font-extrabold tabular-nums leading-none"
           style={{ color: T.ink }}
         >
-          {fmt(LEVY.monthly)}
+          {fmt(monthly)}
         </p>
         <p className="mt-1.5 text-xs font-semibold" style={{ color: T.muted }}>
           Monthly Contribution
         </p>
-        <p className="mt-2 text-xs" style={{ color: T.subtle }}>
-          0.5% of {fmt(LEVY.payroll)} payroll
-        </p>
+        {payroll > 0 && (
+          <p className="mt-2 text-xs" style={{ color: T.subtle }}>
+            0.5% of {fmt(payroll)} payroll
+          </p>
+        )}
       </div>
       <div
         className="overflow-hidden transition-all duration-500"
@@ -58,30 +63,31 @@ export function MonthlyCard() {
           className="px-5 pb-4 pt-3 space-y-2"
           style={{ borderTop: `1px solid ${T.border}` }}
         >
-          {[
-            ["Jan 2025", 4200],
-            ["Feb 2025", 4200],
-            ["Mar 2025", 4200],
-          ].map(([m, v]) => (
-            <div key={m} className="flex justify-between text-xs">
-              <span style={{ color: T.subtle }}>{m}</span>
-              <span className="font-bold tabular-nums" style={{ color: T.ink }}>
-                {fmt(v)}
-              </span>
-            </div>
-          ))}
-          <p
-            className="pt-2 text-xs"
-            style={{ color: T.muted, borderTop: `1px solid ${T.border}` }}
-          >
-            Next deduction:{" "}
-            <strong style={{ color: T.ink }}>19 Apr 2025</strong>
-          </p>
+          {breakdown.length > 0 ? (
+            breakdown.slice(-3).map((b) => (
+              <div key={b.month} className="flex justify-between text-xs">
+                <span style={{ color: T.subtle }}>{b.month}</span>
+                <span
+                  className="font-bold tabular-nums"
+                  style={{ color: T.ink }}
+                >
+                  {fmt(b.value ?? 0)}
+                </span>
+              </div>
+            ))
+          ) : (
+            <p className="text-xs" style={{ color: T.muted }}>
+              No breakdown available
+            </p>
+          )}
           <Link
             href="/billing"
             onClick={(e) => e.stopPropagation()}
-            className="flex items-center gap-1 text-xs font-semibold hover:underline"
-            style={{ color: T.blue }}
+            className="flex items-center gap-1 text-xs font-semibold hover:underline pt-1"
+            style={{
+              color: T.blue,
+              borderTop: `1px solid ${T.border}`,
+            }}
           >
             Payroll settings <ChevronRight className="h-3 w-3" />
           </Link>

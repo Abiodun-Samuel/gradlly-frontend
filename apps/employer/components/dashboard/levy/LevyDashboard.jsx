@@ -2,6 +2,12 @@
 
 import { useState } from "react";
 
+import {
+  useLevyExpiryCalendar,
+  useLevyMatchApplications,
+  useLevySurplus,
+} from "@/features/levy/queries/levy.query";
+
 import { ActionCentre } from "./ActionCentre";
 import { ApprenticeTable } from "./ApprenticeTable";
 import { DasSyncBanner } from "./DasSyncBanner";
@@ -30,6 +36,10 @@ function SectionLabel({ children }) {
 
 export function Dashboard() {
   const das = useDasSync();
+  const { data: levy } = useLevySurplus();
+  const { data: expiryCalendar = [] } = useLevyExpiryCalendar();
+  const { data: matchApplications = [] } = useLevyMatchApplications();
+
   const [expiryModal, setExpiryModal] = useState(false);
   const [exportModal, setExportModal] = useState(false);
   const openExpiry = () => setExpiryModal(true);
@@ -40,54 +50,53 @@ export function Dashboard() {
       className="space-y-8"
       style={{ animation: "slide-up 320ms var(--ease-out) both" }}
     >
-      {/* ── Alerts (conditional, zero height when absent) ── */}
       <div className="space-y-3">
-        <ExpiryAlert />
+        <ExpiryAlert levy={levy} />
         <DasSyncBanner
+          levy={levy}
           isDegraded={das.isDegraded}
           fmtLastSynced={das.fmtLastSynced}
           onSync={das.sync}
         />
       </div>
 
-      {/* ── Overview ── */}
       <section>
         <OverviewPanel
           das={das}
+          levy={levy}
           onExpiryModal={openExpiry}
           onExport={openExport}
         />
       </section>
 
-      {/* ── Analysis ── */}
       <section className="space-y-4">
         <SectionLabel>Analysis</SectionLabel>
-
-        {/* Row 1 — Levy position: current state vs projection (similar heights) */}
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <LevyUtilisation onExpiryModal={openExpiry} />
-          <YearEndForecast onExport={openExport} />
+          <LevyUtilisation levy={levy} onExpiryModal={openExpiry} />
+          <YearEndForecast levy={levy} onExport={openExport} />
         </div>
-
-        {/* Row 2 — Activity detail: trend + per-apprentice breakdown */}
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 items-start">
-          <MonthlyChart />
+          <MonthlyChart levy={levy} />
           <ApprenticeTable />
         </div>
       </section>
 
-      {/* ── Planning ── */}
       <section className="space-y-4">
         <SectionLabel>Planning & Transfers</SectionLabel>
-        <TransferHub />
-        <ExpiryTimeline onExpiryModal={openExpiry} />
+        <TransferHub levy={levy} transfers={matchApplications} />
+        <ExpiryTimeline
+          expiryCalendar={expiryCalendar}
+          onExpiryModal={openExpiry}
+        />
       </section>
 
-      {/* ── Actions ── */}
-      <ActionCentre onSync={das.sync} />
+      <ActionCentre levy={levy} onSync={das.sync} />
 
-      {/* Modals */}
-      <ExpiryModal open={expiryModal} onClose={() => setExpiryModal(false)} />
+      <ExpiryModal
+        open={expiryModal}
+        onClose={() => setExpiryModal(false)}
+        levy={levy}
+      />
       <ExportModal open={exportModal} onClose={() => setExportModal(false)} />
     </div>
   );

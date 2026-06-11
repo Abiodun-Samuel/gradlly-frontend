@@ -2,13 +2,13 @@
 
 import { Clock } from "lucide-react";
 
-import { LEVY } from "./data";
 import { fmt } from "./helpers";
 import { T } from "./tokens";
 
-export function ExpiringCard({ onModal }) {
-  const days = LEVY.expiringDays;
-  const urgent = days < 30;
+export function ExpiringCard({ levy, onModal }) {
+  const days = levy?.expiringDays ?? 0;
+  const expiring = levy?.expiring ?? 0;
+  const urgent = days > 0 && days < 30;
   const color = urgent ? T.red : T.amber;
   const bg = urgent ? T.redLight : T.amberLight;
 
@@ -32,25 +32,29 @@ export function ExpiringCard({ onModal }) {
           >
             <Clock className="h-4 w-4" style={{ color }} />
           </div>
-          <span
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold levy-countdown-pulse"
-            style={{ backgroundColor: bg, color }}
-          >
-            <Clock className="h-3 w-3" /> {days}d left
-          </span>
+          {days > 0 && (
+            <span
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold levy-countdown-pulse"
+              style={{ backgroundColor: bg, color }}
+            >
+              <Clock className="h-3 w-3" /> {days}d left
+            </span>
+          )}
         </div>
         <p
           className="text-[26px] font-extrabold tabular-nums leading-none"
           style={{ color }}
         >
-          {fmt(LEVY.expiring)}
+          {fmt(expiring)}
         </p>
         <p className="mt-1.5 text-xs font-semibold" style={{ color: T.muted }}>
           Expiring Within 90 Days
         </p>
-        <p className="mt-2 text-xs font-medium" style={{ color }}>
-          Jun 2025 · {days} days remaining
-        </p>
+        {days > 0 && (
+          <p className="mt-2 text-xs font-medium" style={{ color }}>
+            {days} days remaining
+          </p>
+        )}
       </div>
     </div>
   );

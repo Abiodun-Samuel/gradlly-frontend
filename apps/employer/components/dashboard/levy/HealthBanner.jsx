@@ -10,20 +10,24 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-import { LEVY } from "./data";
 import { HealthRing } from "./HealthRing";
 import { HealthSignal } from "./HealthSignal";
-import { scoreColor, fmt } from "./helpers";
+import { fmt, scoreColor } from "./helpers";
 import { ImprovePanel } from "./ImprovePanel";
 import { SyncButton } from "./SyncButton";
 import { T } from "./tokens";
 
-export function HealthBanner({ das, onExpiryModal, onExport }) {
+export function HealthBanner({ levy, das, onExpiryModal, onExport }) {
   const [panelOpen, setPanelOpen] = useState(false);
   const ref = useRef(null);
-  const score = LEVY.healthScore;
+
+  const score = levy?.healthScore ?? 0;
   const color = scoreColor(score);
   const label = score < 40 ? "Critical" : score < 70 ? "Moderate" : "Healthy";
+  const usedPct =
+    levy?.annualPot > 0
+      ? Math.round((levy.usedThisYear / levy.annualPot) * 100)
+      : 0;
 
   useEffect(() => {
     const fn = (e) => {
@@ -42,12 +46,7 @@ export function HealthBanner({ das, onExpiryModal, onExport }) {
         borderTop: `3px solid ${color}`,
       }}
     >
-      {/* 3-zone horizontal strip */}
-      <div
-        className="flex flex-col lg:flex-row lg:divide-x"
-        style={{ "--tw-divide-opacity": 1 }}
-      >
-        {/* Zone 1 — Score */}
+      <div className="flex flex-col lg:flex-row lg:divide-x">
         <div
           className="flex items-center gap-4 px-5 py-4 shrink-0"
           style={{ borderRight: `1px solid ${T.border}` }}
@@ -89,30 +88,26 @@ export function HealthBanner({ das, onExpiryModal, onExport }) {
               </span>
             </div>
             <p className="text-xs" style={{ color: T.muted }}>
-              Midlands Engineering Ltd
-            </p>
-            <p className="text-xs" style={{ color: T.muted }}>
               FY 2024/25
             </p>
           </div>
         </div>
 
-        {/* Zone 2 — Signals */}
         <div
           className="flex-1 px-5 py-4 flex flex-col justify-center gap-2"
           style={{ borderRight: `1px solid ${T.border}` }}
         >
           <HealthSignal
             icon={<AlertTriangle className="h-3.5 w-3.5" />}
-            label="Utilisation low"
-            detail="40% used — 5 months left"
-            color={T.amber}
-            bg={T.amberLight}
+            label="Utilisation"
+            detail={`${usedPct}% used`}
+            color={usedPct < 50 ? T.amber : T.green}
+            bg={usedPct < 50 ? T.amberLight : T.greenLight}
           />
           <HealthSignal
             icon={<AlertCircle className="h-3.5 w-3.5" />}
-            label={`${fmt(12400)} expiring`}
-            detail="67 days · unallocated"
+            label={`${fmt(levy?.expiring ?? 0)} expiring`}
+            detail={`${levy?.expiringDays ?? 0} days · unallocated`}
             color={T.red}
             bg={T.redLight}
             onClick={onExpiryModal}
@@ -120,13 +115,12 @@ export function HealthBanner({ das, onExpiryModal, onExport }) {
           <HealthSignal
             icon={<CheckCircle2 className="h-3.5 w-3.5" />}
             label="DAS synced"
-            detail={das ? das.fmtLastSynced() : "2h ago"}
+            detail={das?.fmtLastSynced?.() ?? "—"}
             color={T.green}
             bg={T.greenLight}
           />
         </div>
 
-        {/* Zone 3 — Actions */}
         <div
           className="flex items-center gap-2 px-5 py-4 shrink-0 flex-wrap"
           ref={ref}

@@ -5,7 +5,6 @@ import Link from "next/link";
 
 import { Modal } from "@/components/ui/Modal";
 
-import { LEVY } from "./data";
 import { fmt } from "./helpers";
 import { T } from "./tokens";
 
@@ -62,14 +61,17 @@ function Option({
   );
 }
 
-export function ExpiryModal({ open, onClose }) {
+export function ExpiryModal({ open, onClose, levy }) {
+  const expiring = levy?.expiring ?? 0;
+  const expiringDays = levy?.expiringDays ?? 0;
+
   return (
     <Modal
       open={open}
       onClose={onClose}
       size="md"
       title="Expiring Levy Funds — Action Required"
-      description={`${fmt(LEVY.expiring)} expires 30 Jun 2025 · ${LEVY.expiringDays} days remaining`}
+      description={`${fmt(expiring)} expiring · ${expiringDays} days remaining`}
     >
       <div className="space-y-3">
         <div
