@@ -4,7 +4,7 @@ import { Bell } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { PageSubheader } from "@/components/ui/PageSubheader";
-import { TabNav } from "@/components/ui/TabNav";
+import TabNav from "@/components/ui/TabNav";
 import { NotificationsPanel } from "@/features/notifications/components/NotificationsPanel";
 
 const TABS = [

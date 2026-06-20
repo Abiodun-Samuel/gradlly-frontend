@@ -9,11 +9,13 @@ export function useAuthUser() {
   const activeOrganisation = data?.activeOrganisation ?? null;
   const userRoles = activeOrganisation?.roles ?? [];
   const orgId = activeOrganisation?.organisation?.id ?? null;
+  const memberId = data?.id ?? null;
 
   return {
     user: data ?? null,
     activeOrganisation,
     orgId,
+    memberId,
     userRoles,
     canManageInvitations: userRoles.some((r) => MANAGE_ROLES.has(r)),
     isLoading,

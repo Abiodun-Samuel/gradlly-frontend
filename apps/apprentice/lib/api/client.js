@@ -13,11 +13,15 @@ async function send(path, method, body, opts = {}) {
     url += (path.includes("?") ? "&" : "?") + qs;
   }
 
+  const isFormData = body instanceof FormData;
+
   const headers = new Headers({
     Accept: "application/json",
     "x-gradlly-csrf": "1",
   });
-  if (body !== undefined) headers.set("Content-Type", "application/json");
+  // Let the browser set Content-Type for FormData (it adds the multipart boundary)
+  if (body !== undefined && !isFormData)
+    headers.set("Content-Type", "application/json");
   if (extraHeaders) {
     for (const [key, value] of Object.entries(extraHeaders)) {
       if (value !== null && value !== undefined) headers.set(key, value);
@@ -27,7 +31,12 @@ async function send(path, method, body, opts = {}) {
   const response = await fetch(url, {
     method,
     headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    body:
+      body !== undefined
+        ? isFormData
+          ? body
+          : JSON.stringify(body)
+        : undefined,
     credentials: "include",
     signal,
   });

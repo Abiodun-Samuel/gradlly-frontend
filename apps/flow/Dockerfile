@@ -1,5 +1,15 @@
 ARG NODE_VERSION=20-slim
 
+# ─── Build-time environment variables ──────────────────────────────────────────
+# These NEXT_PUBLIC_* variables are inlined at build time
+ARG NEXT_PUBLIC_PORTAL
+ARG NEXT_PUBLIC_APP_URL
+ARG NEXT_PUBLIC_EMPLOYER_URL
+ARG NEXT_PUBLIC_PROVIDER_URL
+ARG NEXT_PUBLIC_APPRENTICE_URL
+ARG NEXT_PUBLIC_FLOW_URL
+ARG NEXT_PUBLIC_MAIN_URL
+
 # ─── base ─────────────────────────────────────────────────────────────────────
 # Shared foundation for all stages.
 # Centralises npm upgrade, apt dependencies, turbo install, and SSL config
@@ -83,8 +93,24 @@ FROM deps AS builder
 WORKDIR /app
 
 ARG APP_NAME
-COPY --from=pruner /app/out/full/ .
+ARG NEXT_PUBLIC_PORTAL
+ARG NEXT_PUBLIC_APP_URL
+ARG NEXT_PUBLIC_EMPLOYER_URL
+ARG NEXT_PUBLIC_PROVIDER_URL
+ARG NEXT_PUBLIC_APPRENTICE_URL
+ARG NEXT_PUBLIC_FLOW_URL
+ARG NEXT_PUBLIC_MAIN_URL
+
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_PUBLIC_PORTAL=${NEXT_PUBLIC_PORTAL}
+ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
+ENV NEXT_PUBLIC_EMPLOYER_URL=${NEXT_PUBLIC_EMPLOYER_URL}
+ENV NEXT_PUBLIC_PROVIDER_URL=${NEXT_PUBLIC_PROVIDER_URL}
+ENV NEXT_PUBLIC_APPRENTICE_URL=${NEXT_PUBLIC_APPRENTICE_URL}
+ENV NEXT_PUBLIC_FLOW_URL=${NEXT_PUBLIC_FLOW_URL}
+ENV NEXT_PUBLIC_MAIN_URL=${NEXT_PUBLIC_MAIN_URL}
+
+COPY --from=pruner /app/out/full/ .
 RUN npm run build --workspace=apps/${APP_NAME}
 
 # ─── runner ───────────────────────────────────────────────────────────────────
