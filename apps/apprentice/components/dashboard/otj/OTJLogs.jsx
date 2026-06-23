@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-//import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
+import { useLearnerDocuments } from "@/features/otj/queries/otj.query";
+
 import { OTJHeader } from "./OTJHeader";
 import { OTJInfoCard } from "./OTJInfoCard";
 import { OTJLogModal } from "./OTJLogModal";
@@ -25,7 +26,13 @@ const OTJ_DATA = {
 
 export function OTJLogs() {
   const [logOpen, setLogOpen] = useState(false);
-  //const { user } = useAuthUser();
+  const { data: learnerDocuments } = useLearnerDocuments();
+
+  useEffect(() => {
+    if (learnerDocuments !== undefined) {
+      console.log("[/learners/me/documents]", learnerDocuments);
+    }
+  }, [learnerDocuments]);
 
   return (
     <>

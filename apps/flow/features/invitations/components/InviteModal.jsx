@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserPlus } from "lucide-react";
 import { useEffect, useMemo } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 
 import { ServerErrorAlert } from "@/components/error/ServerErrorAlert";
 import { InputField } from "@/components/form/InputField";
@@ -28,7 +28,7 @@ export function InviteModal({ open, onClose }) {
     register,
     handleSubmit,
     setValue,
-    watch,
+    control,
     reset,
     setError,
     formState: { errors, isSubmitting },
@@ -38,7 +38,7 @@ export function InviteModal({ open, onClose }) {
     mode: "onBlur",
   });
 
-  const roleValue = watch("role");
+  const roleValue = useWatch({ control, name: "role" });
   const { mutateAsync, isPending, error: serverError } = useSendInvitation();
   const disabled = isSubmitting || isPending;
 
@@ -59,33 +59,23 @@ export function InviteModal({ open, onClose }) {
     <Modal
       open={open}
       onClose={onClose}
+      busy={disabled}
       size="md"
+      icon={<UserPlus className="size-4.5" strokeWidth={1.85} aria-hidden />}
       title="Invite a team member"
       description="They will receive an email with a secure link to join your organisation."
       footer={
-        <>
-          <Button
-            type="button"
-            color="black"
-            variant="neutral"
-            size="sm"
-            disabled={disabled}
-            onClick={onClose}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            form="invite-form"
-            color="green"
-            size="sm"
-            loading={disabled}
-            disabled={disabled}
-            startIcon={<UserPlus className="size-4" />}
-          >
-            Send invitation
-          </Button>
-        </>
+        <Button
+          type="submit"
+          form="invite-form"
+          color="green"
+          size="sm"
+          loading={disabled}
+          disabled={disabled}
+          startIcon={<UserPlus className="size-4" />}
+        >
+          Send invitation
+        </Button>
       }
     >
       <form

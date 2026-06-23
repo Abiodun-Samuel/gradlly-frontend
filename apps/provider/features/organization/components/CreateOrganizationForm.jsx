@@ -8,7 +8,6 @@ import { useForm, useWatch } from "react-hook-form";
 import { ServerErrorAlert } from "@/components/error/ServerErrorAlert";
 import { InputField } from "@/components/form/InputField";
 import { SingleSelectField } from "@/components/form/SingleSelectField";
-import Button from "@/components/ui/Button";
 import { PORTAL } from "@/config/portal.config";
 import { useCreateOrganization } from "@/features/organization/queries/organizations.query";
 import {
@@ -48,7 +47,11 @@ function getRegionLabel(isoCode) {
   return states.length > 0 ? "State / County" : "City";
 }
 
-export function CreateOrganizationForm({ onSuccess }) {
+export function CreateOrganizationForm({
+  id = "create-org-form",
+  onSuccess,
+  onBusyChange,
+}) {
   const {
     register,
     handleSubmit,
@@ -67,7 +70,14 @@ export function CreateOrganizationForm({ onSuccess }) {
     isPending,
     error: serverError,
   } = useCreateOrganization();
+
   const disabled = isSubmitting || isPending;
+
+  // Surface busy state so a parent (e.g. modal footer submit button) can reflect
+  // it without owning the form.
+  useEffect(() => {
+    onBusyChange?.(disabled);
+  }, [disabled, onBusyChange]);
 
   const selectedCountryCode = useWatch({
     control,
@@ -110,7 +120,12 @@ export function CreateOrganizationForm({ onSuccess }) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
+    <form
+      id={id}
+      onSubmit={handleSubmit(onSubmit)}
+      noValidate
+      className="space-y-4"
+    >
       <ServerErrorAlert showFieldList error={serverError} />
 
       <fieldset disabled={disabled} className="contents space-y-4">
@@ -223,10 +238,6 @@ export function CreateOrganizationForm({ onSuccess }) {
             </p>
           )}
         </div>
-
-        <Button loading={disabled} disabled={disabled} fullWidth type="submit">
-          Create Organisation
-        </Button>
       </fieldset>
     </form>
   );

@@ -14,6 +14,8 @@ import Button from "@/components/ui/Button";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import { useUpdateProfile } from "@/features/auth/queries/auth.query";
+import { useUploadFile } from "@/features/storage/queries/storage.query";
+import { STORAGE_CATEGORY } from "@/features/storage/services/storage.service";
 import { applyServerErrors } from "@/lib/errors";
 import { getFullName, getInitials } from "@/utils/helper";
 
@@ -94,7 +96,21 @@ export function ProfileForm() {
   });
 
   const { mutateAsync, isPending, error: serverError } = useUpdateProfile();
+  const { mutateAsync: updateAvatar, isPending: isSavingAvatar } =
+    useUpdateProfile();
+  const { upload, isUploading } = useUploadFile({
+    category: STORAGE_CATEGORY.AVATAR,
+    silent: true,
+  });
   const disabled = isSubmitting || isPending;
+  const avatarBusy = isUploading || isSavingAvatar;
+
+  // Upload the chosen image to S3, then persist the durable URL on the profile.
+  // Throwing lets the Avatar revert its optimistic preview.
+  const handleAvatarSelect = async (file) => {
+    const avatarUrl = await upload(file);
+    await updateAvatar({ avatarUrl });
+  };
 
   const onSubmit = async (values) => {
     try {
@@ -121,12 +137,19 @@ export function ProfileForm() {
               src={user?.avatarUrl}
               size="xl"
               className="ring-2 ring-primary-100"
+              uploadable
+              onFileSelect={handleAvatarSelect}
+              loading={avatarBusy}
             />
             <div className="min-w-0">
               <p className="truncate text-lg font-semibold text-neutral-900">
                 {fullName}
               </p>
               <p className="truncate text-sm text-neutral-500">{user?.email}</p>
+              <p className="mt-1 text-xs text-neutral-400">
+                Click your photo to upload a new one. PNG, JPG or WEBP, up to
+                5&nbsp;MB.
+              </p>
             </div>
           </div>
         </CardContent>

@@ -1,12 +1,19 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { toastError, toastSuccess } from "@/hooks/useToast";
 import { ERROR_CODES } from "@/lib/errors";
 
 import { OTJ_QUERY_KEYS } from "./keys";
-import { createOtjLog } from "../services/otj.service";
+import { createOtjLog, getLearnerDocuments } from "../services/otj.service";
+
+export function useLearnerDocuments() {
+  return useQuery({
+    queryKey: OTJ_QUERY_KEYS.learnerDocuments(),
+    queryFn: getLearnerDocuments,
+  });
+}
 
 export function useCreateOtjLog() {
   const qc = useQueryClient();

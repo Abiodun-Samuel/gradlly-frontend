@@ -10,6 +10,8 @@ import {
   INVITATION_ROLES,
 } from "../constants";
 
+// Translates a UI role into the backend payload role + optional portal override.
+// "apprentice" is UI-only: it becomes role="member" routed to the apprentice portal.
 function resolveInviteRole(uiRole) {
   if (uiRole === APPRENTICE_ROLE) {
     return {
@@ -20,19 +22,23 @@ function resolveInviteRole(uiRole) {
   return { role: uiRole, portalOverride: null };
 }
 
-function buildHeaders(orgId, portalOverride) {
-  const headers = { "X-Organisation-Id": orgId };
-  if (portalOverride) headers["x-portal-type-override"] = portalOverride;
-  return headers;
+// The active organisation is sent globally via the X-Organisation-Id cookie/
+// header (see lib/api/client). The only header these calls ever set explicitly
+// is the per-request portal override used to route an apprentice invite to the
+// apprentice portal — a genuine override of the always-sent X-Portal-Type.
+function portalOverrideHeaders(portalOverride) {
+  return portalOverride
+    ? { "x-portal-type-override": portalOverride }
+    : undefined;
 }
 
-export async function sendInvitation({ orgId, email, role }) {
+export async function sendInvitation({ email, role }) {
   const { role: payloadRole, portalOverride } = resolveInviteRole(role);
   try {
     const result = await $apiClient.post(
       INVITATION_PATHS.BASE,
       { email, role: payloadRole },
-      { headers: buildHeaders(orgId, portalOverride) },
+      { headers: portalOverrideHeaders(portalOverride) },
     );
     return result.data?.data ?? result.data;
   } catch (e) {
@@ -40,10 +46,9 @@ export async function sendInvitation({ orgId, email, role }) {
   }
 }
 
-export async function listInvitations({ orgId, page = 1, perPage = 20 } = {}) {
+export async function listInvitations({ page = 1, perPage = 20 } = {}) {
   try {
     const result = await $apiClient.get(INVITATION_PATHS.BASE, {
-      headers: buildHeaders(orgId),
       params: { page, perPage },
     });
     return result.data;
@@ -52,12 +57,15 @@ export async function listInvitations({ orgId, page = 1, perPage = 20 } = {}) {
   }
 }
 
-export async function resendInvitation({ orgId, id, portalOverride = null }) {
+// Resend keeps the original invitation intact on the backend (it already stores
+// the role and portal type). We forward the apprentice portal override only when
+// the caller knows this invite was apprentice-routed, so behaviour is preserved.
+export async function resendInvitation({ id, portalOverride = null }) {
   try {
     const result = await $apiClient.post(
       INVITATION_PATHS.resend(id),
       {},
-      { headers: buildHeaders(orgId, portalOverride) },
+      { headers: portalOverrideHeaders(portalOverride) },
     );
     return result.data?.data ?? result.data;
   } catch (e) {
@@ -65,11 +73,9 @@ export async function resendInvitation({ orgId, id, portalOverride = null }) {
   }
 }
 
-export async function revokeInvitation({ orgId, id }) {
+export async function revokeInvitation({ id }) {
   try {
-    await $apiClient.delete(INVITATION_PATHS.revoke(id), {
-      headers: buildHeaders(orgId),
-    });
+    await $apiClient.delete(INVITATION_PATHS.revoke(id));
   } catch (e) {
     throw normalizeApiClientError(e);
   }

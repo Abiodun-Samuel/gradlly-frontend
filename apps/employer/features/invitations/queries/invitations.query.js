@@ -27,8 +27,10 @@ export function useInvitations({ page = 1, perPage = 20, ...options } = {}) {
   const { orgId } = useAuthUser();
 
   return useQuery({
+    // orgId scopes the cache so switching organisations never shows stale rows.
+    // The active org itself travels on the global X-Organisation-Id header.
     queryKey: INVITATION_QUERY_KEYS.list(orgId, page, perPage),
-    queryFn: () => listInvitations({ orgId, page, perPage }),
+    queryFn: () => listInvitations({ page, perPage }),
     enabled: !!orgId,
     placeholderData: keepPreviousData,
     select: (response) => ({
@@ -41,10 +43,9 @@ export function useInvitations({ page = 1, perPage = 20, ...options } = {}) {
 
 export function useSendInvitation() {
   const qc = useQueryClient();
-  const { orgId } = useAuthUser();
 
   return useMutation({
-    mutationFn: ({ email, role }) => sendInvitation({ orgId, email, role }),
+    mutationFn: ({ email, role }) => sendInvitation({ email, role }),
     onSuccess: (data) => {
       toastSuccess(data?.message || "Invitation sent successfully.");
       qc.invalidateQueries({ queryKey: INVITATION_QUERY_KEYS.all() });
@@ -57,10 +58,9 @@ export function useSendInvitation() {
 
 export function useResendInvitation() {
   const qc = useQueryClient();
-  const { orgId } = useAuthUser();
 
   return useMutation({
-    mutationFn: (id) => resendInvitation({ orgId, id }),
+    mutationFn: (id) => resendInvitation({ id }),
     onSuccess: (data) => {
       toastSuccess(data?.message || "Invitation resent.");
       qc.invalidateQueries({ queryKey: INVITATION_QUERY_KEYS.all() });
@@ -73,10 +73,9 @@ export function useResendInvitation() {
 
 export function useRevokeInvitation() {
   const qc = useQueryClient();
-  const { orgId } = useAuthUser();
 
   return useMutation({
-    mutationFn: (id) => revokeInvitation({ orgId, id }),
+    mutationFn: (id) => revokeInvitation({ id }),
     onSuccess: () => {
       toastSuccess("Invitation revoked.");
       qc.invalidateQueries({ queryKey: INVITATION_QUERY_KEYS.all() });
