@@ -97,7 +97,12 @@
       "Bash(Remove-Item \"c:/Users/taiwo/Music/2025/gradlly-frontend/apps/apprentice/components/ui/FileUpload/useFileUpload.ts\" -Force)",
       "Bash(Remove-Item \"c:/Users/taiwo/Music/2025/gradlly-frontend/apps/apprentice/components/ui/FileUpload/types.ts\" -Force)",
       "Bash(Remove-Item \"c:/Users/taiwo/Music/2025/gradlly-frontend/apps/apprentice/components/ui/FileUpload/index.ts\" -Force)",
-      "Bash(Remove-Item \"c:/Users/taiwo/Music/2025/gradlly-frontend/apps/apprentice/lib/storage/index.ts\" -Force)"
+      "Bash(Remove-Item \"c:/Users/taiwo/Music/2025/gradlly-frontend/apps/apprentice/lib/storage/index.ts\" -Force)",
+      "Bash(pnpm --filter apprentice dev)",
+      "Bash(rm -rf \"c:/Users/taiwo/Music/2025/gradlly-frontend/apps/apprentice/.next\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\taiwo\\Music\\2025\\gradlly-frontend\\apps\\apprentice\\.next"
     ]
   }
 }
