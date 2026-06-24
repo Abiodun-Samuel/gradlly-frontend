@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-import { APPRENTICES } from "./data";
+import { useApprenticeRoster } from "@/features/apprentices/queries/apprentices.query";
+
 import { EnrolDrawer } from "./EnrolDrawer";
 import { OTJAlert } from "./OTJAlert";
 import { ProfilePanel } from "./ProfilePanel";
@@ -19,26 +20,51 @@ export function ApprenticesDashboard() {
   const [contact, setContact] = useState(null);
   const [enrol, setEnrol] = useState(false);
 
-  const visible = APPRENTICES.filter((a) => {
-    const q = search.toLowerCase();
-    const matchSearch =
-      search === "" ||
-      a.name.toLowerCase().includes(q) ||
-      a.standard.toLowerCase().includes(q) ||
-      a.provider.toLowerCase().includes(q) ||
-      (a.employeeId ?? "").toLowerCase().includes(q);
+  const { roster, isLoading } = useApprenticeRoster();
 
-    return matchSearch;
-  });
+  const atRisk = useMemo(
+    () => roster.filter((a) => a.status === "at_risk"),
+    [roster],
+  );
+
+  const searchLower = search.toLowerCase();
+  const visible = useMemo(
+    () =>
+      roster.filter((a) => {
+        if (search === "") return true;
+        return (
+          a.name.toLowerCase().includes(searchLower) ||
+          a.standard.toLowerCase().includes(searchLower) ||
+          a.provider.toLowerCase().includes(searchLower) ||
+          (a.employeeId ?? "").toLowerCase().includes(searchLower)
+        );
+      }),
+    [roster, search, searchLower],
+  );
+
+  if (isLoading) {
+    return (
+      <div
+        className="flex items-center justify-center py-24"
+        style={{ color: T.muted }}
+      >
+        <p className="text-sm">Loading apprentices…</p>
+      </div>
+    );
+  }
 
   return (
     <div
       className="space-y-5"
       style={{ animation: "slide-up 320ms var(--ease-out) both" }}
     >
-      <OTJAlert onContact={setContact} onViewProfile={setProfile} />
+      <OTJAlert
+        atRisk={atRisk}
+        onContact={setContact}
+        onViewProfile={setProfile}
+      />
 
-      <StatCards onFilter={setFilter} />
+      <StatCards roster={roster} onFilter={setFilter} />
 
       {filter !== "all" && (
         <div className="flex items-center gap-2">

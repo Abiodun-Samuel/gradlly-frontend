@@ -1,8 +1,8 @@
 "use client";
+
 import { T } from "@/components/dashboard/levy/tokens";
 
 import { CommitmentRow } from "./CommitmentRow";
-import { STATEMENTS } from "./data";
 
 function filterStatements(statements, filter) {
   if (filter === "signed")
@@ -23,17 +23,21 @@ const COL = ({ children, w, right }) => (
   </div>
 );
 
-export function CommitmentList({ filter = "all" }) {
-  const visible = filterStatements(STATEMENTS, filter);
+export function CommitmentList({
+  statements = [],
+  filter = "all",
+  onSign,
+  onView,
+}) {
+  const visible = filterStatements(statements, filter);
+
   return (
     <div
       className="rounded-2xl overflow-hidden"
       style={{ backgroundColor: T.surface, border: `1px solid ${T.border}` }}
     >
       <div className="overflow-x-auto">
-        {/* min-width ensures horizontal scroll kicks in before content crushes */}
         <div style={{ minWidth: 640 }}>
-          {/* Header */}
           <div
             className="flex items-center gap-3 px-4 py-2.5"
             style={{
@@ -54,17 +58,24 @@ export function CommitmentList({ filter = "all" }) {
             </COL>
           </div>
 
-          {/* Rows */}
-          {visible.map((s, i) => (
-            <CommitmentRow key={s.id} statement={s} index={i} />
-          ))}
-
-          {visible.length === 0 && (
+          {visible.length === 0 ? (
             <div className="py-12 text-center">
               <p className="text-sm font-semibold" style={{ color: T.muted }}>
-                No statements match this filter
+                {statements.length === 0
+                  ? "No commitment statements yet"
+                  : "No statements match this filter"}
               </p>
             </div>
+          ) : (
+            visible.map((s, i) => (
+              <CommitmentRow
+                key={s.id}
+                statement={s}
+                index={i}
+                onSign={onSign}
+                onView={onView}
+              />
+            ))
           )}
         </div>
       </div>

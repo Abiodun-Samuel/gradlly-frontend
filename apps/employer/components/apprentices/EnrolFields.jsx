@@ -1,6 +1,14 @@
 import { T } from "./tokens";
 
-export function Field({ id, label, type = "text", placeholder, hint }) {
+export function Field({
+  id,
+  label,
+  type = "text",
+  placeholder,
+  hint,
+  value,
+  onChange,
+}) {
   return (
     <div className="space-y-1.5">
       <label
@@ -14,6 +22,8 @@ export function Field({ id, label, type = "text", placeholder, hint }) {
         id={id}
         type={type}
         placeholder={placeholder}
+        value={value ?? ""}
+        onChange={(e) => onChange?.(id, e.target.value)}
         className="w-full rounded-xl px-3 py-2.5 text-sm border focus:outline-none focus:ring-2 focus:ring-blue-200"
         style={{
           borderColor: T.border,
@@ -30,7 +40,7 @@ export function Field({ id, label, type = "text", placeholder, hint }) {
   );
 }
 
-export function Select({ label, options }) {
+export function Select({ label, name, options, value, onChange }) {
   return (
     <div className="space-y-1.5">
       <label
@@ -40,6 +50,8 @@ export function Select({ label, options }) {
         {label}
       </label>
       <select
+        value={value ?? ""}
+        onChange={(e) => onChange?.(name, e.target.value)}
         className="w-full rounded-xl px-3 py-2.5 text-sm border focus:outline-none"
         style={{
           borderColor: T.border,
@@ -48,9 +60,15 @@ export function Select({ label, options }) {
         }}
       >
         <option value="">Select…</option>
-        {options.map((o) => (
-          <option key={o}>{o}</option>
-        ))}
+        {options.map((o) => {
+          const val = typeof o === "string" ? o : o.value;
+          const text = typeof o === "string" ? o : o.label;
+          return (
+            <option key={val} value={val}>
+              {text}
+            </option>
+          );
+        })}
       </select>
     </div>
   );

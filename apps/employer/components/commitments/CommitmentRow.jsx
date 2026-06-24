@@ -1,4 +1,5 @@
 "use client";
+
 import { MoreHorizontal } from "lucide-react";
 
 import { T } from "@/components/dashboard/levy/tokens";
@@ -12,9 +13,8 @@ function rowStyle(status) {
   return { bg: T.surface, bl: "3px solid transparent" };
 }
 
-export function CommitmentRow({ statement, index }) {
+export function CommitmentRow({ statement, index, onSign, onView }) {
   const {
-    id,
     apprentice,
     standard,
     provider,
@@ -36,7 +36,7 @@ export function CommitmentRow({ statement, index }) {
       }}
     >
       <div className="flex items-center gap-3 px-4 py-4">
-        {/* Apprentice — fixed 200px to match header */}
+        {/* Apprentice — fixed 200px */}
         <div
           className="shrink-0 flex items-center gap-3"
           style={{ width: 200 }}
@@ -57,13 +57,15 @@ export function CommitmentRow({ statement, index }) {
             <p className="text-[11px] truncate" style={{ color: T.muted }}>
               {standard}
             </p>
-            <button
-              type="button"
-              className="text-[11px] font-medium hover:underline truncate max-w-full block"
-              style={{ color: T.blue }}
-            >
-              {provider}
-            </button>
+            {provider !== "—" && (
+              <button
+                type="button"
+                className="text-[11px] font-medium hover:underline truncate max-w-full block"
+                style={{ color: T.blue }}
+              >
+                {provider}
+              </button>
+            )}
           </div>
         </div>
 
@@ -73,24 +75,19 @@ export function CommitmentRow({ statement, index }) {
             {startDate}
           </p>
           <p
-            className="text-[9px] uppercase tracking-wider mt-0.5"
+            className="text-[9px] uppercase tracking-wider mt-0.5 font-mono truncate"
             style={{ color: T.muted }}
           >
-            {id}
+            {statement.id.slice(0, 8)}…
           </p>
           <span
-            title={
-              statement.version > 1
-                ? `Original signed ${statement.originalSignedDate ?? ""} · Renewed ${statement.renewedDate ?? ""}`
-                : undefined
-            }
             className="text-[10px] font-bold px-1.5 py-0.5 rounded mt-1 inline-block"
             style={{
               backgroundColor: statement.version > 1 ? T.amberLight : T.card,
               color: statement.version > 1 ? T.amber : T.muted,
             }}
           >
-            v{statement.version ?? 1}
+            v{statement.version}
           </span>
         </div>
 
@@ -117,6 +114,7 @@ export function CommitmentRow({ statement, index }) {
             <>
               <button
                 type="button"
+                onClick={() => onSign?.(statement)}
                 className="px-3 py-1.5 rounded-lg text-xs font-bold hover:opacity-80 transition-opacity whitespace-nowrap"
                 style={{ backgroundColor: T.amber, color: "#fff" }}
               >
@@ -124,6 +122,7 @@ export function CommitmentRow({ statement, index }) {
               </button>
               <button
                 type="button"
+                onClick={() => onView?.(statement)}
                 className="px-3 py-1.5 rounded-lg text-xs font-semibold border hover:opacity-80 transition-opacity whitespace-nowrap"
                 style={{ borderColor: T.border2, color: T.subtle }}
               >
@@ -134,6 +133,7 @@ export function CommitmentRow({ statement, index }) {
           {status === "draft" && (
             <button
               type="button"
+              onClick={() => onView?.(statement)}
               className="px-3 py-1.5 rounded-lg text-xs font-bold hover:opacity-80 transition-opacity whitespace-nowrap"
               style={{ backgroundColor: T.blue, color: "#fff" }}
             >
@@ -144,6 +144,7 @@ export function CommitmentRow({ statement, index }) {
             <>
               <button
                 type="button"
+                onClick={() => onView?.(statement)}
                 className="px-3 py-1.5 rounded-lg text-xs font-semibold hover:opacity-80 transition-opacity whitespace-nowrap"
                 style={{ backgroundColor: T.blueLight, color: T.blue }}
               >

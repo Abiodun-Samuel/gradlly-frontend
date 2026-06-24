@@ -45,9 +45,12 @@ function lastActivityColor(dateStr) {
 export function RosterRow({ a, index, onView, onContact, isFiltered }) {
   const isOverdue = a.status === "overdue";
   const isAtRisk = a.status === "at_risk";
-  const isEpaNear = a.epaDaysLeft < 60;
+  const isEpaNear = a.epaDaysLeft !== null && a.epaDaysLeft < 60;
   const epa = epaDays(a.epaDaysLeft);
-  const attColor = attendanceColor(a.attendance);
+  const attColor =
+    a.attendance !== null && a.attendance !== undefined
+      ? attendanceColor(a.attendance)
+      : T.muted;
   const actColor = lastActivityColor(a.lastActivity);
   const accentColor = isOverdue
     ? T.red
@@ -153,15 +156,21 @@ export function RosterRow({ a, index, onView, onContact, isFiltered }) {
         </div>
       </td>
       <td className="px-4 py-3 hidden md:table-cell">
-        <div className="flex items-center gap-1.5">
-          <span
-            className="h-2 w-2 rounded-full shrink-0"
-            style={{ backgroundColor: attColor }}
-          />
-          <span className="text-xs tabular-nums" style={{ color: T.ink }}>
-            {a.attendance}%
+        {a.attendance !== null && a.attendance !== undefined ? (
+          <div className="flex items-center gap-1.5">
+            <span
+              className="h-2 w-2 rounded-full shrink-0"
+              style={{ backgroundColor: attColor }}
+            />
+            <span className="text-xs tabular-nums" style={{ color: T.ink }}>
+              {a.attendance}%
+            </span>
+          </div>
+        ) : (
+          <span className="text-xs" style={{ color: T.muted }}>
+            —
           </span>
-        </div>
+        )}
       </td>
       <td className="px-4 py-3 hidden lg:table-cell">
         <div className="flex items-center gap-1.5">

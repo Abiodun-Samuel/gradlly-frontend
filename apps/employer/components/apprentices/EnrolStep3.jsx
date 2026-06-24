@@ -1,19 +1,5 @@
 import { T } from "./tokens";
 
-const SUMMARY = [
-  ["Standard", "Software Developer L4"],
-  ["Provider", "Birmingham Met College"],
-  ["Start date", "01 Sep 2025"],
-  ["Cohort", "2025-A"],
-  ["Funding", "£18,000 — levy funded"],
-];
-
-const CHECKS = [
-  { ok: true, text: "Levy funds available (£35,850 available)" },
-  { ok: true, text: "Provider selected" },
-  { ok: false, text: "Commitment statement generated after submission" },
-];
-
 const STAGES = [
   { label: "Invited", desc: "Magic-link sent to apprentice" },
   { label: "Account created", desc: "Apprentice registered on Portal 3" },
@@ -63,17 +49,36 @@ function StageTracker({ activeStage = 0 }) {
   );
 }
 
-export function EnrolStep3() {
+export function EnrolStep3({ data }) {
+  const fullName = [data.firstName, data.lastName].filter(Boolean).join(" ");
+
+  const summary = [
+    ["Name", fullName || "—"],
+    ["Email", data.email || "—"],
+    ["Standard", data.standard || "—"],
+    ["Provider", data.provider || "—"],
+    ["Start date", data.startDate || "—"],
+    ["Cohort", data.cohort || "—"],
+  ];
+
+  const checks = [
+    { ok: !!fullName, text: "Learner name provided" },
+    { ok: !!data.email, text: "Email address provided" },
+    { ok: !!data.standard, text: "Apprenticeship standard selected" },
+    { ok: !!data.provider, text: "Training provider selected" },
+    { ok: false, text: "Commitment statement generated after submission" },
+  ];
+
   return (
     <div className="space-y-4">
       <p className="text-sm font-semibold" style={{ color: T.ink }}>
-        Review & submit
+        Review &amp; submit
       </p>
       <div
         className="rounded-xl px-4 py-3 space-y-2"
         style={{ backgroundColor: T.card, border: `1px solid ${T.border}` }}
       >
-        {SUMMARY.map(([l, v]) => (
+        {summary.map(([l, v]) => (
           <div key={l} className="flex justify-between text-xs">
             <span style={{ color: T.muted }}>{l}</span>
             <span className="font-semibold" style={{ color: T.ink }}>
@@ -89,7 +94,7 @@ export function EnrolStep3() {
           border: `1px solid ${T.green}20`,
         }}
       >
-        {CHECKS.map((c) => (
+        {checks.map((c) => (
           <p
             key={c.text}
             className="text-xs font-medium"

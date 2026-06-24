@@ -33,12 +33,12 @@ export function MonthlyChart({ levy }) {
         <CardHeader>
           <p className="eyebrow">Monthly Levy Drawdown</p>
           <h2 className="mt-0.5 text-base font-semibold text-neutral-900">
-            Last 8 months
+            No drawdown data yet
           </h2>
         </CardHeader>
         <CardContent className="flex flex-1 items-center justify-center">
           <p className="text-sm" style={{ color: T.muted }}>
-            Monthly breakdown not available
+            Monthly breakdown will appear once levy activity begins
           </p>
         </CardContent>
       </Card>

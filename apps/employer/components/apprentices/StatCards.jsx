@@ -2,7 +2,6 @@
 
 import { AlertTriangle, BookOpen, CalendarCheck, Users } from "lucide-react";
 
-import { APPRENTICES } from "./data";
 import { T } from "./tokens";
 
 function Card({ icon, accent, bg, value, label, sub, badge, pulse, onClick }) {
@@ -43,23 +42,27 @@ function Card({ icon, accent, bg, value, label, sub, badge, pulse, onClick }) {
   );
 }
 
-export function StatCards({ onFilter }) {
-  const epaImm = APPRENTICES.filter((a) => a.epaDaysLeft < 90);
-  const atRisk = APPRENTICES.filter((a) => a.status === "at_risk");
-  const connorDays = APPRENTICES.find((a) => a.id === "CW")?.epaDaysLeft;
+export function StatCards({ roster = [], onFilter }) {
+  const epaImm = roster.filter(
+    (a) => a.epaDaysLeft !== null && a.epaDaysLeft < 90,
+  );
+  const atRisk = roster.filter((a) => a.status === "at_risk");
+  const soonest = epaImm.sort(
+    (a, b) => (a.epaDaysLeft ?? 0) - (b.epaDaysLeft ?? 0),
+  )[0];
 
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
       <Card
         icon={<Users className="h-4 w-4" />}
-        value={APPRENTICES.length}
+        value={roster.length}
         label="Active apprentices"
-        sub="Across 3 providers"
+        sub="In your organisation"
         onClick={() => onFilter?.("all")}
       />
       <Card
         icon={<BookOpen className="h-4 w-4" />}
-        value={APPRENTICES.filter((a) => a.status === "on_track").length}
+        value={roster.filter((a) => a.status === "on_track").length}
         label="On track"
         sub="Progressing well"
         onClick={() => onFilter?.("on_track")}
@@ -69,30 +72,38 @@ export function StatCards({ onFilter }) {
         value={atRisk.length}
         label="At risk"
         sub="OTJ or review concern"
-        pulse
+        pulse={atRisk.length > 0}
         onClick={() => onFilter?.("at_risk")}
         badge={
-          <span
-            className="text-[10px] font-bold px-2 py-0.5 rounded-full levy-countdown-pulse"
-            style={{ backgroundColor: T.amberLight, color: T.amber }}
-          >
-            OTJ
-          </span>
+          atRisk.length > 0 ? (
+            <span
+              className="text-[10px] font-bold px-2 py-0.5 rounded-full levy-countdown-pulse"
+              style={{ backgroundColor: T.amberLight, color: T.amber }}
+            >
+              OTJ
+            </span>
+          ) : null
         }
       />
       <Card
         icon={<CalendarCheck className="h-4 w-4" />}
         value={epaImm.length}
         label="EPA this quarter"
-        sub={`Connor Walsh · ${connorDays} days`}
+        sub={
+          soonest
+            ? `${soonest.name} · ${soonest.epaDaysLeft}d`
+            : "No upcoming EPAs"
+        }
         onClick={() => onFilter?.("epa_imminent")}
         badge={
-          <span
-            className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-            style={{ backgroundColor: T.redLight, color: T.red }}
-          >
-            {connorDays}d
-          </span>
+          soonest ? (
+            <span
+              className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+              style={{ backgroundColor: T.redLight, color: T.red }}
+            >
+              {soonest.epaDaysLeft}d
+            </span>
+          ) : null
         }
       />
     </div>

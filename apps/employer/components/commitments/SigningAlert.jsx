@@ -1,9 +1,24 @@
 "use client";
+
 import { X } from "lucide-react";
+import { useState } from "react";
 
 import { T } from "@/components/dashboard/levy/tokens";
 
-export function SigningAlert({ onSignNow, onViewDoc, onDismiss }) {
+const KEY = "signing_alert_v1";
+
+export function SigningAlert({ statement, onSignNow, onViewDoc }) {
+  const [dismissed, setDismissed] = useState(
+    () => sessionStorage.getItem(KEY) === statement?.id,
+  );
+
+  if (!statement || dismissed) return null;
+
+  const dismiss = () => {
+    sessionStorage.setItem(KEY, statement.id);
+    setDismissed(true);
+  };
+
   return (
     <div
       className="rounded-xl overflow-hidden"
@@ -23,14 +38,14 @@ export function SigningAlert({ onSignNow, onViewDoc, onDismiss }) {
           </span>
           <div className="min-w-0">
             <p className="text-sm font-semibold" style={{ color: T.blue }}>
-              Action required — Amara Diallo · CS-003
+              Action required — {statement.apprentice.name}
             </p>
             <p
               className="mt-1 text-xs leading-relaxed"
               style={{ color: T.subtle }}
             >
-              WMG Academy (Sunita Patel) has signed on 28 Dec 2023. Amara has
-              signed on 27 Dec 2023. Your signature is the final step.
+              This commitment statement is awaiting your signature as the final
+              step before it becomes fully compliant.
             </p>
             <div className="mt-2.5 flex items-center gap-2 flex-wrap">
               <button
@@ -54,7 +69,7 @@ export function SigningAlert({ onSignNow, onViewDoc, onDismiss }) {
         </div>
         <button
           type="button"
-          onClick={onDismiss}
+          onClick={dismiss}
           className="flex h-6 w-6 items-center justify-center rounded-md hover:bg-blue-100 transition-colors shrink-0"
           aria-label="Dismiss"
         >

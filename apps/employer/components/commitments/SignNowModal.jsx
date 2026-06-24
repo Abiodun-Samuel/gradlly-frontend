@@ -88,7 +88,9 @@ function DrawCanvas({ onHasDrawing }) {
   );
 }
 
-export function SignNowModal({ open, onClose }) {
+export function SignNowModal({ open, onClose, statement }) {
+  const apprenticeName = statement?.apprentice?.name ?? "Apprentice";
+  const statementRef = statement?.id?.slice(0, 8) ?? "";
   const [sigTab, setSigTab] = useState("draw");
   const [agreed, setAgreed] = useState(false);
   const [typedName, setTypedName] = useState("");
@@ -101,7 +103,7 @@ export function SignNowModal({ open, onClose }) {
     if (!canSign) return;
     setSigned(true);
     setTimeout(() => {
-      toastSuccess("Commitment statement signed — CS-003");
+      toastSuccess(`Commitment statement signed — ${apprenticeName}`);
       onClose();
     }, 900);
   };
@@ -111,8 +113,10 @@ export function SignNowModal({ open, onClose }) {
       open={open}
       onClose={onClose}
       size="md"
-      title="Sign commitment statement — Amara Diallo"
-      description="Accounting Technician L4 · WMG Academy · CS-003"
+      title={`Sign commitment statement — ${apprenticeName}`}
+      description={
+        statementRef ? `Statement ${statementRef}…` : "Commitment statement"
+      }
       footer={
         <>
           <button

@@ -3,18 +3,16 @@
 import { AlertTriangle, X } from "lucide-react";
 import { useState } from "react";
 
-import { APPRENTICES } from "./data";
 import { T } from "./tokens";
 
 const KEY = "otj_alert_v1";
-const AT_RISK = APPRENTICES.filter((a) => a.status === "at_risk");
 
-export function OTJAlert({ onContact, onViewProfile }) {
+export function OTJAlert({ atRisk = [], onContact, onViewProfile }) {
   const [dismissed, setDismissed] = useState(
     () => sessionStorage.getItem(KEY) === "1",
   );
 
-  if (dismissed) return null;
+  if (dismissed || atRisk.length === 0) return null;
 
   const dismiss = () => {
     sessionStorage.setItem(KEY, "1");
@@ -40,7 +38,8 @@ export function OTJAlert({ onContact, onViewProfile }) {
             style={{ color: T.amber }}
           />
           <p className="text-xs font-semibold" style={{ color: T.amber }}>
-            OTJ alert — {AT_RISK.length} learners behind expected pace
+            OTJ alert — {atRisk.length} learner{atRisk.length !== 1 ? "s" : ""}{" "}
+            behind expected pace
           </p>
         </div>
         <button
@@ -53,8 +52,13 @@ export function OTJAlert({ onContact, onViewProfile }) {
         </button>
       </div>
 
-      {AT_RISK.map((a, i) => {
-        const gap = a.otjActual - a.otjExpected;
+      {atRisk.map((a, i) => {
+        const hasOtj =
+          a.otjActual !== null &&
+          a.otjActual !== undefined &&
+          a.otjExpected !== null &&
+          a.otjExpected !== undefined;
+        const gap = hasOtj ? a.otjActual - a.otjExpected : null;
         return (
           <div
             key={a.id}
@@ -80,19 +84,27 @@ export function OTJAlert({ onContact, onViewProfile }) {
               className="flex-1 text-xs tabular-nums"
               style={{ color: T.muted }}
             >
-              <span className="font-semibold" style={{ color: T.subtle }}>
-                {a.otjActual}%
-              </span>{" "}
-              actual &nbsp;·&nbsp;
-              <span>{a.otjExpected}%</span> expected
+              {hasOtj ? (
+                <>
+                  <span className="font-semibold" style={{ color: T.subtle }}>
+                    {a.otjActual}%
+                  </span>{" "}
+                  actual &nbsp;·&nbsp;
+                  <span>{a.otjExpected}%</span> expected
+                </>
+              ) : (
+                "OTJ pace: at risk"
+              )}
             </p>
 
-            <span
-              className="text-[11px] font-bold px-2 py-0.5 rounded-md tabular-nums shrink-0"
-              style={{ backgroundColor: T.redLight, color: T.red }}
-            >
-              {gap}%
-            </span>
+            {gap !== null && (
+              <span
+                className="text-[11px] font-bold px-2 py-0.5 rounded-md tabular-nums shrink-0"
+                style={{ backgroundColor: T.redLight, color: T.red }}
+              >
+                {gap}%
+              </span>
+            )}
 
             <div className="flex items-center gap-4 shrink-0">
               <button

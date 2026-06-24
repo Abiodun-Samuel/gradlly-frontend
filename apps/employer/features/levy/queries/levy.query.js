@@ -22,6 +22,7 @@ export function useLevySurplus() {
     queryFn: () => getLevy({ orgId }),
     enabled: !!orgId,
     staleTime: 5 * 60 * 1000,
+    meta: { skipAuthRedirect: true },
     select: (response) => response?.data ?? response ?? null,
   });
 }
@@ -34,6 +35,7 @@ export function useLevyExpiryCalendar() {
     queryFn: () => getExpiryCalendar({ orgId }),
     enabled: !!orgId,
     staleTime: 60 * 60 * 1000,
+    meta: { skipAuthRedirect: true },
     select: (response) =>
       Array.isArray(response?.data)
         ? response.data
@@ -51,6 +53,7 @@ export function useDonorLinks() {
     queryFn: () => getDonorLinks({ orgId }),
     enabled: !!orgId,
     staleTime: 5 * 60 * 1000,
+    meta: { skipAuthRedirect: true },
     select: (response) =>
       Array.isArray(response?.data)
         ? response.data
@@ -85,6 +88,7 @@ export function useLevyMatchApplications() {
     queryFn: () => getMatchApplications({ orgId }),
     enabled: !!orgId,
     staleTime: 2 * 60 * 1000,
+    meta: { skipAuthRedirect: true },
     select: (response) =>
       Array.isArray(response?.data)
         ? response.data

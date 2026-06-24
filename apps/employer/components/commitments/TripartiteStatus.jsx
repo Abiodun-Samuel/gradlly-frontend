@@ -1,14 +1,15 @@
 "use client";
+
 import { T } from "@/components/dashboard/levy/tokens";
 
 function badge(info, isDraft) {
   if (isDraft) return { bg: T.card, color: T.muted, text: "Awaiting" };
-  if (info?.signed)
-    return {
-      bg: T.greenLight,
-      color: T.green,
-      text: `✓ ${info.name.split(" ")[0]} · ${info.date}`,
-    };
+  if (info?.signed) {
+    const name = info.name ? info.name.split(" ")[0] : null;
+    const date = info.date ?? null;
+    const text = name && date ? `✓ ${name} · ${date}` : "✓ Signed";
+    return { bg: T.greenLight, color: T.green, text };
+  }
   return { bg: T.amberLight, color: T.amber, text: "⏳ Pending" };
 }
 

@@ -1,4 +1,5 @@
 "use client";
+
 import { T } from "@/components/dashboard/levy/tokens";
 
 function Card({ value, label, sub, accent, bg, badge, footer, pulse }) {
@@ -32,45 +33,71 @@ function Card({ value, label, sub, accent, bg, badge, footer, pulse }) {
   );
 }
 
-export function CommitmentStatCards() {
+export function CommitmentStatCards({ statements = [] }) {
+  const signed = statements.filter((s) => s.status === "signed");
+  const pending = statements.filter((s) => s.status === "pending_employer");
+  const drafts = statements.filter((s) => s.status === "draft");
+
+  const firstPending = pending[0];
+  const firstDraft = drafts[0];
+
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       <Card
-        value={3}
+        value={signed.length}
         label="Fully signed"
         sub="All parties countersigned"
         accent={T.green}
-        footer={<span style={{ color: T.green }}>✓ Fully ESFA compliant</span>}
+        footer={
+          signed.length > 0 ? (
+            <span style={{ color: T.green }}>✓ Fully ESFA compliant</span>
+          ) : null
+        }
       />
       <Card
-        value={1}
+        value={pending.length}
         label="Pending your signature"
-        sub="Amara Diallo — awaiting you"
+        sub={
+          firstPending
+            ? `${firstPending.apprentice.name} — awaiting you`
+            : "No pending signatures"
+        }
         accent={T.amber}
-        bg={T.amberLight}
-        pulse
+        bg={pending.length > 0 ? T.amberLight : undefined}
+        pulse={pending.length > 0}
         badge={
-          <span
-            className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-            style={{ backgroundColor: `${T.amber}22`, color: T.amber }}
-          >
-            90 days
-          </span>
+          pending.length > 0 ? (
+            <span
+              className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+              style={{ backgroundColor: `${T.amber}22`, color: T.amber }}
+            >
+              Action
+            </span>
+          ) : null
         }
         footer={
-          <span style={{ color: T.amber }}>
-            Apprenticeship started 01 Jan 2024 · 90 days unsigned
-          </span>
+          pending.length > 0 ? (
+            <span style={{ color: T.amber }}>
+              {pending.length} statement{pending.length !== 1 ? "s" : ""}{" "}
+              awaiting your signature
+            </span>
+          ) : null
         }
       />
       <Card
-        value={1}
+        value={drafts.length}
         label="In draft"
-        sub="Tom Griffiths — incomplete"
+        sub={
+          firstDraft
+            ? `${firstDraft.apprentice.name} — incomplete`
+            : "No drafts"
+        }
         accent={T.border2}
         bg={T.card}
         footer={
-          <span style={{ color: T.amber }}>⚠ Non-compliant until signed</span>
+          drafts.length > 0 ? (
+            <span style={{ color: T.amber }}>⚠ Non-compliant until signed</span>
+          ) : null
         }
       />
     </div>

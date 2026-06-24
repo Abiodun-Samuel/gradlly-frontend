@@ -7,12 +7,30 @@ import { T } from "./tokens";
 
 export function OtjBar({ actual, expected, delay = 0 }) {
   const [width, setWidth] = useState(0);
-  const color = otjColor(actual, expected);
+
+  const hasData =
+    actual !== null &&
+    actual !== undefined &&
+    expected !== null &&
+    expected !== undefined;
+
+  const color = hasData ? otjColor(actual, expected) : T.muted;
 
   useEffect(() => {
+    if (!hasData) return;
     const t = setTimeout(() => setWidth(actual), 100 + delay);
     return () => clearTimeout(t);
-  }, [actual, delay]);
+  }, [actual, delay, hasData]);
+
+  if (!hasData) {
+    return (
+      <div className="min-w-[110px]">
+        <p className="text-[10px] tabular-nums" style={{ color: T.muted }}>
+          —
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-w-[110px]">

@@ -1,62 +1,26 @@
 "use client";
+
 import { Download } from "lucide-react";
 
 import { T } from "@/components/dashboard/levy/tokens";
 
-const R = 22,
-  C = +(2 * Math.PI * R).toFixed(2),
-  PCT = 60;
-const FILLED = +((PCT / 100) * C).toFixed(2);
+const R = 22;
+const C = +(2 * Math.PI * R).toFixed(2);
 
-const DOTS = [T.green, T.green, T.amber, T.muted, T.green];
-const STATS = [
-  { val: "3", label: "Signed", color: T.green },
-  { val: "1", label: "Pending", color: T.amber },
-  { val: "1", label: "Draft", color: T.muted },
-];
-const ACTIONS = [
-  {
-    color: T.red,
-    initials: "AD",
-    avatarColor: "#b85c0a",
-    name: "Amara Diallo",
-    id: "CS-003",
-    desc: "Awaiting your signature — final step",
-    cta: "Sign now",
-    ctaBg: T.amber,
-  },
-  {
-    color: T.amber,
-    initials: "TG",
-    avatarColor: "#1847d4",
-    name: "Tom Griffiths",
-    id: "CS-004",
-    desc: "Draft not sent — apprenticeship non-compliant",
-    cta: "Complete draft",
-    ctaBg: T.blue,
-  },
-  {
-    color: T.blue,
-    initials: "CW",
-    avatarColor: "#7c3aed",
-    name: "Connor Walsh",
-    id: "CS-005",
-    desc: "Renewal needed — EPA rescheduled to Jul 2025",
-    cta: "Review",
-    ctaBg: null,
-  },
-];
+function ActionRow({ statement, onSignNow }) {
+  const { apprentice, status } = statement;
+  const isPending = status === "pending_employer";
+  const isDraft = status === "draft";
 
-function ActionRow({
-  color,
-  initials,
-  avatarColor,
-  name,
-  id,
-  desc,
-  cta,
-  ctaBg,
-}) {
+  const color = isPending ? T.red : isDraft ? T.amber : T.blue;
+  const desc = isPending
+    ? "Awaiting your signature — final step"
+    : isDraft
+      ? "Draft not sent — apprenticeship non-compliant"
+      : "Renewal needed";
+  const cta = isPending ? "Sign now" : isDraft ? "Complete draft" : "Review";
+  const ctaBg = isPending ? T.amber : isDraft ? T.blue : null;
+
   return (
     <div
       className="flex items-center gap-4 px-5 py-3.5"
@@ -67,17 +31,17 @@ function ActionRow({
     >
       <div
         className="h-8 w-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0"
-        style={{ backgroundColor: avatarColor }}
+        style={{ backgroundColor: apprentice.avatarColor }}
       >
-        {initials}
+        {apprentice.initials}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-2">
           <p className="text-xs font-semibold" style={{ color: T.ink }}>
-            {name}
+            {apprentice.name}
           </p>
           <span className="text-[10px] font-mono" style={{ color: T.muted }}>
-            {id}
+            {statement.id.slice(0, 8)}…
           </span>
         </div>
         <p className="text-[11px] mt-0.5" style={{ color: T.subtle }}>
@@ -87,6 +51,7 @@ function ActionRow({
       {ctaBg ? (
         <button
           type="button"
+          onClick={() => isPending && onSignNow?.(statement)}
           className="px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 hover:opacity-80 transition-opacity"
           style={{ backgroundColor: ctaBg, color: "#fff" }}
         >
@@ -105,13 +70,30 @@ function ActionRow({
   );
 }
 
-export function ComplianceBanner() {
+export function ComplianceBanner({ statements = [], onSignNow }) {
+  const total = statements.length;
+  const signed = statements.filter((s) => s.status === "signed").length;
+  const pending = statements.filter(
+    (s) => s.status === "pending_employer",
+  ).length;
+  const drafts = statements.filter((s) => s.status === "draft").length;
+  const pct = total === 0 ? 0 : Math.round((signed / total) * 100);
+
+  const FILLED = +((pct / 100) * C).toFixed(2);
+  const ringColor = pct === 100 ? T.green : pct >= 60 ? T.amber : T.red;
+
+  // Action rows: pending + draft + renewals (excluding already signed)
+  const actionStatements = statements.filter(
+    (s) =>
+      s.status === "pending_employer" || s.status === "draft" || s.needsRenewal,
+  );
+
   return (
     <div
       className="rounded-2xl overflow-hidden"
       style={{ backgroundColor: T.surface, border: `1px solid ${T.border}` }}
     >
-      {/* ── Score header ─────────────────────────────────── */}
+      {/* Score header */}
       <div
         className="flex items-center gap-5 px-5 py-4 flex-wrap"
         style={{ borderBottom: `1px solid ${T.border}` }}
@@ -138,7 +120,7 @@ export function ComplianceBanner() {
               cy="28"
               r={R}
               fill="none"
-              stroke={T.amber}
+              stroke={ringColor}
               strokeWidth="5"
               strokeLinecap="round"
               strokeDasharray={`${FILLED} ${C}`}
@@ -149,29 +131,38 @@ export function ComplianceBanner() {
           </svg>
           <span
             className="text-sm font-extrabold tabular-nums"
-            style={{ color: T.amber }}
+            style={{ color: ringColor }}
           >
-            {PCT}%
+            {pct}%
           </span>
         </div>
 
-        {/* Label + dots */}
+        {/* Label */}
         <div className="shrink-0">
           <p className="text-sm font-bold" style={{ color: T.ink }}>
-            3 of 5 fully compliant
+            {signed} of {total} fully compliant
           </p>
           <p className="text-[11px] mt-0.5" style={{ color: T.muted }}>
             Commitment statements · ESFA
           </p>
-          <div className="flex items-center gap-1 mt-2">
-            {DOTS.map((d, i) => (
-              <span
-                key={i}
-                className="h-2 w-2 rounded-full"
-                style={{ backgroundColor: d }}
-              />
-            ))}
-          </div>
+          {total > 0 && (
+            <div className="flex items-center gap-1 mt-2">
+              {statements.map((s) => (
+                <span
+                  key={s.id}
+                  className="h-2 w-2 rounded-full"
+                  style={{
+                    backgroundColor:
+                      s.status === "signed"
+                        ? T.green
+                        : s.status === "pending_employer"
+                          ? T.amber
+                          : T.muted,
+                  }}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         <div
@@ -181,7 +172,11 @@ export function ComplianceBanner() {
 
         {/* Quick stats */}
         <div className="flex items-center gap-6 flex-1 flex-wrap">
-          {STATS.map((s) => (
+          {[
+            { val: signed, label: "Signed", color: T.green },
+            { val: pending, label: "Pending", color: T.amber },
+            { val: drafts, label: "Draft", color: T.muted },
+          ].map((s) => (
             <div key={s.label}>
               <p
                 className="text-2xl font-extrabold tabular-nums leading-none"
@@ -208,10 +203,18 @@ export function ComplianceBanner() {
         </button>
       </div>
 
-      {/* ── Action rows ───────────────────────────────────── */}
-      {ACTIONS.map((a) => (
-        <ActionRow key={a.id} {...a} />
+      {/* Action rows */}
+      {actionStatements.map((s) => (
+        <ActionRow key={s.id} statement={s} onSignNow={onSignNow} />
       ))}
+
+      {actionStatements.length === 0 && total > 0 && (
+        <div className="px-5 py-4">
+          <p className="text-xs font-semibold" style={{ color: T.green }}>
+            ✓ All commitment statements are fully signed and compliant.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
