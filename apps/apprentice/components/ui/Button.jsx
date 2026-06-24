@@ -112,7 +112,7 @@ const ICON_ONLY_SIZE = {
 };
 
 const BASE =
-  "inline-flex items-center justify-center font-medium leading-none tracking-tight " +
+  "inline-flex items-center justify-center font-medium leading-[1.2] tracking-[-0.01em] " +
   "rounded-lg border transition-all duration-150 ease-out " +
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 " +
   "disabled:pointer-events-none disabled:opacity-40 " +
@@ -166,7 +166,9 @@ function ButtonInner({ children, startIcon, endIcon, loading, size }) {
           className={cn(spinnerSize, "shrink-0 animate-spin")}
           strokeWidth={2}
         />
-        {children !== null && <span className="truncate">{children}</span>}
+        {children !== null && (
+          <span className="whitespace-nowrap">{children}</span>
+        )}
       </>
     );
   }
@@ -174,7 +176,9 @@ function ButtonInner({ children, startIcon, endIcon, loading, size }) {
   return (
     <>
       {startIcon && <IconSlot size={size}>{startIcon}</IconSlot>}
-      {children !== null && <span className="truncate">{children}</span>}
+      {children !== null && (
+        <span className="whitespace-nowrap">{children}</span>
+      )}
       {endIcon && <IconSlot size={size}>{endIcon}</IconSlot>}
     </>
   );

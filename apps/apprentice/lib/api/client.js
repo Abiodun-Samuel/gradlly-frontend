@@ -14,6 +14,8 @@ async function send(path, method, body, opts = {}) {
     url += (path.includes("?") ? "&" : "?") + qs;
   }
 
+  const isFormData = body instanceof FormData;
+
   const headers = new Headers({
     Accept: "application/json",
     "x-gradlly-csrf": "1",
@@ -34,7 +36,12 @@ async function send(path, method, body, opts = {}) {
   const response = await fetch(url, {
     method,
     headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    body:
+      body !== undefined
+        ? isFormData
+          ? body
+          : JSON.stringify(body)
+        : undefined,
     credentials: "include",
     signal,
   });

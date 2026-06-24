@@ -1,9 +1,15 @@
 # docker-compose.dev.yml
 services:
-
   main-app:
     build:
       target: dev-deps
+      args:
+        NEXT_PUBLIC_PORTAL: main
+        NEXT_PUBLIC_EMPLOYER_URL: http://localhost:3002
+        NEXT_PUBLIC_PROVIDER_URL: http://localhost:3004
+        NEXT_PUBLIC_APPRENTICE_URL: http://localhost:3001
+        NEXT_PUBLIC_FLOW_URL: http://localhost:3003
+        NEXT_PUBLIC_MAIN_URL: http://localhost:3005
     volumes:
       - .:/app
       # Anonymous volumes prevent the host mount from overwriting the
@@ -18,10 +24,23 @@ services:
       - NEXT_TELEMETRY_DISABLED=1
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
+      - NEXT_PUBLIC_PORTAL=main
+      - NEXT_PUBLIC_EMPLOYER_URL=http://localhost:3002
+      - NEXT_PUBLIC_PROVIDER_URL=http://localhost:3004
+      - NEXT_PUBLIC_APPRENTICE_URL=http://localhost:3001
+      - NEXT_PUBLIC_FLOW_URL=http://localhost:3003
+      - NEXT_PUBLIC_MAIN_URL=http://localhost:3005
 
   employer-app:
     build:
       target: dev-deps
+      args:
+        NEXT_PUBLIC_PORTAL: employer
+        NEXT_PUBLIC_EMPLOYER_URL: http://localhost:3002
+        NEXT_PUBLIC_PROVIDER_URL: http://localhost:3004
+        NEXT_PUBLIC_APPRENTICE_URL: http://localhost:3001
+        NEXT_PUBLIC_FLOW_URL: http://localhost:3003
+        NEXT_PUBLIC_MAIN_URL: http://localhost:3005
     volumes:
       - .:/app
       - /app/node_modules
@@ -32,10 +51,23 @@ services:
       - NEXT_TELEMETRY_DISABLED=1
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
+      - NEXT_PUBLIC_PORTAL=employer
+      - NEXT_PUBLIC_EMPLOYER_URL=http://localhost:3002
+      - NEXT_PUBLIC_PROVIDER_URL=http://localhost:3004
+      - NEXT_PUBLIC_APPRENTICE_URL=http://localhost:3001
+      - NEXT_PUBLIC_FLOW_URL=http://localhost:3003
+      - NEXT_PUBLIC_MAIN_URL=http://localhost:3005
 
   provider-app:
     build:
       target: dev-deps
+      args:
+        NEXT_PUBLIC_PORTAL: provider
+        NEXT_PUBLIC_EMPLOYER_URL: http://localhost:3002
+        NEXT_PUBLIC_PROVIDER_URL: http://localhost:3004
+        NEXT_PUBLIC_APPRENTICE_URL: http://localhost:3001
+        NEXT_PUBLIC_FLOW_URL: http://localhost:3003
+        NEXT_PUBLIC_MAIN_URL: http://localhost:3005
     volumes:
       - .:/app
       - /app/node_modules
@@ -46,10 +78,23 @@ services:
       - NEXT_TELEMETRY_DISABLED=1
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
+      - NEXT_PUBLIC_PORTAL=provider
+      - NEXT_PUBLIC_EMPLOYER_URL=http://localhost:3002
+      - NEXT_PUBLIC_PROVIDER_URL=http://localhost:3004
+      - NEXT_PUBLIC_APPRENTICE_URL=http://localhost:3001
+      - NEXT_PUBLIC_FLOW_URL=http://localhost:3003
+      - NEXT_PUBLIC_MAIN_URL=http://localhost:3005
 
   apprentice-app:
     build:
       target: dev-deps
+      args:
+        NEXT_PUBLIC_PORTAL: apprentice
+        NEXT_PUBLIC_EMPLOYER_URL: http://localhost:3002
+        NEXT_PUBLIC_PROVIDER_URL: http://localhost:3004
+        NEXT_PUBLIC_APPRENTICE_URL: http://localhost:3001
+        NEXT_PUBLIC_FLOW_URL: http://localhost:3003
+        NEXT_PUBLIC_MAIN_URL: http://localhost:3005
     volumes:
       - .:/app
       - /app/node_modules
@@ -60,10 +105,23 @@ services:
       - NEXT_TELEMETRY_DISABLED=1
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
+      - NEXT_PUBLIC_PORTAL=apprentice
+      - NEXT_PUBLIC_EMPLOYER_URL=http://localhost:3002
+      - NEXT_PUBLIC_PROVIDER_URL=http://localhost:3004
+      - NEXT_PUBLIC_APPRENTICE_URL=http://localhost:3001
+      - NEXT_PUBLIC_FLOW_URL=http://localhost:3003
+      - NEXT_PUBLIC_MAIN_URL=http://localhost:3005
 
   flow-app:
     build:
       target: dev-deps
+      args:
+        NEXT_PUBLIC_PORTAL: flow
+        NEXT_PUBLIC_EMPLOYER_URL: http://localhost:3002
+        NEXT_PUBLIC_PROVIDER_URL: http://localhost:3004
+        NEXT_PUBLIC_APPRENTICE_URL: http://localhost:3001
+        NEXT_PUBLIC_FLOW_URL: http://localhost:3003
+        NEXT_PUBLIC_MAIN_URL: http://localhost:3005
     volumes:
       - .:/app
       - /app/node_modules
@@ -74,3 +132,9 @@ services:
       - NEXT_TELEMETRY_DISABLED=1
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
+      - NEXT_PUBLIC_PORTAL=flow
+      - NEXT_PUBLIC_EMPLOYER_URL=http://localhost:3002
+      - NEXT_PUBLIC_PROVIDER_URL=http://localhost:3004
+      - NEXT_PUBLIC_APPRENTICE_URL=http://localhost:3001
+      - NEXT_PUBLIC_FLOW_URL=http://localhost:3003
+      - NEXT_PUBLIC_MAIN_URL=http://localhost:3005
