@@ -104,7 +104,12 @@
       "Bash(git commit -m ' *)",
       "Bash(git push *)",
       "Bash(git fetch *)",
-      "Bash(git pull *)"
+      "Bash(git pull *)",
+      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\('workspaces:', JSON.stringify\\(p.workspaces\\)\\); console.log\\('packageManager:', p.packageManager\\)\")",
+      "Bash(npm audit *)",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/next/package.json'\\).version\\)\")",
+      "Bash(node -e \"console.log\\(require\\('./apps/apprentice/node_modules/next/package.json'\\).version\\)\")",
+      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\(JSON.stringify\\({deps: p.dependencies, devDeps: p.devDependencies}, null, 2\\)\\)\")"
     ],
     "additionalDirectories": [
       "c:\\Users\\taiwo\\Music\\2025\\gradlly-frontend\\apps\\apprentice\\.next"
