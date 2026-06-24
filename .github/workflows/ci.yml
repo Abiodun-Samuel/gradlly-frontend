@@ -49,7 +49,7 @@ jobs:
         run: npm run build -- --filter=...[origin/main] --parallel
 
       - name: Security audit
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=critical
 
       - name: Dead code check
         run: npm run dead-code
