@@ -99,7 +99,10 @@
       "Bash(Remove-Item \"c:/Users/taiwo/Music/2025/gradlly-frontend/apps/apprentice/components/ui/FileUpload/index.ts\" -Force)",
       "Bash(Remove-Item \"c:/Users/taiwo/Music/2025/gradlly-frontend/apps/apprentice/lib/storage/index.ts\" -Force)",
       "Bash(pnpm --filter apprentice dev)",
-      "Bash(rm -rf \"c:/Users/taiwo/Music/2025/gradlly-frontend/apps/apprentice/.next\")"
+      "Bash(rm -rf \"c:/Users/taiwo/Music/2025/gradlly-frontend/apps/apprentice/.next\")",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ],
     "additionalDirectories": [
       "c:\\Users\\taiwo\\Music\\2025\\gradlly-frontend\\apps\\apprentice\\.next"
