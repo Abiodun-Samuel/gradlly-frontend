@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 
 import { PORTAL } from "@/config/portal.config";
 import { useMe } from "@/features/auth/queries/auth.query";
@@ -19,37 +19,33 @@ export function useAuthUser() {
 
   const activeOrganisation = data?.activeOrganisation ?? null;
   const userRoles = activeOrganisation?.roles ?? [];
-  const orgId = activeOrganisation?.organisation?.id ?? null;
   const memberId = data?.id ?? null;
 
-  // Organisations the user can switch to *within this portal*. Cross-portal
-  // organisations are intentionally excluded — switching only ever stays on the
-  // current portal, so the active-org header always matches X-Portal-Type.
-  const organisations = (data?.organisations ?? []).filter(
-    (org) => org?.portalType === PORTAL.key,
-  );
+  // Apprentices are members of their training provider's organisation (portalType
+  // "provider"), not a separate apprentice org type.
+  const allOrganisations = data?.organisations ?? [];
+  const organisations =
+    PORTAL.key === "apprentice"
+      ? allOrganisations.filter((org) => org?.portalType === "provider")
+      : allOrganisations.filter((org) => org?.portalType === PORTAL.key);
+
+  const providerOrgId = organisations[0]?.id ?? null;
+  const activeOrgId = activeOrganisation?.organisation?.id ?? null;
+  const activeIsProvider =
+    activeOrganisation?.organisation?.portalType === "provider";
+
+  const orgId =
+    PORTAL.key === "apprentice"
+      ? (providerOrgId ?? (activeIsProvider ? activeOrgId : null))
+      : (activeOrgId ?? organisations[0]?.id ?? null);
+
   const canSwitchOrganisation = organisations.length > 1;
 
-  // Keep the active-org cookie in sync with the session so the API client always
-  // sends the correct X-Organisation-Id. Runs as an effect (a cookie write is a
-  // side-effect) and only when the id actually changes.
-  useEffect(() => {
-    setActiveOrgId(orgId);
-  }, [orgId]);
-
-  // Organisations the user can switch to *within this portal*. Cross-portal
-  // organisations are intentionally excluded — switching only ever stays on the
-  // current portal, so the active-org header always matches X-Portal-Type.
-  const organisations = (data?.organisations ?? []).filter(
-    (org) => org?.portalType === PORTAL.key,
-  );
-  const canSwitchOrganisation = organisations.length > 1;
-
-  // Keep the active-org cookie in sync with the session so the API client always
-  // sends the correct X-Organisation-Id. Runs as an effect (a cookie write is a
-  // side-effect) and only when the id actually changes.
-  useEffect(() => {
-    setActiveOrgId(orgId);
+  // Write the cookie when we know the org; never clear it here — logout handles
+  // that. Clearing on a transient null (e.g. /me refetch after accept-invite)
+  // would strip X-Organisation-Id from uploads mid-session.
+  useLayoutEffect(() => {
+    if (orgId) setActiveOrgId(orgId);
   }, [orgId]);
 
   return {

@@ -8,7 +8,6 @@ import {
   Check,
   CheckCircle2,
   ChevronRight,
-  CreditCard,
   ExternalLink,
   Globe,
   Hash,
@@ -26,6 +25,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import TextBadge from "@/components/ui/TextBadge";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
+import { useEmployerDashboard } from "@/features/reporting/queries/reporting.query";
 import {
   capitalise,
   cn,
@@ -40,40 +40,46 @@ import {
 
 const STAT_CARDS = [
   {
-    id: "positions",
-    label: "Open Positions",
-    icon: Briefcase,
+    id: "apprentices",
+    label: "Active Apprentices",
+    valueKey: "activeApprenticeCount",
+    href: "/apprentices",
+    icon: Users,
     iconBg: "bg-primary-50",
     iconColor: "text-primary-700",
     accentBg: "bg-primary-600",
-    hint: "Post a new role",
+    hint: "Manage your team",
   },
   {
-    id: "applications",
-    label: "New Applications",
+    id: "otj",
+    label: "Pending OTJ Approvals",
+    valueKey: "pendingOtjApprovalCount",
+    href: "/onboarding",
     icon: Send,
     iconBg: "bg-info-50",
     iconColor: "text-info-700",
     accentBg: "bg-info-600",
-    hint: "Review applicants",
+    hint: "Review OTJ entries",
   },
   {
-    id: "apprentices",
-    label: "Active Apprentices",
-    icon: Users,
-    iconBg: "bg-success-50",
-    iconColor: "text-success-700",
-    accentBg: "bg-success-600",
-    hint: "Manage your team",
-  },
-  {
-    id: "interviews",
-    label: "Interviews Booked",
+    id: "reviews",
+    label: "Reviews Awaiting Action",
+    valueKey: "reviewsAwaitingActionCount",
     icon: CalendarCheck,
     iconBg: "bg-warning-50",
     iconColor: "text-warning-700",
     accentBg: "bg-warning-600",
-    hint: "View schedule",
+    hint: "Co-sign reviews",
+  },
+  {
+    id: "commitments",
+    label: "Awaiting Signatures",
+    pipelineKey: "awaitingSignatures",
+    icon: Briefcase,
+    iconBg: "bg-success-50",
+    iconColor: "text-success-700",
+    accentBg: "bg-success-600",
+    hint: "Commitment pipeline",
   },
 ];
 
@@ -87,40 +93,16 @@ const QUICK_ACTIONS = [
     iconColor: "text-primary-700",
   },
   {
-    label: "Jobs",
-    description: "Post & manage roles",
-    href: "/jobs",
-    icon: Briefcase,
-    iconBg: "bg-info-50 group-hover:bg-info-100",
-    iconColor: "text-info-700",
-  },
-  {
-    label: "Applications",
-    description: "Review candidates",
-    href: "/applications",
-    icon: Send,
-    iconBg: "bg-warning-50 group-hover:bg-warning-100",
-    iconColor: "text-warning-700",
-  },
-  {
     label: "Onboarding",
-    description: "New hire setup",
+    description: "Approve OTJ entries",
     href: "/onboarding",
     icon: UserPlus,
     iconBg: "bg-success-50 group-hover:bg-success-100",
     iconColor: "text-success-700",
   },
   {
-    label: "Billing",
-    description: "Plans & invoices",
-    href: "/billing",
-    icon: CreditCard,
-    iconBg: "bg-danger-50 group-hover:bg-danger-100",
-    iconColor: "text-danger-700",
-  },
-  {
     label: "Analytics",
-    description: "Hiring insights",
+    description: "Levy utilisation",
     href: "/analytics",
     icon: BarChart3,
     iconBg: "bg-neutral-100 group-hover:bg-neutral-200",
@@ -351,10 +333,18 @@ function HeroSection({ user, activeOrganisation, greeting }) {
 
 // ─── Metrics row ──────────────────────────────────────────────────────────────
 
-function MetricCard({ stat }) {
-  const { label, icon: Icon, iconBg, iconColor, accentBg, hint } = stat;
-  return (
-    <Card className="relative overflow-hidden transition-shadow duration-200 hover:shadow-md">
+function MetricCard({ stat, value, isLoading }) {
+  const { label, icon: Icon, iconBg, iconColor, accentBg, hint, href } = stat;
+  const display =
+    value !== null && value !== "" ? value : isLoading ? "…" : "N/A";
+
+  const card = (
+    <Card
+      className={cn(
+        "relative overflow-hidden transition-shadow duration-200",
+        href ? "hover:shadow-md" : "",
+      )}
+    >
       <CardContent className="pb-5 pt-5">
         <div className="flex items-start justify-between gap-2">
           <div
@@ -371,8 +361,15 @@ function MetricCard({ stat }) {
         </div>
 
         <div className="mt-4">
-          <p className="text-3xl font-bold tracking-tight text-neutral-300">
-            N/A
+          <p
+            className={cn(
+              "text-3xl font-bold tracking-tight tabular-nums",
+              display === "N/A" || display === "…"
+                ? "text-neutral-300"
+                : "text-neutral-900",
+            )}
+          >
+            {display}
           </p>
           <p className="mt-1 text-sm font-medium text-neutral-500">{label}</p>
         </div>
@@ -382,6 +379,17 @@ function MetricCard({ stat }) {
         className={cn("absolute inset-x-0 bottom-0 h-0.5 opacity-60", accentBg)}
       />
     </Card>
+  );
+
+  if (!href) return card;
+
+  return (
+    <Link
+      href={href}
+      className="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+    >
+      {card}
+    </Link>
   );
 }
 
@@ -737,8 +745,20 @@ function ProfileCard({ user, activeOrganisation, profileStatus }) {
 
 export function DashboardHome() {
   const { user, activeOrganisation } = useAuthUser();
+  const { data: dashboard, isLoading: dashboardLoading } =
+    useEmployerDashboard();
+  const summary = dashboard?.summary;
   const greeting = getGreeting(user?.timezone);
   const profileStatus = getProfileStatus(user);
+
+  const getStatValue = (stat) => {
+    if (!summary) return null;
+    if (stat.pipelineKey) {
+      return summary.commitmentPipeline?.[stat.pipelineKey] ?? null;
+    }
+    if (!stat.valueKey) return null;
+    return summary[stat.valueKey];
+  };
 
   return (
     <div
@@ -760,7 +780,11 @@ export function DashboardHome() {
               animationDelay: `${i * 50}ms`,
             }}
           >
-            <MetricCard stat={stat} />
+            <MetricCard
+              stat={stat}
+              value={getStatValue(stat)}
+              isLoading={dashboardLoading}
+            />
           </div>
         ))}
       </div>

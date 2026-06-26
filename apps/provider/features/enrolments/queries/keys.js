@@ -7,5 +7,11 @@ export const ENROLMENT_QUERY_KEYS = {
     { page, perPage },
   ],
   detail: (orgId, id) => ["enrolments", "detail", orgId, id],
+  participantOptions: (orgId, id) => [
+    "enrolments",
+    "participant-options",
+    orgId,
+    id,
+  ],
   journey: (orgId, id) => ["enrolments", "journey", orgId, id],
 };

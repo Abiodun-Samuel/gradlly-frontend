@@ -14,6 +14,37 @@ export async function login(credentials) {
   }
 }
 
+export async function signup(data) {
+  try {
+    const result = await $apiClient.post(AUTH_API_PATHS.SIGNUP, data);
+    return result.data?.data ?? result.data;
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+export async function verifyEmail({ token }) {
+  try {
+    const result = await $apiClient.post(AUTH_API_PATHS.VERIFY_EMAIL, {
+      token,
+    });
+    return result.data?.data ?? result.data;
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+export async function resendVerificationEmail({ email }) {
+  try {
+    const result = await $apiClient.post(AUTH_API_PATHS.RESEND_VERIFICATION, {
+      email,
+    });
+    return result.data?.data ?? result.data;
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
 export async function logout() {
   await $apiClient.post(AUTH_API_PATHS.LOGOUT);
 }

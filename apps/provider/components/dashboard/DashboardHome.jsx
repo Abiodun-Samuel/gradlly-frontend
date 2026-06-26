@@ -25,6 +25,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import TextBadge from "@/components/ui/TextBadge";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
+import { useProviderDashboard } from "@/features/reporting/queries/reporting.query";
 import {
   capitalise,
   cn,
@@ -41,38 +42,43 @@ const STAT_CARDS = [
   {
     id: "learners",
     label: "Active Learners",
+    valueKey: "cohortCount",
     icon: Users,
     iconBg: "bg-primary-50",
     iconColor: "text-primary-700",
     accentBg: "bg-primary-600",
-    hint: "Connect cohort data",
+    hint: "View cohort",
   },
   {
-    id: "reviews",
-    label: "Reviews Due",
+    id: "atRisk",
+    label: "At-Risk Learners",
+    valueKey: "atRiskCount",
     icon: CalendarCheck,
     iconBg: "bg-info-50",
     iconColor: "text-info-700",
     accentBg: "bg-info-600",
-    hint: "Sync your schedule",
+    hint: "Needs attention",
   },
   {
     id: "ilr",
-    label: "ILR Readiness",
+    label: "ILR Pending",
+    valueKey: "ilrPendingCount",
     icon: FileText,
     iconBg: "bg-warning-50",
     iconColor: "text-warning-700",
     accentBg: "bg-warning-600",
-    hint: "Upload ILR data",
+    hint: "Submit ILR data",
   },
   {
     id: "ofsted",
     label: "Ofsted Score",
+    valueKey: "eifOverallPercent",
+    format: "percent",
     icon: ShieldCheck,
     iconBg: "bg-success-50",
     iconColor: "text-success-700",
     accentBg: "bg-success-600",
-    hint: "Upload evidence",
+    hint: "EIF readiness",
   },
 ];
 
@@ -354,8 +360,16 @@ function HeroSection({ user, activeOrganisation, greeting }) {
 
 // ─── Metrics row ──────────────────────────────────────────────────────────────
 
-function MetricCard({ stat }) {
-  const { label, icon: Icon, iconBg, iconColor, accentBg, hint } = stat;
+function formatMetricValue(value, format) {
+  if (value === null || value === undefined) return "—";
+  if (format === "percent") return `${value}%`;
+  return value;
+}
+
+function MetricCard({ stat, value, isLoading }) {
+  const { label, icon: Icon, iconBg, iconColor, accentBg, hint, format } = stat;
+  const displayValue = isLoading ? "—" : formatMetricValue(value, format);
+
   return (
     <Card className="relative overflow-hidden transition-shadow duration-200 hover:shadow-md">
       <CardContent className="pb-5 pt-5">
@@ -374,8 +388,13 @@ function MetricCard({ stat }) {
         </div>
 
         <div className="mt-4">
-          <p className="text-3xl font-bold tracking-tight text-neutral-300">
-            N/A
+          <p
+            className={cn(
+              "text-3xl font-bold tracking-tight tabular-nums",
+              isLoading ? "text-neutral-300" : "text-neutral-900",
+            )}
+          >
+            {displayValue}
           </p>
           <p className="mt-1 text-sm font-medium text-neutral-500">{label}</p>
         </div>
@@ -750,6 +769,9 @@ function ProfileCard({ user, activeOrganisation, profileStatus }) {
 
 export function DashboardHome() {
   const { user, activeOrganisation } = useAuthUser();
+  const { data: summary, isLoading: isDashboardLoading } =
+    useProviderDashboard();
+  const isMetricsLoading = isDashboardLoading && !summary;
   const greeting = getGreeting(user?.timezone);
   const profileStatus = getProfileStatus(user);
 
@@ -776,7 +798,11 @@ export function DashboardHome() {
                 animationDelay: `${i * 50}ms`,
               }}
             >
-              <MetricCard stat={stat} />
+              <MetricCard
+                stat={stat}
+                value={summary?.[stat.valueKey]}
+                isLoading={isMetricsLoading}
+              />
             </div>
           ))}
         </div>

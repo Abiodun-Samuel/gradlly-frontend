@@ -46,6 +46,7 @@ export const TextareaField = forwardRef(function TextareaField(
       <textarea
         ref={ref}
         id={name}
+        name={name}
         rows={rows}
         maxLength={maxLength}
         disabled={disabled}

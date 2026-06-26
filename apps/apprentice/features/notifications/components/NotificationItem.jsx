@@ -1,22 +1,30 @@
 "use client";
 
+import Link from "next/link";
+
 import { cn, formatRelativeTime } from "@/utils/helper";
 
 import { getNotificationTypeMeta } from "../constants";
+
+function getActionUrl(notification) {
+  return (
+    notification.actionUrl ??
+    notification.metadata?.actionUrl ??
+    notification.payload?.actionUrl ??
+    null
+  );
+}
 
 /**
  * NotificationItem
  *
  * A single notification row. Unread items carry a subtle tint and a dot; the
- * whole row is clickable to mark it read (no-op when already read).
- *
- * @param {object}   props
- * @param {object}   props.notification  { id, type, title, body, readAt, createdAt }
- * @param {Function} props.onMarkRead    (id:string) => void
- * @param {boolean}  [props.isUpdating]
+ * whole row is clickable to mark it read (no-op when already read). When the
+ * notification payload includes actionUrl, the row links to that destination.
  */
 export function NotificationItem({ notification, onMarkRead, isUpdating }) {
   const { id, type, title, body, readAt, createdAt } = notification;
+  const actionUrl = getActionUrl(notification);
   const meta = getNotificationTypeMeta(type);
   const Icon = meta.icon;
   const isUnread = !readAt;
@@ -25,26 +33,17 @@ export function NotificationItem({ notification, onMarkRead, isUpdating }) {
     if (isUnread && !isUpdating) onMarkRead?.(id);
   };
 
-  return (
-    <div
-      role={isUnread ? "button" : undefined}
-      tabIndex={isUnread ? 0 : undefined}
-      onClick={handleActivate}
-      onKeyDown={(e) => {
-        if (isUnread && (e.key === "Enter" || e.key === " ")) {
-          e.preventDefault();
-          handleActivate();
-        }
-      }}
-      className={cn(
-        "flex items-start gap-3 px-4 py-3.5 transition-colors duration-150 sm:px-5",
-        isUnread
-          ? "cursor-pointer bg-primary-50/40 hover:bg-primary-50/70"
-          : "hover:bg-neutral-50",
-        isUpdating && "opacity-60",
-      )}
-    >
-      {/* Type icon */}
+  const rowClassName = cn(
+    "flex items-start gap-3 px-4 py-3.5 transition-colors duration-150 sm:px-5",
+    actionUrl || isUnread ? "cursor-pointer" : "",
+    isUnread
+      ? "bg-primary-50/40 hover:bg-primary-50/70"
+      : "hover:bg-neutral-50",
+    isUpdating && "opacity-60",
+  );
+
+  const content = (
+    <>
       <div
         className={cn(
           "mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg ring-1",
@@ -58,7 +57,6 @@ export function NotificationItem({ notification, onMarkRead, isUpdating }) {
         />
       </div>
 
-      {/* Content */}
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-3">
           <p
@@ -87,6 +85,31 @@ export function NotificationItem({ notification, onMarkRead, isUpdating }) {
           {formatRelativeTime(createdAt)}
         </p>
       </div>
+    </>
+  );
+
+  if (actionUrl) {
+    return (
+      <Link href={actionUrl} onClick={handleActivate} className={rowClassName}>
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <div
+      role={isUnread ? "button" : undefined}
+      tabIndex={isUnread ? 0 : undefined}
+      onClick={handleActivate}
+      onKeyDown={(e) => {
+        if (isUnread && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          handleActivate();
+        }
+      }}
+      className={rowClassName}
+    >
+      {content}
     </div>
   );
 }

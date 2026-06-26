@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { AUTH_REDIRECTS } from "@/features/auth/constants";
 import { AUTH_QUERY_KEYS } from "@/features/auth/queries/keys";
 import { toastError, toastSuccess } from "@/hooks/useToast";
+import { setActiveOrgId } from "@/lib/api/active-org";
 import { ERROR_CODES } from "@/lib/errors";
 
 import { acceptInvitation } from "../services/invitations.service";
@@ -16,14 +17,15 @@ export function useAcceptInvitation() {
 
   return useMutation({
     mutationFn: ({ token }) => acceptInvitation({ token }),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       toastSuccess(
         data?.message || "You have successfully joined the organisation.",
       );
+      if (data?.organisationId) {
+        setActiveOrgId(data.organisationId);
+      }
       qc.removeQueries({ queryKey: ["invitations"] });
-      // The user's active organisation has changed; refresh their profile so the
-      // dashboard reflects the new membership immediately.
-      qc.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.me() });
+      await qc.refetchQueries({ queryKey: AUTH_QUERY_KEYS.me() });
       router.refresh();
       router.replace(AUTH_REDIRECTS.DASHBOARD_HOME_PAGE);
     },

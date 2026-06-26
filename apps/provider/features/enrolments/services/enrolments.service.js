@@ -25,9 +25,32 @@ export async function listEnrolments({ page = 1, perPage = 20 } = {}) {
   }
 }
 
+export async function lookupCounterpartOrganisation(ukprn) {
+  try {
+    const result = await $apiClient.get(
+      ENROLMENT_PATHS.counterpartOrganisationLookup,
+      { params: { ukprn } },
+    );
+    return unwrap(result);
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
 export async function getEnrolment(id) {
   try {
     const result = await $apiClient.get(ENROLMENT_PATHS.byId(id));
+    return unwrap(result);
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+export async function getParticipantOptions(enrolmentId) {
+  try {
+    const result = await $apiClient.get(
+      ENROLMENT_PATHS.participantOptions(enrolmentId),
+    );
     return unwrap(result);
   } catch (e) {
     throw normalizeApiClientError(e);

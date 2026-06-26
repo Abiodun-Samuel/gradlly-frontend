@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
+import { PORTAL } from "@/config/portal.config";
 import { AUTH_REDIRECTS, safeRedirectPath } from "@/features/auth/constants";
 import { AUTH_QUERY_KEYS } from "@/features/auth/queries/keys";
 import {
@@ -10,8 +11,11 @@ import {
   getMe,
   login,
   logout,
+  resendVerificationEmail,
   resetPassword,
+  signup,
   updateMe,
+  verifyEmail,
 } from "@/features/auth/services/auth.service";
 import { toastError, toastSuccess } from "@/hooks/useToast";
 import { setActiveOrgId } from "@/lib/api/active-org";
@@ -59,6 +63,68 @@ export function useLogin({ redirectTo } = {}) {
       if (error.code !== ERROR_CODES.VALIDATION) {
         toastError(error.message);
       }
+    },
+  });
+}
+
+export function useSignup({ redirectTo } = {}) {
+  const router = useRouter();
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: signup,
+    onSuccess: (data, variables) => {
+      toastSuccess(data?.message || "Account created! Check your inbox.");
+      qc.removeQueries({ queryKey: AUTH_QUERY_KEYS.me() });
+      localStorage.setItem(
+        PORTAL.emailVerification.storageKey,
+        String(Date.now()),
+      );
+      const email = encodeURIComponent(variables.email);
+      const redirect = redirectTo
+        ? `&redirect=${encodeURIComponent(redirectTo)}`
+        : "";
+      router.refresh();
+      router.replace(
+        `${AUTH_REDIRECTS.VERIFY_EMAIL_PAGE}?email=${email}${redirect}`,
+      );
+    },
+    onError: (error) => {
+      if (error.code !== ERROR_CODES.VALIDATION) {
+        toastError(error.message);
+      }
+    },
+  });
+}
+
+export function useVerifyEmail({ redirectTo } = {}) {
+  const router = useRouter();
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: verifyEmail,
+    onSuccess: (data) => {
+      toastSuccess(data?.message || "Email verified successfully!");
+      qc.removeQueries({ queryKey: AUTH_QUERY_KEYS.me() });
+      router.refresh();
+      router.replace(safeRedirectPath(redirectTo));
+    },
+    onError: (error) => {
+      if (error.code !== ERROR_CODES.VALIDATION) {
+        toastError(error.message);
+      }
+    },
+  });
+}
+
+export function useResendVerification() {
+  return useMutation({
+    mutationFn: resendVerificationEmail,
+    onSuccess: (data) => {
+      toastSuccess(data?.message || "Verification email sent.");
+    },
+    onError: (error) => {
+      toastError(error.message || "Failed to resend. Please try again.");
     },
   });
 }

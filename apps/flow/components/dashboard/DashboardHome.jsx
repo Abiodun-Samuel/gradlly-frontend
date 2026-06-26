@@ -6,15 +6,14 @@ import {
   Check,
   CheckCircle2,
   ChevronRight,
+  ClipboardList,
   ExternalLink,
-  GitBranch,
   Globe,
   Hash,
   MapPin,
-  Plug,
   Sparkles,
+  Users,
   Workflow,
-  Zap,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -22,6 +21,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import TextBadge from "@/components/ui/TextBadge";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
+import { useSmeOverview } from "@/features/reporting/queries/reporting.query";
 import {
   capitalise,
   cn,
@@ -36,87 +36,91 @@ import {
 
 const STAT_CARDS = [
   {
-    id: "flows",
-    label: "Active Flows",
-    icon: GitBranch,
+    id: "apprentices",
+    label: "Active Apprentices",
+    valueKey: "activeApprenticeCount",
+    icon: Users,
     iconBg: "bg-primary-50",
     iconColor: "text-primary-700",
     accentBg: "bg-primary-600",
-    hint: "Manage flows",
+    hint: "View apprentice roster",
   },
   {
-    id: "webhooks",
-    label: "Webhook Endpoints",
-    icon: Zap,
+    id: "otj",
+    label: "Pending OTJ Approvals",
+    valueKey: "pendingOtjApprovalCount",
+    icon: ClipboardList,
     iconBg: "bg-warning-50",
     iconColor: "text-warning-700",
     accentBg: "bg-warning-600",
-    hint: "Configure webhooks",
+    hint: "Review OTJ entries",
   },
   {
-    id: "success",
-    label: "Success Rate",
+    id: "reviews",
+    label: "Reviews Due",
+    valueKey: "reviewsDueThisMonthCount",
     icon: Activity,
     iconBg: "bg-success-50",
     iconColor: "text-success-700",
     accentBg: "bg-success-600",
-    hint: "View activity logs",
+    hint: "View compliance",
   },
   {
-    id: "connections",
-    label: "Connections",
-    icon: Plug,
+    id: "reports",
+    label: "SME Reports",
+    icon: BarChart3,
     iconBg: "bg-info-50",
     iconColor: "text-info-700",
     accentBg: "bg-info-600",
-    hint: "Add integration",
+    hint: "Open reports",
+    staticHref: "/reports",
   },
 ];
 
 const QUICK_ACTIONS = [
   {
-    label: "My Flows",
-    description: "View all flows",
-    href: "/flows",
-    icon: GitBranch,
+    label: "AI Programmes",
+    description: "Browse catalogue",
+    href: "/courses",
+    icon: Sparkles,
     iconBg: "bg-primary-50 group-hover:bg-primary-100",
     iconColor: "text-primary-700",
   },
   {
-    label: "Builder",
-    description: "Create a new flow",
-    href: "/builder",
-    icon: Workflow,
+    label: "Levy Surplus",
+    description: "View surplus balance",
+    href: "/levy",
+    icon: Activity,
     iconBg: "bg-warning-50 group-hover:bg-warning-100",
     iconColor: "text-warning-700",
   },
   {
-    label: "Connections",
-    description: "Manage integrations",
-    href: "/connections",
-    icon: Plug,
+    label: "Matches",
+    description: "Find levy donors",
+    href: "/matches",
+    icon: Users,
     iconBg: "bg-success-50 group-hover:bg-success-100",
     iconColor: "text-success-700",
   },
   {
-    label: "Webhooks",
-    description: "Configure endpoints",
-    href: "/webhooks",
-    icon: Zap,
+    label: "Donor Links",
+    description: "Manage DAS connections",
+    href: "/donor-links",
+    icon: Globe,
     iconBg: "bg-info-50 group-hover:bg-info-100",
     iconColor: "text-info-700",
   },
   {
-    label: "Activity Logs",
-    description: "Monitor run history",
-    href: "/logs",
-    icon: Activity,
+    label: "Eligibility",
+    description: "Check SME eligibility",
+    href: "/eligibility",
+    icon: CheckCircle2,
     iconBg: "bg-danger-50 group-hover:bg-danger-100",
     iconColor: "text-danger-700",
   },
   {
     label: "Reports",
-    description: "View analytics",
+    description: "Compliance overview",
     href: "/reports",
     icon: BarChart3,
     iconBg: "bg-neutral-100 group-hover:bg-neutral-200",
@@ -245,7 +249,7 @@ function HeroSection({ user, activeOrganisation, greeting }) {
             className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em]"
             style={{ color: "#8cc4a1" }}
           >
-            Automation Hub
+            Flow Portal
           </p>
           <h1 className="text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl lg:text-[2.75rem]">
             {greeting},
@@ -347,8 +351,11 @@ function HeroSection({ user, activeOrganisation, greeting }) {
 
 // ─── Metrics row ──────────────────────────────────────────────────────────────
 
-function MetricCard({ stat }) {
+function MetricCard({ stat, value, isLoading }) {
   const { label, icon: Icon, iconBg, iconColor, accentBg, hint } = stat;
+  const display =
+    value !== null && value !== "" ? value : isLoading ? "…" : "N/A";
+
   return (
     <Card className="relative overflow-hidden transition-shadow duration-200 hover:shadow-md">
       <CardContent className="pb-5 pt-5">
@@ -367,8 +374,15 @@ function MetricCard({ stat }) {
         </div>
 
         <div className="mt-4">
-          <p className="text-3xl font-bold tracking-tight text-neutral-300">
-            N/A
+          <p
+            className={cn(
+              "text-3xl font-bold tracking-tight",
+              display === "N/A" || display === "…"
+                ? "text-neutral-300"
+                : "text-neutral-900",
+            )}
+          >
+            {display}
           </p>
           <p className="mt-1 text-sm font-medium text-neutral-500">{label}</p>
         </div>
@@ -456,16 +470,16 @@ function GettingStartedCard({ user, activeOrganisation, profileStatus }) {
       href: "/settings",
     },
     {
-      id: "flow",
-      label: "Create your first flow",
+      id: "register",
+      label: "Complete ESFA registration",
       done: false,
-      href: "/builder/new",
+      href: "/register",
     },
     {
-      id: "connection",
-      label: "Connect an integration",
+      id: "levy",
+      label: "Connect a donor DAS account",
       done: false,
-      href: "/connections",
+      href: "/donor-links",
     },
   ];
 
@@ -718,8 +732,16 @@ function ProfileCard({ user, activeOrganisation, profileStatus }) {
 
 export function DashboardHome() {
   const { user, activeOrganisation } = useAuthUser();
+  const { data: overview, isLoading: overviewLoading } = useSmeOverview();
+  const summary = overview?.summary;
   const greeting = getGreeting(user?.timezone);
   const profileStatus = getProfileStatus(user);
+
+  const getStatValue = (stat) => {
+    if (stat.staticHref) return null;
+    if (!stat.valueKey || !summary) return null;
+    return summary[stat.valueKey];
+  };
 
   return (
     <div
@@ -741,7 +763,11 @@ export function DashboardHome() {
               animationDelay: `${i * 50}ms`,
             }}
           >
-            <MetricCard stat={stat} />
+            <MetricCard
+              stat={stat}
+              value={getStatValue(stat)}
+              isLoading={overviewLoading}
+            />
           </div>
         ))}
       </div>

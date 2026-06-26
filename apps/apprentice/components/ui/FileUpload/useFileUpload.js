@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { getActiveOrgId } from "@/lib/api/active-org";
 import { normalizeApiClientError } from "@/lib/errors";
 import { putFileToS3, requestUploadUrl } from "@/lib/storage";
 
@@ -42,14 +43,27 @@ export function useFileUpload(config) {
       let uploadUrl;
       let key;
 
-      try {
-        const data = await requestUploadUrl({
-          filename: file.name,
-          contentType: file.type || "application/octet-stream",
-          contentLength: file.size,
-          category: config.category,
-          learnerId: config.learnerId,
+      const organisationId = config.orgId ?? getActiveOrgId();
+      if (!organisationId) {
+        patch(id, {
+          status: "error",
+          error:
+            "Your training provider organisation is not loaded yet. Wait a moment and retry.",
         });
+        return;
+      }
+
+      try {
+        const data = await requestUploadUrl(
+          {
+            filename: file.name,
+            contentType: file.type || "application/octet-stream",
+            contentLength: file.size,
+            category: config.category,
+            learnerId: config.learnerId,
+          },
+          organisationId,
+        );
         uploadUrl = data.uploadUrl;
         key = data.key;
       } catch (err) {

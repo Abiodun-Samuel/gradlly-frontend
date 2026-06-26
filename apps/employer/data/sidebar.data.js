@@ -1,17 +1,12 @@
 import {
+  BarChart3,
   Bell,
   Building2,
+  GraduationCap,
   LayoutDashboard,
   Settings,
   UserCircle,
   UserPlus,
-  // ── Icons for not-yet-built sections (kept for when they are re-enabled) ──
-  // BarChart3,
-  // Briefcase,
-  // ClipboardList,
-  // CreditCard,
-  // GraduationCap,
-  // UsersRound,
 } from "lucide-react";
 
 export const NAV_SECTIONS = [
@@ -19,24 +14,22 @@ export const NAV_SECTIONS = [
     title: "Overview",
     items: [{ label: "Dashboard", href: "/", icon: LayoutDashboard }],
   },
-  // ── Talent section: pages not yet built. Re-enable when ready. ──
-  // {
-  //   title: "Talent",
-  //   items: [
-  //     { label: "Apprentices", href: "/apprentices", icon: GraduationCap },
-  //     {
-  //       label: "Recruitment",
-  //       href: "/jobs",
-  //       icon: Briefcase,
-  //       children: [
-  //         { label: "Job Posts", href: "/jobs" },
-  //         { label: "Applications", href: "/applications" },
-  //       ],
-  //     },
-  //     { label: "Onboarding", href: "/onboarding", icon: UserPlus },
-  //     { label: "Assessments", href: "/assessments", icon: ClipboardList },
-  //   ],
-  // },
+  {
+    title: "Apprenticeships",
+    items: [
+      { label: "Apprentices", href: "/apprentices", icon: GraduationCap },
+      { label: "Onboarding", href: "/onboarding", icon: UserPlus },
+      {
+        label: "Analytics",
+        href: "/analytics",
+        icon: BarChart3,
+        children: [
+          { label: "Levy utilisation", href: "/analytics" },
+          { label: "Levy ROI", href: "/analytics/cost" },
+        ],
+      },
+    ],
+  },
   {
     title: "Account",
     items: [

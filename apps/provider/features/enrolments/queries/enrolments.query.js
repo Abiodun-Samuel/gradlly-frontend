@@ -20,7 +20,9 @@ import {
   createEnrolment,
   getEnrolment,
   getEnrolmentJourney,
+  getParticipantOptions,
   listEnrolments,
+  lookupCounterpartOrganisation,
   recordEpaOutcome,
   setEnrolmentJourney,
   setEnrolmentOrganisationLinks,
@@ -56,6 +58,32 @@ export function useEnrolment(id, options = {}) {
   });
 }
 
+function mapParticipantOptions(response) {
+  const mapList = (items = []) =>
+    items.map((user) => ({
+      value: user.id,
+      text: user.displayName,
+    }));
+
+  return {
+    apprenticeOptions: mapList(response?.apprenticeCandidates),
+    tutorOptions: mapList(response?.tutors),
+    employerManagerOptions: mapList(response?.employerManagers),
+  };
+}
+
+export function useParticipantOptions(enrolmentId, options = {}) {
+  const { orgId } = useAuthUser();
+
+  return useQuery({
+    queryKey: ENROLMENT_QUERY_KEYS.participantOptions(orgId, enrolmentId),
+    queryFn: () => getParticipantOptions(enrolmentId),
+    enabled: !!orgId && !!enrolmentId,
+    select: mapParticipantOptions,
+    ...options,
+  });
+}
+
 export function useEnrolmentJourney(id, options = {}) {
   const { orgId } = useAuthUser();
 
@@ -64,6 +92,13 @@ export function useEnrolmentJourney(id, options = {}) {
     queryFn: () => getEnrolmentJourney(id),
     enabled: !!orgId && !!id,
     ...options,
+  });
+}
+
+// Employer organisations already linked on provider enrolments (PRD F2.4.1 directory).
+export function useLookupCounterpartOrganisation() {
+  return useMutation({
+    mutationFn: (ukprn) => lookupCounterpartOrganisation(ukprn),
   });
 }
 

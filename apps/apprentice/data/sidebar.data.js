@@ -1,14 +1,15 @@
 import {
-  LayoutDashboard,
-  Settings,
-  UserCircle,
-  // ── Icons for not-yet-built sections (kept for when they are re-enabled) ──
-  // BarChart3,
-  // BookMarked,
+  BarChart3,
+  BookMarked,
   BookOpen,
   ClipboardCheck,
+  ClipboardList,
+  FileText,
+  FolderOpen,
+  LayoutDashboard,
+  Settings,
   TrendingUp,
-  // Users,
+  UserCircle,
 } from "lucide-react";
 
 export const NAV_SECTIONS = [
@@ -16,39 +17,36 @@ export const NAV_SECTIONS = [
     title: "My Learning",
     items: [
       { label: "Dashboard", href: "/", icon: LayoutDashboard },
-      { label: "OTJ log ", href: "/otj-logs", icon: BookOpen },
+      { label: "My Courses", href: "/courses", icon: BookMarked },
+      { label: "OTJ log", href: "/otj-logs", icon: BookOpen },
       {
         label: "Portfolio & KSBs",
         href: "/portfolio",
         icon: ClipboardCheck,
       },
-      { label: "Milestones ", href: "/progress", icon: TrendingUp },
+      {
+        label: "Assessments",
+        href: "/assessments",
+        icon: ClipboardList,
+      },
+      {
+        label: "Progress",
+        href: "/progress",
+        icon: TrendingUp,
+      },
     ],
   },
-
-  // ── Learning sections: pages not yet built. Re-enable when ready. ──
-  // {
-  //   title: "My Learning",
-  //   items: [
-  //     { label: "My Courses", href: "/courses", icon: BookOpen },
-  //     { label: "Assessments", href: "/assessments", icon: ClipboardCheck },
-  //     { label: "Progress", href: "/progress", icon: TrendingUp },
-  //   ],
-  // },
-  // {
-  //   title: "Curriculum",
-  //   items: [
-  //     { label: "Curriculum", href: "/curriculum", icon: BookMarked },
-  //     { label: "Analytics", href: "/analytics", icon: BarChart3 },
-  //   ],
-  // },
-  // {
-  //   title: "Reporting",
-  //   items: [
-  //     { label: "Reports", href: "/reports", icon: BarChart3 },
-  //     { label: "Learners", href: "/learners", icon: Users },
-  //   ],
-  // },
+  {
+    title: "Curriculum",
+    items: [
+      { label: "Curriculum", href: "/curriculum", icon: FileText },
+      { label: "Analytics", href: "/analytics", icon: BarChart3 },
+    ],
+  },
+  {
+    title: "Reporting",
+    items: [{ label: "Documents", href: "/reports", icon: FolderOpen }],
+  },
   {
     title: "Account",
     items: [
