@@ -17,11 +17,11 @@ export async function createOrganization(payload) {
   }
 }
 
+// orgId identifies the resource in the URL path. The active organisation still
+// travels globally on the X-Organisation-Id header (see lib/api/client).
 export async function updateOrganization({ orgId, payload }) {
   try {
-    const result = await $apiClient.patch(ORG_PATHS.byId(orgId), payload, {
-      headers: { "X-Organisation-Id": orgId },
-    });
+    const result = await $apiClient.patch(ORG_PATHS.byId(orgId), payload);
     return result.data?.data ?? result.data;
   } catch (e) {
     throw normalizeApiClientError(e);

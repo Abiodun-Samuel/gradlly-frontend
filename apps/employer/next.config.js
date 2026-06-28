@@ -23,7 +23,12 @@ const nextConfig = {
   ],
 
   images: {
-    remotePatterns: [{ protocol: "https", hostname: "**.gradlly.com" }],
+    remotePatterns: [
+      { protocol: "https", hostname: "**.gradlly.com" },
+      // S3 uploads buckets (avatars, organisation logos).
+      { protocol: "https", hostname: "*.s3.*.amazonaws.com" },
+      { protocol: "https", hostname: "*.amazonaws.com" },
+    ],
   },
 
   async headers() {

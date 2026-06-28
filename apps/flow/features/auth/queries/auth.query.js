@@ -18,6 +18,7 @@ import {
   updateMe,
 } from "@/features/auth/services/auth.service";
 import { toastError, toastSuccess } from "@/hooks/useToast";
+import { setActiveOrgId } from "@/lib/api/active-org";
 import { ERROR_CODES } from "@/lib/errors";
 import { STALE_TIMES } from "@/lib/react-query/query.config";
 
@@ -175,7 +176,10 @@ export function useLogout() {
       toastError("Sign out failed. Redirecting for security.");
     },
     onSettled: () => {
-      // Always clear client state regardless of server outcome.
+      // Always clear client state regardless of server outcome. Dropping the
+      // active-org cookie stops the next user on this browser from inheriting a
+      // stale X-Organisation-Id.
+      setActiveOrgId(null);
       qc.clear();
       router.refresh();
       router.replace(AUTH_REDIRECTS.LOGIN_PAGE);

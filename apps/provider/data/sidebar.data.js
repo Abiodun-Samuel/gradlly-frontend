@@ -1,10 +1,14 @@
 import {
   Bell,
+  BookMarked,
   Building2,
+  ClipboardList,
+  GraduationCap,
   LayoutDashboard,
   Settings,
   UserCircle,
   UserPlus,
+  Users,
   // ── Icons for not-yet-built sections (kept for when they are re-enabled) ──
   // AlertTriangle,
   // Archive,
@@ -23,6 +27,21 @@ export const NAV_SECTIONS = [
   {
     title: "Overview",
     items: [{ label: "Dashboard", href: "/", icon: LayoutDashboard }],
+  },
+  {
+    title: "Curriculum",
+    items: [
+      { label: "Programmes", href: "/programmes", icon: GraduationCap },
+      { label: "Standards", href: "/standards", icon: BookMarked },
+    ],
+  },
+  {
+    title: "Learners",
+    items: [{ label: "Apprentices", href: "/apprentices", icon: Users }],
+  },
+  {
+    title: "Delivery",
+    items: [{ label: "Enrolments", href: "/enrolments", icon: ClipboardList }],
   },
   // ── Compliance section: pages not yet built. Re-enable when ready. ──
   // {

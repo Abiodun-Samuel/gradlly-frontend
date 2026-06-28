@@ -5,10 +5,9 @@ import { useEffect, useState } from "react";
 
 import { SessionErrorScreen } from "@/components/error/SessionErrorScreen";
 import { DashboardSkeleton } from "@/components/skeleton";
-import { Modal } from "@/components/ui/Modal";
 import { AUTH_REDIRECTS } from "@/features/auth/constants";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
-import { CreateOrganisationContent } from "@/features/organization/components/CreateOrganisationContent";
+import { CreateOrganisationModal } from "@/features/organization/components/CreateOrganisationModal";
 import { CreateOrgBanner } from "@/features/organization/components/CreateOrgBanner";
 import { Header } from "@/layout/dashboard/Header";
 import { Sidebar } from "@/layout/dashboard/Sidebar";
@@ -86,19 +85,11 @@ export function DashboardLayout({ children }) {
         </div>
       </div>
 
-      <Modal
+      <CreateOrganisationModal
         open={orgModalOpen}
+        onOrgCreated={() => setOrgModalOpen(false)}
         onClose={() => setOrgModalOpen(false)}
-        closable
-        showCloseButton={false}
-        size="4xl"
-        className="flex-col lg:flex-row"
-      >
-        <CreateOrganisationContent
-          onOrgCreated={() => setOrgModalOpen(false)}
-          onClose={() => setOrgModalOpen(false)}
-        />
-      </Modal>
+      />
     </>
   );
 }

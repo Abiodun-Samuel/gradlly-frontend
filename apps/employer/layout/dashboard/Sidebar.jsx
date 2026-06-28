@@ -9,6 +9,7 @@ import { GradllyLogo } from "@/assets/svgs/GradllyLogo";
 import { Avatar } from "@/components/ui/Avatar";
 import { NAV_SECTIONS } from "@/data/sidebar.data";
 import { LogoutButton } from "@/features/auth/components/LogoutButton";
+import { OrgSwitcher } from "@/features/auth/components/OrgSwitcher";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import { useRoleAccess } from "@/features/auth/hooks/useRoleAccess";
 import { useOtjPendingCount } from "@/features/otj/queries/otj.query";
@@ -148,15 +149,13 @@ export function Sidebar({ isOpen, onClose }) {
               }}
             >
               <div className="flex items-center gap-3">
-                <div
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[14px] font-extrabold text-white"
-                  style={{
-                    background:
-                      "linear-gradient(145deg,#22c55e 0%,#15803d 100%)",
-                  }}
-                >
-                  {orgInitial}
-                </div>
+                <Avatar
+                  src={org?.logoUrl}
+                  initials={orgInitial}
+                  alt={`${orgName} logo`}
+                  size="md"
+                  shape="square"
+                />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[12.5px] font-semibold text-white">
                     {orgName}
@@ -237,6 +236,9 @@ export function Sidebar({ isOpen, onClose }) {
             </div>
           )}
         </div>
+
+        {/* Organisation switcher (only when the user has >1 org on this portal) */}
+        <OrgSwitcher variant="sidebar" />
 
         {/* Nav */}
         <nav aria-label="Primary navigation" className="sidebar-nav py-2">

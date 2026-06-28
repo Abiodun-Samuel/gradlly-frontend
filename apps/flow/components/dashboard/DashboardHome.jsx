@@ -270,15 +270,14 @@ function HeroSection({ user, activeOrganisation, greeting }) {
             }}
           >
             <div className="flex min-w-0 items-center gap-3.5">
-              <div
-                className="flex size-11 shrink-0 items-center justify-center rounded-xl text-base font-bold text-white"
-                style={{
-                  background: "rgba(255,255,255,0.14)",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                }}
-              >
-                {orgInitial}
-              </div>
+              <Avatar
+                src={org.logoUrl}
+                initials={orgInitial}
+                alt={`${org.name} logo`}
+                size="xl"
+                shape="square"
+                className="border border-white/15"
+              />
               <div className="min-w-0">
                 <p className="truncate text-sm font-bold text-white sm:text-[15px]">
                   {org.name}

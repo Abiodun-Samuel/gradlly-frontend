@@ -2,7 +2,7 @@
 
 import { AlertCircle, Camera, CheckCircle, Loader2, User } from "lucide-react";
 import Image from "next/image";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const AVATAR_SIZES = {
   xs: {
@@ -57,34 +57,97 @@ const AVATAR_SIZES = {
 };
 
 const SHAPE_CLASSES = { circle: "rounded-full", square: "rounded-xl" };
-const MAX_FILE_SIZE = 1.5 * 1024 * 1024;
 
+// next/image is only configured for our own host; render anything else (e.g.
+// presigned S3 URLs) with a plain <img> so we never trip the remotePatterns
+// guard. Data-URL previews also use the plain <img> path.
+function isOptimizableUrl(src) {
+  if (typeof src !== "string") return false;
+  if (src.startsWith("data:") || src.startsWith("blob:")) return false;
+  try {
+    return new URL(src).hostname.endsWith(".gradlly.com");
+  } catch {
+    return false; // relative/unknown → plain <img>
+  }
+}
+
+/**
+ * Avatar
+ *
+ * Displays a user/organisation image with graceful initials fallback. Supports
+ * an OPTIONAL upload affordance that works in two interchangeable modes:
+ *
+ *  • Self-contained async (recommended): pass `uploadable` + `onFileSelect`.
+ *    The component shows an optimistic preview of the chosen file, overlays a
+ *    spinner while `onFileSelect(file)` resolves, and reverts the preview
+ *    automatically if it rejects.
+ *
+ *  • Legacy data-URL: pass `onUpload(dataUrl)`. The component reads the file as
+ *    a data URL and hands it back — caller owns persistence. (Unchanged.)
+ *
+ * When no upload handler is supplied, the avatar is purely presentational.
+ */
 export function Avatar({
   src,
   alt = "User avatar",
   initials = "",
   size = "md",
   shape = "circle",
+  // legacy data-URL upload (kept for backward compatibility)
   onUpload,
+  // self-contained async upload
+  uploadable = false,
+  onFileSelect,
+  accept = "image/png,image/jpeg,image/webp,image/gif,image/svg+xml",
+  // shared
   onError,
   className = "",
   loading = false,
+  disabled = false,
   isProfileCompleted = false,
   showProfileStatus = false,
 }) {
   const [imageError, setImageError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [preview, setPreview] = useState(null); // object URL during async upload
+  const [internalUploading, setInternalUploading] = useState(false);
+  const [lastSrc, setLastSrc] = useState(src);
   const fileInputRef = useRef(null);
+
+  // When the persisted `src` genuinely changes, reset the error flag and drop
+  // any optimistic preview so the canonical image takes over without a flash.
+  // Done during render (React's recommended pattern) rather than in an effect,
+  // so there is no extra commit/paint with stale state.
+  if (src !== lastSrc) {
+    setLastSrc(src);
+    setImageError(false);
+    setPreview(null);
+  }
 
   const sizeConfig = AVATAR_SIZES[size] ?? AVATAR_SIZES.md;
   const shapeClass = SHAPE_CLASSES[shape] ?? SHAPE_CLASSES.circle;
-  const isUploadable = Boolean(onUpload);
-  const isDataUrl = src?.startsWith("data:");
-  const showImage = src && !imageError;
+
+  const isUploadable =
+    !disabled && (Boolean(onUpload) || (uploadable && Boolean(onFileSelect)));
+  const isBusy = loading || internalUploading;
+
+  // The displayed source: optimistic preview wins while uploading, otherwise
+  // the persisted src.
+  const displaySrc = preview ?? src;
+  const showImage = Boolean(displaySrc) && !imageError;
+  const useNextImage = isOptimizableUrl(displaySrc);
+
   const displayInitials = useMemo(
     () => (initials ? initials.slice(0, 2).toUpperCase() : ""),
     [initials],
   );
+
+  // Revoke object URLs to avoid leaks.
+  useEffect(() => {
+    return () => {
+      if (preview?.startsWith("blob:")) URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
 
   const handleImageError = useCallback(() => {
     setImageError(true);
@@ -92,18 +155,39 @@ export function Avatar({
   }, [onError]);
 
   const handleClick = useCallback(() => {
-    if (isUploadable && !loading) fileInputRef.current?.click();
-  }, [isUploadable, loading]);
+    if (isUploadable && !isBusy) fileInputRef.current?.click();
+  }, [isUploadable, isBusy]);
+
+  const clearInput = useCallback(() => {
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }, []);
 
   const handleFileChange = useCallback(
-    (e) => {
+    async (e) => {
       const file = e.target.files?.[0];
+      clearInput();
       if (!file) return;
-      if (file.size > MAX_FILE_SIZE) {
-        onError?.("Image must be less than 1.5 MB");
-        if (fileInputRef.current) fileInputRef.current.value = "";
+
+      // ── Self-contained async mode ──────────────────────────────────────
+      if (uploadable && onFileSelect) {
+        setPreview(URL.createObjectURL(file));
+        setImageError(false);
+        setInternalUploading(true);
+        try {
+          await onFileSelect(file);
+          // On success keep the preview until the parent's updated `src` lands —
+          // the render-time reset above swaps it in seamlessly (no flash). The
+          // object URL is revoked by the cleanup effect when `preview` changes.
+        } catch {
+          // Parent/hook already surfaces the error toast; revert to old src.
+          setPreview(null);
+        } finally {
+          setInternalUploading(false);
+        }
         return;
       }
+
+      // ── Legacy data-URL mode ───────────────────────────────────────────
       const reader = new FileReader();
       reader.onloadend = () => {
         onUpload?.(reader.result);
@@ -111,9 +195,8 @@ export function Avatar({
       };
       reader.onerror = () => onError?.("Failed to read file");
       reader.readAsDataURL(file);
-      if (fileInputRef.current) fileInputRef.current.value = "";
     },
-    [onUpload, onError],
+    [uploadable, onFileSelect, onUpload, onError, clearInput],
   );
 
   const handleKeyDown = useCallback(
@@ -130,7 +213,7 @@ export function Avatar({
     "relative overflow-hidden transition-all duration-300",
     sizeConfig.container,
     shapeClass,
-    isUploadable && !loading ? "cursor-pointer" : "",
+    isUploadable && !isBusy ? "cursor-pointer" : "",
     className,
   ]
     .filter(Boolean)
@@ -154,26 +237,27 @@ export function Avatar({
         onMouseLeave={() => isUploadable && setIsHovered(false)}
         onKeyDown={handleKeyDown}
         role={isUploadable ? "button" : undefined}
-        aria-label={isUploadable ? "Upload avatar" : alt}
-        tabIndex={isUploadable && !loading ? 0 : undefined}
+        aria-label={isUploadable ? "Upload image" : alt}
+        aria-busy={isBusy || undefined}
+        tabIndex={isUploadable && !isBusy ? 0 : undefined}
       >
         {showImage ? (
-          isDataUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={src}
-              alt={alt}
-              className="h-full w-full object-cover"
-              onError={handleImageError}
-              draggable={false}
-            />
-          ) : (
+          useNextImage ? (
             <Image
-              src={src}
+              src={displaySrc}
               alt={alt}
               fill
               sizes="128px"
               className="object-cover"
+              onError={handleImageError}
+              draggable={false}
+            />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={displaySrc}
+              alt={alt}
+              className="h-full w-full object-cover"
               onError={handleImageError}
               draggable={false}
             />
@@ -197,7 +281,7 @@ export function Avatar({
             <div
               className={[
                 "absolute inset-0 flex items-center justify-center bg-black/55 transition-opacity duration-200",
-                isHovered && !loading ? "opacity-100" : "opacity-0",
+                isHovered && !isBusy ? "opacity-100" : "opacity-0",
               ].join(" ")}
               aria-hidden
             >
@@ -209,18 +293,18 @@ export function Avatar({
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept={accept}
               onChange={handleFileChange}
               className="hidden"
-              aria-label="Upload avatar image"
-              disabled={loading}
+              aria-label="Upload image file"
+              disabled={isBusy}
             />
           </>
         )}
 
-        {loading && (
+        {isBusy && (
           <div
-            className={`absolute inset-0 flex items-center justify-center bg-black/50 ${shapeClass}`}
+            className={`absolute inset-0 flex items-center justify-center bg-black/55 ${shapeClass}`}
           >
             <Loader2 size={20} className="animate-spin text-white" />
           </div>

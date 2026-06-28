@@ -11,20 +11,15 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 
+import Button from "@/components/ui/Button";
 import { AnimatePresence, MotionBox } from "@/components/ui/MotionBox";
 import { cn } from "@/utils/helper";
 import { acquireScrollLock, releaseScrollLock } from "@/utils/scroll-lock";
 
-// ─── Isomorphic layout effect ─────────────────────────────────────────────────
-//
-// useLayoutEffect fires synchronously before the browser paint — eliminating
-// the blank-frame flash that useEffect causes on mount. On the server, where
-// there is no DOM and no paint, it falls back to useEffect so SSR doesn't warn.
-
+// Isomorphic layout effect: useLayoutEffect runs before paint (no blank frame
+// on mount), falling back to useEffect on the server where there is no DOM.
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
-
-// ─── Size map ─────────────────────────────────────────────────────────────────
 
 const SIZES = {
   sm: "max-w-sm",
@@ -37,8 +32,6 @@ const SIZES = {
   full: "max-w-[90vw]",
 };
 
-// ─── Internal helpers ─────────────────────────────────────────────────────────
-
 function getFocusableNodes(root) {
   return Array.from(
     root.querySelectorAll(
@@ -49,30 +42,40 @@ function getFocusableNodes(root) {
   );
 }
 
-/*
- * @param {object}            props
- * @param {boolean}           props.open                   — visibility flag
- * @param {function}          [props.onClose]              — called when the modal requests close
- * @param {boolean}           [props.closable=true]        — enables ESC, backdrop click, close button
- * @param {'sm'|'md'|'lg'|'xl'|'2xl'|'3xl'|'4xl'|'full'} [props.size='lg'] — card width
- * @param {React.ReactNode}   [props.title]                — activates standard header
- * @param {React.ReactNode}   [props.description]          — subtitle inside header
- * @param {React.ReactNode}   [props.footer]               — sticky footer row
- * @param {boolean}           [props.showCloseButton=true] — X icon in header
- * @param {'center'|'top'}    [props.align='center']       — vertical position on screen
- * @param {string}            [props.className]            — extra classes on the card
- * @param {string}            [props.overlayClassName]     — extra classes on the backdrop wrapper
- * @param {React.ReactNode}   props.children
+/**
+ * Standard application modal. Always renders a sticky header (icon + title +
+ * description + close), a scrollable body, and a sticky footer with a default
+ * Cancel button. Callers supply only the primary action via the `footer` prop.
+ *
+ * @param {object}          props
+ * @param {boolean}         props.open                  visibility flag
+ * @param {function}        [props.onClose]             called when the modal requests close
+ * @param {boolean}         [props.closable=true]       enables ESC, backdrop click, close button
+ * @param {boolean}         [props.busy=false]          blocks close/cancel while an action runs
+ * @param {'sm'|'md'|'lg'|'xl'|'2xl'|'3xl'|'4xl'|'full'} [props.size='lg'] card width
+ * @param {React.ReactNode} props.icon                  leading header icon
+ * @param {React.ReactNode} props.title                 header title
+ * @param {React.ReactNode} [props.description]         header subtitle
+ * @param {React.ReactNode} [props.footer]              primary action button(s); Cancel is automatic
+ * @param {string}          [props.cancelLabel='Cancel'] label for the default Cancel button
+ * @param {boolean}         [props.hideCancel=false]    omit the default Cancel button
+ * @param {'center'|'top'}  [props.align='center']      vertical position on screen
+ * @param {string}          [props.className]           extra classes on the card
+ * @param {string}          [props.overlayClassName]    extra classes on the backdrop wrapper
+ * @param {React.ReactNode} props.children              modal body
  */
 export function Modal({
   open,
   onClose,
   closable = true,
+  busy = false,
   size = "lg",
+  icon,
   title,
   description,
   footer,
-  showCloseButton = true,
+  cancelLabel = "Cancel",
+  hideCancel = false,
   align = "center",
   className,
   overlayClassName,
@@ -81,28 +84,26 @@ export function Modal({
   const cardRef = useRef(null);
   const [mounted, setMounted] = useState(false);
 
-  // Unique IDs per instance — satisfies ARIA uniqueness even when two modals
-  // are mounted at the same time (e.g. a confirmation inside another modal).
   const titleId = useId();
   const descriptionId = useId();
 
-  // Mount guard — useIsomorphicLayoutEffect fires before the browser paint,
-  // so the portal is injected in the same frame as the first client render.
-  // useEffect would fire after paint, producing a blank frame before the
-  // AnimatePresence entrance animation begins.
+  // Close is permitted only when closable and not mid-action.
+  const canClose = closable && !busy;
+  const requestClose = canClose ? onClose : undefined;
+
   useIsomorphicLayoutEffect(() => {
     setMounted(true);
   }, []);
 
-  // Body scroll lock — delegated to the shared ref-counted utility so Modal
-  // and MobileDrawer operate on the same counter and never fight each other.
+  // Body scroll lock via the shared ref-counted utility so Modal and
+  // MobileDrawer never fight over the same counter.
   useEffect(() => {
     if (!open) return;
     acquireScrollLock();
     return releaseScrollLock;
   }, [open]);
 
-  // Auto-focus first focusable element after entrance animation settles
+  // Focus the first focusable element after the entrance animation settles.
   useEffect(() => {
     if (!open || !cardRef.current) return;
     const id = setTimeout(() => {
@@ -112,11 +113,11 @@ export function Modal({
     return () => clearTimeout(id);
   }, [open]);
 
-  // Focus trap + conditional ESC handler
+  // Focus trap + ESC handling.
   const handleKey = useCallback(
     (e) => {
       if (e.key === "Escape") {
-        closable ? onClose?.() : e.preventDefault();
+        canClose ? onClose?.() : e.preventDefault();
         return;
       }
       if (e.key !== "Tab" || !cardRef.current) return;
@@ -135,7 +136,7 @@ export function Modal({
         (e.shiftKey ? last : first).focus();
       }
     },
-    [closable, onClose],
+    [canClose, onClose],
   );
 
   useEffect(() => {
@@ -146,17 +147,13 @@ export function Modal({
 
   if (!mounted) return null;
 
-  const hasTitle = Boolean(title);
-  const renderCloseBtn = closable && showCloseButton && hasTitle;
+  const showFooter = !hideCancel || Boolean(footer);
 
   return createPortal(
     <AnimatePresence>
       {open && (
-        // ── Layer 1: Presence wrapper — animates opacity only ─────────────────
-        //
-        // Intentionally carries NO backgroundColor or backdropFilter.
-        // Those live on the .overlay child below, which has its own GPU
-        // compositing layer pre-allocated before the first animation frame.
+        // Presence wrapper animates opacity only; the visual overlay below owns
+        // the backdrop so backdrop-filter gets its own GPU layer up front.
         <MotionBox
           key="modal-backdrop"
           variant="fade"
@@ -170,13 +167,8 @@ export function Modal({
               : "items-center justify-center p-4",
             overlayClassName,
           )}
-          onClick={closable ? onClose : undefined}
+          onClick={requestClose}
         >
-          {/* ── Layer 1a: Visual overlay ──────────────────────────────────────
-               Separate from the MotionBox so backdrop-filter gets its own GPU
-               compositing layer at render time, not mid-animation. Inherits
-               parent opacity through CSS cascade — the visual fade is identical
-               to if it were on the MotionBox directly.                        */}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0"
@@ -187,11 +179,6 @@ export function Modal({
             }}
           />
 
-          {/* ── Layer 2: Card ─────────────────────────────────────────────────
-               No explicit delay. The popUp preset (scale + y + opacity) has
-               more motion than a plain fade, so it visually trails the backdrop
-               without needing artificial delay. Explicit delay produced a dark
-               flash — 40 ms of visible backdrop with no card.                */}
           <MotionBox
             ref={cardRef}
             variant="popUp"
@@ -199,85 +186,82 @@ export function Modal({
             exitDuration={0.2}
             role="dialog"
             aria-modal="true"
-            aria-labelledby={hasTitle ? titleId : undefined}
+            aria-labelledby={titleId}
             aria-describedby={description ? descriptionId : undefined}
             className={cn(
-              "relative w-full overflow-hidden rounded-2xl bg-white shadow-xl",
+              "relative flex w-full flex-col overflow-hidden rounded-2xl bg-white shadow-xl",
               SIZES[size] ?? SIZES.lg,
-              hasTitle || footer ? "flex flex-col" : "flex",
               className,
             )}
-            style={{
-              maxHeight: "92dvh",
-              willChange: "transform, opacity",
-            }}
+            style={{ maxHeight: "92dvh", willChange: "transform, opacity" }}
             onClick={(e) => e.stopPropagation()}
           >
-            {hasTitle ? (
-              <>
-                {/* Header */}
-                <div className="flex shrink-0 items-start justify-between gap-4 border-b border-neutral-100 px-6 py-5">
-                  <div className="min-w-0">
-                    <h2
-                      id={titleId}
-                      className="truncate text-base font-semibold leading-snug text-neutral-900"
+            {/* Sticky header */}
+            <div className="flex shrink-0 items-start justify-between gap-4 border-b border-neutral-100 px-6 py-5">
+              <div className="flex min-w-0 items-start gap-3">
+                {icon ? (
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-primary-500 to-primary-700 text-white shadow-sm">
+                    {icon}
+                  </span>
+                ) : null}
+                <div className="min-w-0">
+                  <h2
+                    id={titleId}
+                    className="truncate text-base font-semibold leading-snug text-neutral-900"
+                  >
+                    {title}
+                  </h2>
+                  {description ? (
+                    <p
+                      id={descriptionId}
+                      className="mt-0.5 text-sm leading-snug text-neutral-500"
                     >
-                      {title}
-                    </h2>
-                    {description && (
-                      <p
-                        id={descriptionId}
-                        className="mt-0.5 text-sm leading-snug text-neutral-500"
-                      >
-                        {description}
-                      </p>
-                    )}
-                  </div>
+                      {description}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
 
-                  {renderCloseBtn && (
-                    <button
-                      type="button"
-                      onClick={onClose}
-                      aria-label="Close"
-                      className={cn(
-                        "-mr-1.5 -mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center",
-                        "rounded-lg text-neutral-400 transition-colors duration-150",
-                        "hover:bg-neutral-100 hover:text-neutral-700",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700",
-                      )}
-                    >
-                      <X className="h-4 w-4" strokeWidth={2} aria-hidden />
-                    </button>
+              {canClose ? (
+                <button
+                  type="button"
+                  onClick={onClose}
+                  aria-label="Close"
+                  className={cn(
+                    "-mr-1.5 -mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center",
+                    "rounded-lg text-neutral-400 transition-colors duration-150",
+                    "hover:bg-neutral-100 hover:text-neutral-700",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700",
                   )}
-                </div>
+                >
+                  <X className="h-4 w-4" strokeWidth={2} aria-hidden />
+                </button>
+              ) : null}
+            </div>
 
-                {/* Scrollable body */}
-                <div className="flex-1 overflow-y-auto overscroll-contain px-6 py-5">
-                  {children}
-                </div>
+            {/* Scrollable body */}
+            <div className="flex-1 overflow-y-auto overscroll-contain px-6 py-5">
+              {children}
+            </div>
 
-                {/* Sticky footer */}
-                {footer && (
-                  <div className="flex shrink-0 items-center justify-end gap-2.5 border-t border-neutral-100 bg-neutral-50/60 px-6 py-4">
-                    {footer}
-                  </div>
-                )}
-              </>
-            ) : (
-              // Untitled (custom) modal: render children, and still honour a
-              // footer when one is provided so callers like confirm dialogs
-              // keep their action buttons.
-              <>
-                <div className="min-w-0 flex-1 overflow-y-auto overscroll-contain">
-                  {children}
-                </div>
-                {footer && (
-                  <div className="flex shrink-0 items-center justify-end gap-2.5 border-t border-neutral-100 bg-neutral-50/60 px-6 py-4">
-                    {footer}
-                  </div>
-                )}
-              </>
-            )}
+            {/* Sticky footer: default Cancel + caller-supplied action(s) */}
+            {showFooter ? (
+              <div className="flex shrink-0 items-center justify-end gap-2.5 border-t border-neutral-100 bg-neutral-50/60 px-6 py-4">
+                {!hideCancel ? (
+                  <Button
+                    type="button"
+                    color="black"
+                    variant="neutral"
+                    size="sm"
+                    disabled={busy}
+                    onClick={onClose}
+                  >
+                    {cancelLabel}
+                  </Button>
+                ) : null}
+                {footer}
+              </div>
+            ) : null}
           </MotionBox>
         </MotionBox>
       )}
