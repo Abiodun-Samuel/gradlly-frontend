@@ -1,14 +1,14 @@
-import { DashboardHome } from "@/components/dashboard/DashboardHome";
+import { Dashboard } from "@/components/dashboard/Dashboard";
 import { createPageSeo } from "@/utils/metadata";
 
 export const { metadata, viewport } = createPageSeo({
-  title: "Dashboard",
+  title: "Levy Dashboard",
   description:
-    "Your Gradlly Employer dashboard — manage apprentices, track progress, and oversee your workforce development.",
+    "Your Gradlly Employer levy dashboard — manage apprenticeship levy balance, transfers, and ROI.",
   path: "/",
   noIndex: true,
 });
 
 export default function DashboardHomePage() {
-  return <DashboardHome />;
+  return <Dashboard />;
 }
