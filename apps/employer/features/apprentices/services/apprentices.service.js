@@ -1,0 +1,45 @@
+"use client";
+
+import { $apiClient } from "@/lib/api/client";
+import { normalizeApiClientError } from "@/lib/errors";
+
+import { APPRENTICE_PATHS } from "../constants";
+
+function buildHeaders(orgId) {
+  if (!orgId) return {};
+  return { "x-organisation-id": orgId };
+}
+
+export async function getApprentices({ orgId, page = 1, perPage = 100 } = {}) {
+  try {
+    const result = await $apiClient.get(
+      `${APPRENTICE_PATHS.LIST}?page=${page}&perPage=${perPage}`,
+      { headers: buildHeaders(orgId) },
+    );
+    return result.data;
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+export async function getApprentice({ orgId, id }) {
+  try {
+    const result = await $apiClient.get(APPRENTICE_PATHS.detail(id), {
+      headers: buildHeaders(orgId),
+    });
+    return result.data;
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+export async function createApprentice({ orgId, body }) {
+  try {
+    const result = await $apiClient.post(APPRENTICE_PATHS.LIST, body, {
+      headers: buildHeaders(orgId),
+    });
+    return result.data?.data ?? result.data;
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}

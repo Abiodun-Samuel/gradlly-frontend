@@ -1,10 +1,18 @@
 import {
+  AlertTriangle,
+  BarChart3,
+  Briefcase,
+  CheckSquare,
+  ClipboardList,
+  FileText,
   Bell,
   Building2,
   LayoutDashboard,
+  PoundSterling,
   Settings,
   UserCircle,
   UserPlus,
+  Users,
   // ── Icons for not-yet-built sections (kept for when they are re-enabled) ──
   // BarChart3,
   // Briefcase,
@@ -17,7 +25,56 @@ import {
 export const NAV_SECTIONS = [
   {
     title: "Overview",
-    items: [{ label: "Dashboard", href: "/", icon: LayoutDashboard }],
+    items: [
+      { label: "Dashboard", href: "/", icon: LayoutDashboard },
+      { label: "Analytics", href: "/analytics", icon: BarChart3 },
+    ],
+  },
+  {
+    title: "Apprenticeships",
+    items: [
+      { label: "My Apprentices", href: "/apprentices", icon: Users },
+      {
+        label: "Commitments",
+        href: "/commitments",
+        icon: ClipboardList,
+        badge: 2,
+      },
+      {
+        label: "OTJ Approvals",
+        href: "/otj-approvals",
+        icon: CheckSquare,
+      },
+      {
+        label: "At-Risk Management",
+        href: "/at-risk",
+        icon: AlertTriangle,
+        badge: 5,
+      },
+    ],
+  },
+  {
+    title: "Levy & Finance",
+    items: [
+      { label: "Levy Dashboard", href: "/levy-dashboard", icon: PoundSterling },
+      { label: "Levy Transfer", href: "/levy-transfer", icon: Briefcase },
+      { label: "Reports", href: "/reports", icon: FileText },
+    ],
+  },
+  {
+    title: "Recruitment",
+    items: [
+      {
+        label: "Jobs",
+        href: "/jobs",
+        icon: Briefcase,
+        children: [
+          { label: "Job Posts", href: "/jobs" },
+          { label: "Applications", href: "/applications" },
+        ],
+      },
+      { label: "Onboarding", href: "/onboarding", icon: UserPlus },
+    ],
   },
   // ── Talent section: pages not yet built. Re-enable when ready. ──
   // {
