@@ -35,7 +35,7 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
  * }} [params]
  * @returns {Promise<{ summary: import("@/components/at-risk/data").AtRiskSummary, apprentices: import("@/components/at-risk/data").AtRiskApprentice[] }>}
  */
-export async function getAtRiskList(params = {}) {
+export async function getAtRiskList(_params = {}) {
   // REAL:
   // try {
   //   const result = await $apiClient.get("/apprentices/at-risk", { params });
@@ -133,7 +133,7 @@ export async function createIntervention(id, body) {
  * @param {{ recipient: 'apprentice' | 'provider' | 'manager', subject: string, body: string }} body
  * @returns {Promise<{ success: boolean, message: string }>}
  */
-export async function sendMessage(id, body) {
+export async function sendMessage(_id, _body) {
   // REAL:
   // try {
   //   const result = await $apiClient.post(`/apprentices/${id}/messages`, body);

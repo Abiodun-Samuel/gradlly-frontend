@@ -54,7 +54,7 @@ function Skeleton() {
   );
 }
 
-function ErrorState({ onRetry }) {
+function ErrorState({ onRetry: _onRetry }) {
   return (
     <div className="flex flex-col items-center gap-3 py-20 text-center">
       <p className="text-sm font-bold" style={{ color: T.ink }}>
