@@ -104,7 +104,7 @@ export function OTJLogForm() {
           </div>
         </div>
 
-        <div className="flex justify-end pt-1">
+        <div className="flex justify-end pt-1 ">
           <Button type="submit" size="md">
             Log session
           </Button>

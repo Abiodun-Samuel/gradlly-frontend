@@ -5,24 +5,37 @@ import { normalizeApiClientError } from "@/lib/errors";
 
 import { OTJ_PATHS } from "../constants";
 
+function buildHeaders(orgId) {
+  if (!orgId) return {};
+  return { "x-organisation-id": orgId };
+}
+
 function unwrap(result) {
   return result.data?.data ?? result.data;
 }
 
-export async function listOtjLogEntries({
+export async function listOtjEntries({
+  orgId,
+  status,
+  apprenticeId,
+  enrolmentId,
+  from,
+  to,
   page = 1,
   perPage = 20,
-  status,
-  orgId,
 } = {}) {
   const params = { page, perPage };
   if (status !== undefined && status !== null && status !== "")
     params.status = status;
+  if (apprenticeId) params.apprenticeId = apprenticeId;
+  if (enrolmentId) params.enrolmentId = enrolmentId;
+  if (from) params.from = from;
+  if (to) params.to = to;
 
   try {
     const result = await $apiClient.get(OTJ_PATHS.BASE, {
+      headers: buildHeaders(orgId),
       params,
-      headers: orgId ? { "X-Organisation-Id": orgId } : undefined,
     });
     return result.data;
   } catch (e) {
@@ -30,16 +43,56 @@ export async function listOtjLogEntries({
   }
 }
 
-export async function bulkApproveOtjEntries(ids, orgId) {
+export async function listOtjLogEntries(args) {
+  return listOtjEntries(args);
+}
+
+export async function bulkApproveOtj({ orgId, ids, reason = "" }) {
   try {
     const result = await $apiClient.post(
-      OTJ_PATHS.BULK_APPROVE,
-      { ids },
-      {
-        headers: orgId ? { "X-Organisation-Id": orgId } : undefined,
-      },
+      OTJ_PATHS.bulkApprove(),
+      { ids, reason },
+      { headers: buildHeaders(orgId) },
     );
     return unwrap(result);
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+export async function bulkApproveOtjEntries(ids, orgId) {
+  return bulkApproveOtj({ orgId, ids, reason: "" });
+}
+
+export async function bulkRejectOtj({ orgId, ids, reason }) {
+  try {
+    const result = await $apiClient.post(
+      OTJ_PATHS.bulkReject(),
+      { ids, reason },
+      { headers: buildHeaders(orgId) },
+    );
+    return unwrap(result);
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+export async function updateOtjEntry({ orgId, id, ...body }) {
+  try {
+    const result = await $apiClient.patch(OTJ_PATHS.detail(id), body, {
+      headers: buildHeaders(orgId),
+    });
+    return unwrap(result);
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+export async function deleteOtjEntry({ orgId, id }) {
+  try {
+    await $apiClient.delete(OTJ_PATHS.detail(id), {
+      headers: buildHeaders(orgId),
+    });
   } catch (e) {
     throw normalizeApiClientError(e);
   }

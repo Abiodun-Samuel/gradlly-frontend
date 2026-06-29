@@ -8,12 +8,6 @@ import { setActiveOrgId } from "@/lib/api/active-org";
 
 const MANAGE_ROLES = new Set(["owner", "admin"]);
 
-/**
- * Public interface to the current authenticated user.
- *
- * Wraps useMe so consumers never import from the query layer directly.
- * All dashboard components should use this hook — never useMe.
- */
 export function useAuthUser() {
   const { data, isLoading, isError, error } = useMe();
 

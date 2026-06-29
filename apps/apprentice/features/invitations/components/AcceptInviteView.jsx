@@ -1,10 +1,11 @@
 "use client";
 
 import { CheckCircle2, Loader2, Mail, XCircle } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef } from "react";
 
 import Button from "@/components/ui/Button";
+import { useMe } from "@/features/auth/queries/auth.query";
 
 import { useAcceptInvitation } from "../queries/invitations.query";
 
@@ -45,26 +46,31 @@ function StatusBlock({
   );
 }
 
-/**
- * AcceptInviteInner
- *
- * The /accept-invitation route is auth-protected by the portal proxy
- * (Next.js 16 proxy.js), so this component only ever renders for an
- * authenticated user. It simply accepts the token on mount; on success the
- * mutation redirects to the dashboard.
- */
 function AcceptInviteInner() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token") ?? "";
+  const router = useRouter();
 
+  const { data: user, isLoading: authLoading } = useMe();
   const { mutate, isError, isSuccess, error } = useAcceptInvitation();
   const didAccept = useRef(false);
 
+  // Redirect unauthenticated users to login, preserving the invite URL
   useEffect(() => {
-    if (!token || didAccept.current) return;
+    if (authLoading) return;
+    if (!user) {
+      router.replace(
+        `/login?redirect=${encodeURIComponent(`/accept-invitation?token=${token}`)}`,
+      );
+    }
+  }, [authLoading, user, token, router]);
+
+  // Fire the mutation once we know the user is authenticated
+  useEffect(() => {
+    if (!token || !user || didAccept.current) return;
     didAccept.current = true;
     mutate({ token });
-  }, [token, mutate]);
+  }, [token, user, mutate]);
 
   // ── Missing token ──────────────────────────────────────────────────────────
   if (!token) {
@@ -75,7 +81,7 @@ function AcceptInviteInner() {
         title="Invalid invitation link"
         description="This link is missing an invitation token. Please check your email for the original invite link."
       >
-        <Button href="/" color="green" size="sm">
+        <Button href="/" size="sm">
           Go to dashboard
         </Button>
       </StatusBlock>
@@ -94,7 +100,7 @@ function AcceptInviteInner() {
           "This invitation link may have expired or already been used."
         }
       >
-        <Button href="/" color="green" size="sm">
+        <Button href="/" size="sm">
           Go to dashboard
         </Button>
       </StatusBlock>
@@ -106,18 +112,20 @@ function AcceptInviteInner() {
     return (
       <StatusBlock tone="success" icon={CheckCircle2}>
         <p className="text-sm font-medium text-neutral-700">
-          Invitation accepted. Redirecting
+          Invitation accepted. Redirecting…
         </p>
       </StatusBlock>
     );
   }
 
-  // ── Accepting (idle + pending) ──────────────────────────────────────────────
+  // ── Waiting for auth check or accepting ────────────────────────────────────
   return (
     <StatusBlock>
       <Loader2 className="size-8 animate-spin text-primary-500" />
       <p className="text-sm font-medium text-neutral-700">
-        Accepting your invitation
+        {authLoading || !user
+          ? "Verifying session…"
+          : "Accepting your invitation…"}
       </p>
     </StatusBlock>
   );

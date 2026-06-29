@@ -5,8 +5,12 @@ import { queryConfig } from "@/lib/react-query/query.config";
 function makeQueryClient() {
   return new QueryClient({
     queryCache: new QueryCache({
-      onError: (error) => {
-        if (error?.status === 401 && typeof window !== "undefined") {
+      onError: (error, query) => {
+        if (
+          error?.status === 401 &&
+          typeof window !== "undefined" &&
+          !query.meta?.skipAuthRedirect
+        ) {
           window.location.replace("/login");
         }
       },
