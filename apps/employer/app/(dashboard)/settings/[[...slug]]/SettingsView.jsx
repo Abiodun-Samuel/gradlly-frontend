@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Building2, UserPlus } from "lucide-react";
+import { Bell, BookOpen, Building2, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 
@@ -11,6 +11,7 @@ import { useRoleAccess } from "@/features/auth/hooks/useRoleAccess";
 import { InvitationsTable } from "@/features/invitations/components/InvitationsTable";
 import { NotificationsPanel } from "@/features/notifications/components/NotificationsPanel";
 import { UpdateOrganizationForm } from "@/features/organization/components/UpdateOrganizationForm";
+import { ProgrammesPanel } from "@/features/standards/components/ProgrammesPanel";
 
 const TAB_META = {
   organisation: {
@@ -29,6 +30,12 @@ const TAB_META = {
     icon: Bell,
     description: "Your latest activity, alerts and updates.",
   },
+  standards: {
+    label: "Standards",
+    icon: BookOpen,
+    description:
+      "Manage apprenticeship programmes and standards used in enrolments.",
+  },
 };
 
 export function SettingsView({ activeTab = "invitations" }) {
@@ -45,6 +52,7 @@ export function SettingsView({ activeTab = "invitations" }) {
     ];
     if (isOwner && hasOrg) {
       base.unshift({ value: "organisation", ...TAB_META.organisation });
+      base.push({ value: "standards", ...TAB_META.standards });
     }
     return base;
   }, [isOwner, hasOrg]);
@@ -90,6 +98,8 @@ export function SettingsView({ activeTab = "invitations" }) {
             <UpdateOrganizationForm />
           ) : resolvedTab === "invitations" ? (
             <InvitationsTable />
+          ) : resolvedTab === "standards" ? (
+            <ProgrammesPanel />
           ) : (
             <NotificationsPanel />
           )}

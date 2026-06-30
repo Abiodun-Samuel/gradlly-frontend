@@ -12,6 +12,7 @@ import { LogoutButton } from "@/features/auth/components/LogoutButton";
 import { OrgSwitcher } from "@/features/auth/components/OrgSwitcher";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import { useRoleAccess } from "@/features/auth/hooks/useRoleAccess";
+import { useOtjPendingCount } from "@/features/otj/queries/otj.query";
 import { capitalise, cn, getFullName, getInitials } from "@/utils/helper";
 
 // Compact labelled row for the sidebar organisation card.
@@ -52,6 +53,9 @@ export function Sidebar({ isOpen, onClose }) {
   const { user, activeOrganisation } = useAuthUser();
   const { can } = useRoleAccess();
   const pathname = usePathname();
+  const otjPendingCount = useOtjPendingCount();
+
+  const liveBadges = { "/otj-approvals": otjPendingCount.data ?? 0 };
 
   // Active matching for nested routes (e.g. Settings sub-pages). Bare /settings
   // resolves to its default first sub-page (/settings/invitations).
@@ -371,7 +375,12 @@ export function Sidebar({ isOpen, onClose }) {
                           : "text-white/40 group-hover:text-primary-400/70",
                       )}
                     />
-                    {item.label}
+                    <span className="flex-1">{item.label}</span>
+                    {(liveBadges[item.href] ?? item.badge ?? 0) > 0 && (
+                      <span className="flex h-4.5 min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white leading-none">
+                        {liveBadges[item.href] ?? item.badge}
+                      </span>
+                    )}
                   </Link>
                 );
               })}

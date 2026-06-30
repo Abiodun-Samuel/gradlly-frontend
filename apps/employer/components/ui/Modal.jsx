@@ -161,7 +161,7 @@ export function Modal({
           exitDuration={0.2}
           ease="easeOut"
           className={cn(
-            "fixed inset-0 z-400 flex",
+            "fixed inset-0 z-[400] flex",
             align === "top"
               ? "items-start justify-center p-4 pt-16"
               : "items-center justify-center p-4",

@@ -5,17 +5,27 @@ import {
   // ── Icons for not-yet-built sections (kept for when they are re-enabled) ──
   // BarChart3,
   // BookMarked,
-  // BookOpen,
-  // ClipboardCheck,
-  // TrendingUp,
+  BookOpen,
+  ClipboardCheck,
+  TrendingUp,
   // Users,
 } from "lucide-react";
 
 export const NAV_SECTIONS = [
   {
     title: "My Learning",
-    items: [{ label: "Dashboard", href: "/", icon: LayoutDashboard }],
+    items: [
+      { label: "Dashboard", href: "/", icon: LayoutDashboard },
+      { label: "OTJ log ", href: "/otj-logs", icon: BookOpen },
+      {
+        label: "Portfolio & KSBs",
+        href: "/portfolio",
+        icon: ClipboardCheck,
+      },
+      { label: "Milestones ", href: "/progress", icon: TrendingUp },
+    ],
   },
+
   // ── Learning sections: pages not yet built. Re-enable when ready. ──
   // {
   //   title: "My Learning",

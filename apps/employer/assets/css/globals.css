@@ -333,6 +333,49 @@
   }
 }
 
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ── Responsive table utility ────────────────────────────────── */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Prevent content from hiding behind the sidebar on desktop ─ */
+@media (min-width: 1024px) {
+  .main-content-area.sidebar-open .page-content {
+    max-width: 100%;
+  }
+}
+
+/* ── Touch-friendly tap targets ──────────────────────────────── */
+@media (max-width: 640px) {
+  button,
+  [role="button"] {
+    min-height: 36px;
+  }
+}
+
 /* loading page  */
 /* ── Background ──────────────────────────────────────────── */
 .gl-bg {
