@@ -1,0 +1,158 @@
+"use client";
+
+import { $apiClient } from "@/lib/api/client";
+import { normalizeApiClientError } from "@/lib/errors";
+
+import { OFSTED_PATHS } from "../constants";
+
+// The active organisation is sent globally via the X-Organisation-Id cookie/
+// header (see lib/api/client), so none of these calls set it explicitly.
+
+// ─── EIF criteria + scores ───────────────────────────────────────────────────
+export async function getEifCriteria() {
+  try {
+    const result = await $apiClient.get(OFSTED_PATHS.eifCriteria);
+    return result.data?.data ?? result.data;
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+export async function getEifScores() {
+  try {
+    const result = await $apiClient.get(OFSTED_PATHS.eifScores);
+    return result.data?.data ?? result.data;
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+// ─── QIP actions ─────────────────────────────────────────────────────────────
+export async function listQipActions({
+  page = 1,
+  perPage = 20,
+  status,
+  eifCriterionSlug,
+  overdue,
+} = {}) {
+  try {
+    const params = { page, perPage };
+    if (status) params.status = status;
+    if (eifCriterionSlug) params.eifCriterionSlug = eifCriterionSlug;
+    if (overdue) params.overdue = overdue;
+
+    const result = await $apiClient.get(OFSTED_PATHS.qipActions, { params });
+    return result.data;
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+export async function getQipSummary() {
+  try {
+    const result = await $apiClient.get(OFSTED_PATHS.qipSummary);
+    return result.data?.data ?? result.data;
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+export async function createQipAction(payload) {
+  try {
+    const result = await $apiClient.post(OFSTED_PATHS.qipActions, payload);
+    return result.data?.data ?? result.data;
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+export async function updateQipAction({ id, payload }) {
+  try {
+    const result = await $apiClient.patch(
+      OFSTED_PATHS.qipActionById(id),
+      payload,
+    );
+    return result.data?.data ?? result.data;
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+export async function deleteQipAction(id) {
+  try {
+    await $apiClient.delete(OFSTED_PATHS.qipActionById(id));
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+// ─── Safeguarding checklist ──────────────────────────────────────────────────
+export async function getSafeguardingChecklist() {
+  try {
+    const result = await $apiClient.get(OFSTED_PATHS.safeguardingChecklist);
+    return result.data?.data ?? result.data;
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+export async function completeSafeguardingItem({ slug, evidenceStorageKey }) {
+  try {
+    const body = {};
+    if (evidenceStorageKey) body.evidenceStorageKey = evidenceStorageKey;
+    const result = await $apiClient.patch(
+      OFSTED_PATHS.safeguardingItem(slug),
+      body,
+    );
+    return result.data?.data ?? result.data;
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+// ─── Programme documents ─────────────────────────────────────────────────────
+export async function listProgrammeDocuments(programmeId) {
+  try {
+    const result = await $apiClient.get(
+      OFSTED_PATHS.programmeDocuments(programmeId),
+    );
+    return result.data?.data ?? result.data;
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+export async function createProgrammeDocument({ programmeId, payload }) {
+  try {
+    const result = await $apiClient.post(
+      OFSTED_PATHS.programmeDocuments(programmeId),
+      payload,
+    );
+    return result.data?.data ?? result.data;
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+// ─── Evidence pack jobs (owner/admin) ────────────────────────────────────────
+export async function createEvidencePackJob({ additionalStorageKeys } = {}) {
+  try {
+    const body = {};
+    if (additionalStorageKeys?.length) {
+      body.additionalStorageKeys = additionalStorageKeys;
+    }
+    const result = await $apiClient.post(OFSTED_PATHS.evidencePacks, body);
+    return result.data?.data ?? result.data;
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+export async function getEvidencePackJob(id) {
+  try {
+    const result = await $apiClient.get(OFSTED_PATHS.evidencePackById(id));
+    return result.data?.data ?? result.data;
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}

@@ -1,0 +1,11 @@
+export const LEARNER_QUERY_KEYS = {
+  all: () => ["learners"],
+  cohort: (orgId, params = {}) => ["learners", "cohort", orgId, params],
+  interventionQueue: (orgId, params = {}) => [
+    "learners",
+    "intervention-queue",
+    orgId,
+    params,
+  ],
+  profile: (orgId, enrolmentId) => ["learners", "profile", orgId, enrolmentId],
+};

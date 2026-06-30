@@ -15,6 +15,9 @@ import { GoBackButton } from "@/components/ui/GoBackButton";
 import { PageSubheader } from "@/components/ui/PageSubheader";
 import { useApprentice } from "@/features/apprentices/queries/apprentices.query";
 import { useRoleAccess } from "@/features/auth/hooks/useRoleAccess";
+import { CommitmentStatementPanel } from "@/features/commitment-statements/components/CommitmentStatementPanel";
+import { EnrolmentPortfolioPanel } from "@/features/portfolio/components/EnrolmentPortfolioPanel";
+import { EnrolmentReviewsPanel } from "@/features/reviews/components/EnrolmentReviewsPanel";
 import { useStandard } from "@/features/standards/queries/standards.query";
 import { cn, formatDate, getFullName } from "@/utils/helper";
 
@@ -288,6 +291,21 @@ export function EnrolmentDetailView({ enrolmentId }) {
             </CardContent>
           </Card>
         </div>
+      ) : null}
+
+      {/* Commitment statement (1:1 with the enrolment) */}
+      {enrolment ? (
+        <CommitmentStatementPanel enrolment={enrolment} canManage={canManage} />
+      ) : null}
+
+      {/* Progress reviews for this enrolment */}
+      {enrolment ? (
+        <EnrolmentReviewsPanel enrolment={enrolment} canManage={canManage} />
+      ) : null}
+
+      {/* Portfolio: KSB coverage, evidence review, EPA pack */}
+      {enrolment ? (
+        <EnrolmentPortfolioPanel enrolment={enrolment} canManage={canManage} />
       ) : null}
 
       {/* Journey */}

@@ -1,11 +1,12 @@
 "use client";
 
-import { BookMarked, Pencil, Plus, Trash2 } from "lucide-react";
+import { BookMarked, ListChecks, Pencil, Plus, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import Button from "@/components/ui/Button";
 import { DataTable } from "@/components/ui/DataTable";
 import { useRoleAccess } from "@/features/auth/hooks/useRoleAccess";
+import { ManageKsbModal } from "@/features/portfolio/components/ManageKsbModal";
 import { useProgrammes } from "@/features/programmes/queries/programmes.query";
 import { cn } from "@/utils/helper";
 
@@ -69,9 +70,22 @@ function FundingCell({ value }) {
   return <span className="tabular-nums text-neutral-700">{formatted}</span>;
 }
 
-function RowActions({ standard, onEdit, onDelete }) {
+function RowActions({ standard, onManageKsb, onEdit, onDelete }) {
   return (
     <div className="flex items-center justify-end gap-1">
+      <button
+        type="button"
+        onClick={() => onManageKsb(standard)}
+        title="Manage KSBs"
+        className={cn(
+          "flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium",
+          "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900",
+          "transition-colors duration-150",
+        )}
+      >
+        <ListChecks className="size-3.5" aria-hidden />
+        KSBs
+      </button>
       <button
         type="button"
         onClick={() => onEdit(standard)}
@@ -110,6 +124,7 @@ export function StandardsTable() {
   const [formOpen, setFormOpen] = useState(false);
   const [editTarget, setEditTarget] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [ksbTarget, setKsbTarget] = useState(null);
 
   const { data, isLoading, isFetching } = useStandards({ page, perPage });
   const standards = data?.standards ?? [];
@@ -201,6 +216,7 @@ export function StandardsTable() {
             cell: (row) => (
               <RowActions
                 standard={row}
+                onManageKsb={setKsbTarget}
                 onEdit={openEdit}
                 onDelete={setDeleteTarget}
               />
@@ -274,6 +290,11 @@ export function StandardsTable() {
         standard={deleteTarget}
         open={Boolean(deleteTarget)}
         onClose={() => setDeleteTarget(null)}
+      />
+      <ManageKsbModal
+        standard={ksbTarget}
+        open={Boolean(ksbTarget)}
+        onClose={() => setKsbTarget(null)}
       />
     </div>
   );

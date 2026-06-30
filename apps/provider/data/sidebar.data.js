@@ -2,13 +2,20 @@ import {
   Bell,
   BookMarked,
   Building2,
+  ClipboardCheck,
   ClipboardList,
+  Clock,
+  FileSignature,
+  FolderOpen,
   GraduationCap,
   LayoutDashboard,
+  PenTool,
   Settings,
+  ShieldCheck,
   UserCircle,
   UserPlus,
   Users,
+  UsersRound,
   // ── Icons for not-yet-built sections (kept for when they are re-enabled) ──
   // AlertTriangle,
   // Archive,
@@ -37,11 +44,41 @@ export const NAV_SECTIONS = [
   },
   {
     title: "Learners",
-    items: [{ label: "Apprentices", href: "/apprentices", icon: Users }],
+    items: [
+      { label: "Apprentices", href: "/apprentices", icon: Users },
+      { label: "Caseload", href: "/learners", icon: UsersRound },
+    ],
   },
   {
     title: "Delivery",
-    items: [{ label: "Enrolments", href: "/enrolments", icon: ClipboardList }],
+    items: [
+      { label: "Enrolments", href: "/enrolments", icon: ClipboardList },
+      {
+        label: "Commitment Statements",
+        href: "/commitment-statements",
+        icon: FileSignature,
+      },
+      { label: "OTJ Log Entries", href: "/otj-log-entries", icon: Clock },
+      { label: "Reviews", href: "/reviews", icon: ClipboardCheck },
+    ],
+  },
+  {
+    title: "Portfolio",
+    items: [
+      {
+        label: "Evidence Review",
+        href: "/portfolio/evidence",
+        icon: FolderOpen,
+      },
+    ],
+  },
+  {
+    title: "Compliance",
+    items: [{ label: "Ofsted Hub", href: "/ofsted-hub", icon: ShieldCheck }],
+  },
+  {
+    title: "Tools",
+    items: [{ label: "E-Signature", href: "/esignature", icon: PenTool }],
   },
   // ── Compliance section: pages not yet built. Re-enable when ready. ──
   // {

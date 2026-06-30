@@ -20,6 +20,8 @@ function retryDelay(attemptIndex) {
 export const STALE_TIMES = {
   USER_SESSION: 30 * 1000,
   DEFAULT: 60 * 1000,
+  // Rarely-changing reference data (e.g. versioned catalogues / enums).
+  STATIC: 60 * 60 * 1000,
 };
 
 export const queryConfig = {
