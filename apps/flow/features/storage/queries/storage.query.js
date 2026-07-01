@@ -5,6 +5,7 @@ import { useCallback } from "react";
 
 import {
   STORAGE_CATEGORY,
+  requestDownloadUrl,
   uploadFile,
 } from "@/features/storage/services/storage.service";
 import { toastError } from "@/hooks/useToast";
@@ -50,5 +51,26 @@ export function useUploadFile({
     isUploading: mutation.isPending,
     error: mutation.error,
     reset: mutation.reset,
+  };
+}
+
+/**
+ * Resolves a private object's S3 key to a short-lived presigned download URL and
+ * opens it in a new tab. Used for signed-PDF / evidence downloads.
+ */
+export function useDownloadObject() {
+  const mutation = useMutation({
+    mutationFn: (key) => requestDownloadUrl({ key }),
+    onSuccess: ({ downloadUrl }) => {
+      if (typeof window !== "undefined") {
+        window.open(downloadUrl, "_blank", "noopener,noreferrer");
+      }
+    },
+    onError: (error) => toastError(error.message),
+  });
+
+  return {
+    download: (key) => mutation.mutateAsync(key),
+    isDownloading: mutation.isPending,
   };
 }

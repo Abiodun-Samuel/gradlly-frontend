@@ -12,7 +12,6 @@ import {
   Hash,
   MapPin,
   Sparkles,
-  Users,
   Workflow,
 } from "lucide-react";
 import Link from "next/link";
@@ -21,7 +20,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import TextBadge from "@/components/ui/TextBadge";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
-import { useSmeOverview } from "@/features/reporting/queries/reporting.query";
+import { SmeDashboard } from "@/features/reporting/components/SmeDashboard";
 import {
   capitalise,
   cn,
@@ -34,49 +33,6 @@ import {
 
 // ─── Static config ────────────────────────────────────────────────────────────
 
-const STAT_CARDS = [
-  {
-    id: "apprentices",
-    label: "Active Apprentices",
-    valueKey: "activeApprenticeCount",
-    icon: Users,
-    iconBg: "bg-primary-50",
-    iconColor: "text-primary-700",
-    accentBg: "bg-primary-600",
-    hint: "View apprentice roster",
-  },
-  {
-    id: "otj",
-    label: "Pending OTJ Approvals",
-    valueKey: "pendingOtjApprovalCount",
-    icon: ClipboardList,
-    iconBg: "bg-warning-50",
-    iconColor: "text-warning-700",
-    accentBg: "bg-warning-600",
-    hint: "Review OTJ entries",
-  },
-  {
-    id: "reviews",
-    label: "Reviews Due",
-    valueKey: "reviewsDueThisMonthCount",
-    icon: Activity,
-    iconBg: "bg-success-50",
-    iconColor: "text-success-700",
-    accentBg: "bg-success-600",
-    hint: "View compliance",
-  },
-  {
-    id: "reports",
-    label: "SME Reports",
-    icon: BarChart3,
-    iconBg: "bg-info-50",
-    iconColor: "text-info-700",
-    accentBg: "bg-info-600",
-    hint: "Open reports",
-    staticHref: "/reports",
-  },
-];
-
 const QUICK_ACTIONS = [
   {
     label: "AI Programmes",
@@ -87,26 +43,26 @@ const QUICK_ACTIONS = [
     iconColor: "text-primary-700",
   },
   {
-    label: "Levy Surplus",
-    description: "View surplus balance",
-    href: "/levy",
-    icon: Activity,
+    label: "Approvals",
+    description: "Approve OTJ hours",
+    href: "/approvals",
+    icon: ClipboardList,
     iconBg: "bg-warning-50 group-hover:bg-warning-100",
     iconColor: "text-warning-700",
   },
   {
-    label: "Matches",
-    description: "Find levy donors",
-    href: "/matches",
-    icon: Users,
+    label: "Reviews",
+    description: "Progress reviews",
+    href: "/reviews",
+    icon: Activity,
     iconBg: "bg-success-50 group-hover:bg-success-100",
     iconColor: "text-success-700",
   },
   {
-    label: "Donor Links",
-    description: "Manage DAS connections",
-    href: "/donor-links",
-    icon: Globe,
+    label: "Funding",
+    description: "Levy & payments",
+    href: "/funding",
+    icon: BarChart3,
     iconBg: "bg-info-50 group-hover:bg-info-100",
     iconColor: "text-info-700",
   },
@@ -346,52 +302,6 @@ function HeroSection({ user, activeOrganisation, greeting }) {
         )}
       </div>
     </div>
-  );
-}
-
-// ─── Metrics row ──────────────────────────────────────────────────────────────
-
-function MetricCard({ stat, value, isLoading }) {
-  const { label, icon: Icon, iconBg, iconColor, accentBg, hint } = stat;
-  const display =
-    value !== null && value !== "" ? value : isLoading ? "…" : "N/A";
-
-  return (
-    <Card className="relative overflow-hidden transition-shadow duration-200 hover:shadow-md">
-      <CardContent className="pb-5 pt-5">
-        <div className="flex items-start justify-between gap-2">
-          <div
-            className={cn(
-              "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
-              iconBg,
-            )}
-          >
-            <Icon className={cn("h-5 w-5", iconColor)} aria-hidden />
-          </div>
-          <span className="mt-0.5 text-right text-[10px] leading-tight text-neutral-400">
-            {hint}
-          </span>
-        </div>
-
-        <div className="mt-4">
-          <p
-            className={cn(
-              "text-3xl font-bold tracking-tight",
-              display === "N/A" || display === "…"
-                ? "text-neutral-300"
-                : "text-neutral-900",
-            )}
-          >
-            {display}
-          </p>
-          <p className="mt-1 text-sm font-medium text-neutral-500">{label}</p>
-        </div>
-      </CardContent>
-
-      <div
-        className={cn("absolute inset-x-0 bottom-0 h-0.5 opacity-60", accentBg)}
-      />
-    </Card>
   );
 }
 
@@ -732,16 +642,8 @@ function ProfileCard({ user, activeOrganisation, profileStatus }) {
 
 export function DashboardHome() {
   const { user, activeOrganisation } = useAuthUser();
-  const { data: overview, isLoading: overviewLoading } = useSmeOverview();
-  const summary = overview?.summary;
   const greeting = getGreeting(user?.timezone);
   const profileStatus = getProfileStatus(user);
-
-  const getStatValue = (stat) => {
-    if (stat.staticHref) return null;
-    if (!stat.valueKey || !summary) return null;
-    return summary[stat.valueKey];
-  };
 
   return (
     <div
@@ -754,23 +656,8 @@ export function DashboardHome() {
         greeting={greeting}
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {STAT_CARDS.map((stat, i) => (
-          <div
-            key={stat.id}
-            style={{
-              animation: "slide-up 320ms var(--ease-out) both",
-              animationDelay: `${i * 50}ms`,
-            }}
-          >
-            <MetricCard
-              stat={stat}
-              value={getStatValue(stat)}
-              isLoading={overviewLoading}
-            />
-          </div>
-        ))}
-      </div>
+      {/* Growth flow hub — live SME KPIs, pipeline, needs-you, roster */}
+      <SmeDashboard />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">

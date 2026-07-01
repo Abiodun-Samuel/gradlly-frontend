@@ -20,13 +20,23 @@ import { ApiClientError, normalizeApiClientError } from "@/lib/errors";
 
 const STORAGE_PATHS = Object.freeze({
   UPLOAD_URL: "/api/v1/storage/upload-url",
+  DOWNLOAD_URL: "/api/v1/storage/download-url",
 });
 
 export const STORAGE_CATEGORY = Object.freeze({
   GENERAL: "general",
   AVATAR: "general",
   LOGO: "general",
+  // Real backend categories (StorageObjectCategory). The image-upload flow above
+  // only ever needs "general"; the key-returning flow below uses the rest.
+  EVIDENCE: "evidence",
+  SIGNATURE: "signature",
+  EXPORT: "export",
+  ATTACHMENT: "attachment",
 });
+
+// Backend hard cap for presigned uploads (25 MB).
+export const MAX_PRESIGNED_BYTES = 25 * 1024 * 1024;
 
 // Defensive client-side guard. The backend remains the source of truth, but
 // failing fast here saves a wasted round-trip and gives the user a clear error.
@@ -156,6 +166,111 @@ export async function uploadFile({
 }
 
 // ─── Validation helpers ─────────────────────────────────────────────────────
+
+// ─── Key-returning presigned upload (signatures, evidence, attachments) ─────
+//
+// Unlike uploadFile above (which returns a durable PUBLIC URL for avatars/logos),
+// these resources are private: the backend stores and references them by their
+// S3 `key`. The commitment signing flow needs the key to pass as
+// `signatureImageKey`, so this orchestrator returns the key, not a URL.
+
+/**
+ * @param {{ filename, contentType, contentLength, category, learnerId?, signal? }} params
+ * @returns {Promise<{ key: string, uploadUrl: string, expiresAt?: string }>}
+ */
+export async function requestKeyedUploadUrl({
+  filename,
+  contentType,
+  contentLength,
+  category,
+  learnerId,
+  signal,
+}) {
+  try {
+    const body = { filename, contentType, contentLength, category };
+    if (learnerId) body.learnerId = learnerId;
+
+    const result = await $apiClient.post(STORAGE_PATHS.UPLOAD_URL, body, {
+      signal,
+    });
+    const data = result.data?.data ?? result.data;
+
+    if (!data?.key || !data?.uploadUrl) {
+      throw new ApiClientError({
+        message: "Upload could not be initialised. Please try again.",
+        status: 502,
+      });
+    }
+    return {
+      key: data.key,
+      uploadUrl: data.uploadUrl,
+      expiresAt: data.expiresAt,
+    };
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+/**
+ * Validate → presign → PUT to S3 → return the durable S3 `key`.
+ * @param {{ file: File, category: string, learnerId?: string, signal?: AbortSignal }} params
+ * @returns {Promise<string>} the S3 object key
+ */
+export async function uploadFileForKey({ file, category, learnerId, signal }) {
+  assertWithinPresignedLimit(file);
+
+  const { key, uploadUrl } = await requestKeyedUploadUrl({
+    filename: file.name,
+    contentType: file.type,
+    contentLength: file.size,
+    category,
+    learnerId,
+    signal,
+  });
+
+  await putToPresignedUrl({ uploadUrl, file, signal });
+
+  return key;
+}
+
+// ─── Presigned download URL (for private objects: signed PDFs, evidence) ─────
+/**
+ * @param {{ key: string, signal?: AbortSignal }} params
+ * @returns {Promise<{ downloadUrl: string, expiresAt?: string }>}
+ */
+export async function requestDownloadUrl({ key, signal }) {
+  try {
+    const result = await $apiClient.post(
+      STORAGE_PATHS.DOWNLOAD_URL,
+      { key },
+      { signal },
+    );
+    const data = result.data?.data ?? result.data;
+    if (!data?.downloadUrl) {
+      throw new ApiClientError({
+        message: "Could not generate a download link. Please try again.",
+        status: 502,
+      });
+    }
+    return { downloadUrl: data.downloadUrl, expiresAt: data.expiresAt };
+  } catch (e) {
+    throw normalizeApiClientError(e);
+  }
+}
+
+export function assertWithinPresignedLimit(file) {
+  if (!file) {
+    throw new ApiClientError({ message: "No file selected.", status: 400 });
+  }
+  if (file.size > MAX_PRESIGNED_BYTES) {
+    throw new ApiClientError({
+      message: `File must be smaller than ${Math.round(
+        MAX_PRESIGNED_BYTES / (1024 * 1024),
+      )} MB.`,
+      status: 400,
+    });
+  }
+}
 
 export function assertValidImage(file) {
   if (!file) {

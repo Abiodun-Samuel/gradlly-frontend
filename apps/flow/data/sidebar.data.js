@@ -1,18 +1,18 @@
 import {
-  ArrowRightLeft,
-  BarChart3,
+  Banknote,
   Bell,
   Building2,
+  CalendarCheck,
   CheckCircle2,
-  Coins,
+  ClipboardCheck,
+  FileSignature,
   FileText,
-  Handshake,
   LayoutDashboard,
-  Link2,
   Settings,
   Sparkles,
   UserCircle,
   UserPlus,
+  Users,
 } from "lucide-react";
 
 export const NAV_SECTIONS = [
@@ -21,23 +21,35 @@ export const NAV_SECTIONS = [
     items: [{ label: "Dashboard", href: "/", icon: LayoutDashboard }],
   },
   {
-    title: "Levy Exchange",
+    title: "Talent",
     items: [
       { label: "AI Programmes", href: "/courses", icon: Sparkles },
-      { label: "Levy Surplus", href: "/levy", icon: Coins },
-      { label: "Donor Matches", href: "/matches", icon: Handshake },
-      { label: "Transfers", href: "/transfers", icon: ArrowRightLeft },
-      { label: "Donor Links", href: "/donor-links", icon: Link2 },
-      { label: "Eligibility", href: "/eligibility", icon: CheckCircle2 },
+      { label: "Apprentices", href: "/learners", icon: Users },
+    ],
+  },
+  {
+    title: "Delivery",
+    items: [
+      { label: "OTJ Approvals", href: "/approvals", icon: ClipboardCheck },
+      {
+        label: "Commitment Statements",
+        href: "/commitment-statements",
+        icon: FileSignature,
+      },
+      { label: "Reviews", href: "/reviews", icon: CalendarCheck },
+      { label: "Funding", href: "/funding", icon: Banknote },
     ],
   },
   {
     title: "Reporting",
-    items: [{ label: "SME Reports", href: "/reports", icon: BarChart3 }],
+    items: [{ label: "SME Analytics", href: "/analytics", icon: FileText }],
   },
   {
     title: "Onboarding",
-    items: [{ label: "ESFA Registration", href: "/register", icon: FileText }],
+    items: [
+      { label: "Eligibility", href: "/eligibility", icon: CheckCircle2 },
+      { label: "ESFA Registration", href: "/register", icon: FileText },
+    ],
   },
   {
     title: "Account",

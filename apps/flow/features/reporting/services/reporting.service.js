@@ -9,11 +9,11 @@ function unwrap(result) {
   return result.data?.data ?? result.data;
 }
 
-export async function getSmeOverview(orgId) {
+// The active org is auto-attached by $apiClient (X-Organisation-Id), so the
+// backend scopes this to the caller's Flow org — no manual header needed.
+export async function getSmeOverview() {
   try {
-    const result = await $apiClient.get(REPORTING_PATHS.SME_OVERVIEW, {
-      headers: orgId ? { "X-Organisation-Id": orgId } : undefined,
-    });
+    const result = await $apiClient.get(REPORTING_PATHS.SME_OVERVIEW);
     return unwrap(result);
   } catch (e) {
     throw normalizeApiClientError(e);

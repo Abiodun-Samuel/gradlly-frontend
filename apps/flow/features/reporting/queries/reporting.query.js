@@ -12,7 +12,7 @@ export function useSmeOverview(options = {}) {
 
   return useQuery({
     queryKey: REPORTING_QUERY_KEYS.smeOverview(orgId),
-    queryFn: () => getSmeOverview(orgId),
+    queryFn: getSmeOverview,
     enabled: !!orgId,
     ...options,
   });

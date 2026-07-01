@@ -1,17 +1,4 @@
-export const LEVY_EXCHANGE_QUERY_KEYS = {
+export const LEVY_EXCHANGE_QUERY_KEYS = Object.freeze({
   all: () => ["levy-exchange"],
-  donorLinks: (orgId) => ["levy-exchange", "donor-links", orgId],
-  surplus: (orgId) => ["levy-exchange", "surplus", orgId],
-  matches: (orgId) => ["levy-exchange", "matches", orgId],
-  matchApplications: (orgId, page, perPage) => [
-    "levy-exchange",
-    "match-applications",
-    orgId,
-    { page, perPage },
-  ],
-  transferPreferences: (orgId) => [
-    "levy-exchange",
-    "transfer-preferences",
-    orgId,
-  ],
-};
+  eligibility: () => ["levy-exchange", "eligibility"],
+});

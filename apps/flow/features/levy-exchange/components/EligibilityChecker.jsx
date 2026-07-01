@@ -1,0 +1,213 @@
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowRight, CheckCircle2, Info, XCircle } from "lucide-react";
+import { useForm, useWatch } from "react-hook-form";
+
+import { CheckboxField } from "@/components/form/CheckboxField";
+import { SingleSelectField } from "@/components/form/SingleSelectField";
+import Button from "@/components/ui/Button";
+import { Card, CardContent, CardHeader } from "@/components/ui/Card";
+import TextBadge from "@/components/ui/TextBadge";
+import { cn } from "@/utils/helper";
+
+import {
+  ELIGIBILITY_REGIONS,
+  ELIGIBILITY_SECTORS,
+  ELIGIBILITY_STATUS,
+  EMPLOYEE_COUNT_BANDS,
+} from "../constants";
+import { useCheckLevyEligibility } from "../queries/levy-exchange.query";
+import { levyEligibilityDefaults, levyEligibilitySchema } from "../schemas";
+
+const STATUS_META = {
+  [ELIGIBILITY_STATUS.ELIGIBLE]: {
+    color: "green",
+    icon: CheckCircle2,
+    title: "You look eligible",
+  },
+  [ELIGIBILITY_STATUS.CHECK_WITH_ADVISOR]: {
+    color: "amber",
+    icon: Info,
+    title: "Let's check with an advisor",
+  },
+  [ELIGIBILITY_STATUS.NOT_ELIGIBLE]: {
+    color: "red",
+    icon: XCircle,
+    title: "Not eligible right now",
+  },
+};
+
+function ResultCard({ result, sector, region }) {
+  const meta = STATUS_META[result.status] ?? STATUS_META.not_eligible;
+  const Icon = meta.icon;
+  const band = result.estimatedFundingBand;
+  const isEligible = result.status === ELIGIBILITY_STATUS.ELIGIBLE;
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center gap-2.5">
+          <span
+            className={cn(
+              "flex size-9 shrink-0 items-center justify-center rounded-lg",
+              meta.color === "green" && "bg-green-50 text-green-600",
+              meta.color === "amber" && "bg-amber-50 text-amber-600",
+              meta.color === "red" && "bg-red-50 text-red-600",
+            )}
+          >
+            <Icon className="size-5" strokeWidth={1.9} aria-hidden />
+          </span>
+          <div>
+            <h2 className="text-base font-semibold text-neutral-900">
+              {meta.title}
+            </h2>
+            <TextBadge variant="light" color={meta.color} size="xs">
+              {result.status?.replace(/_/g, " ")}
+            </TextBadge>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {band ? (
+          <div className="rounded-xl border border-neutral-100 bg-neutral-50 px-4 py-3">
+            <p className="text-xs font-medium text-neutral-500">
+              Estimated funding band
+            </p>
+            <p className="mt-0.5 text-lg font-bold tabular-nums text-neutral-900">
+              £{band.min.toLocaleString()} – £{band.max.toLocaleString()}
+              <span className="ml-1 text-sm font-medium text-neutral-400">
+                {band.currency}
+              </span>
+            </p>
+          </div>
+        ) : null}
+
+        {result.nextSteps?.length ? (
+          <div>
+            <p className="mb-1.5 text-xs font-medium text-neutral-500">
+              Next steps
+            </p>
+            <ul className="list-disc space-y-1 pl-5 text-sm text-neutral-600">
+              {result.nextSteps.map((step) => (
+                <li key={step}>{step}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
+        {isEligible ? (
+          <Button
+            href={`/register?sector=${encodeURIComponent(
+              sector,
+            )}&region=${encodeURIComponent(region)}`}
+            color="green"
+            endIcon={<ArrowRight className="size-4" />}
+          >
+            Start registration
+          </Button>
+        ) : null}
+      </CardContent>
+    </Card>
+  );
+}
+
+export function EligibilityChecker() {
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    control,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(levyEligibilitySchema),
+    defaultValues: levyEligibilityDefaults,
+    mode: "onBlur",
+  });
+
+  const values = useWatch({ control });
+
+  const { mutate, data: result, isPending, error } = useCheckLevyEligibility();
+
+  const onSubmit = (form) => mutate(form);
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="eyebrow">Levy funding</p>
+        <h1 className="mt-0.5 text-2xl font-bold tracking-tight text-neutral-900">
+          Check your levy transfer eligibility
+        </h1>
+        <p className="mt-1 text-sm text-neutral-500">
+          Answer four quick questions to see whether your business qualifies for
+          apprenticeship levy transfer funding — no account needed.
+        </p>
+      </div>
+
+      <Card>
+        <CardContent className="pt-6">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
+            className="grid gap-4 sm:grid-cols-2"
+          >
+            <SingleSelectField
+              name="employeeCountBand"
+              label="How many employees do you have?"
+              options={EMPLOYEE_COUNT_BANDS}
+              register={register}
+              setValue={setValue}
+              value={values.employeeCountBand ?? ""}
+              error={errors.employeeCountBand?.message}
+              searchable={false}
+            />
+            <SingleSelectField
+              name="sector"
+              label="Which sector are you in?"
+              options={ELIGIBILITY_SECTORS}
+              register={register}
+              setValue={setValue}
+              value={values.sector ?? ""}
+              error={errors.sector?.message}
+            />
+            <SingleSelectField
+              name="region"
+              label="Where are you based?"
+              options={ELIGIBILITY_REGIONS}
+              register={register}
+              setValue={setValue}
+              value={values.region ?? ""}
+              error={errors.region?.message}
+            />
+            <div className="flex items-end">
+              <CheckboxField
+                name="hasDasAccount"
+                label="We already have a DAS account"
+                register={register}
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <Button type="submit" color="green" loading={isPending}>
+                Check eligibility
+              </Button>
+            </div>
+          </form>
+
+          {error ? (
+            <p className="mt-4 text-sm text-danger-600" role="alert">
+              {error.message}
+            </p>
+          ) : null}
+        </CardContent>
+      </Card>
+
+      {result ? (
+        <ResultCard
+          result={result}
+          sector={values.sector}
+          region={values.region}
+        />
+      ) : null}
+    </div>
+  );
+}

@@ -13,6 +13,10 @@ const AUTH_PATHS = [
   "/reset-password",
 ];
 
+// Pre-account Levy funnel: reachable with OR without a session, and NOT bounced
+// to the dashboard when signed in (an SME may re-check eligibility any time).
+const PUBLIC_PATHS = ["/eligibility", "/register"];
+
 const HOME_PATH = "/";
 const LOGIN_PATH = "/login";
 
@@ -24,6 +28,9 @@ export function proxy(request) {
   const isAuthenticated = Boolean(
     request.cookies.get(REFRESH_TOKEN_COOKIE)?.value,
   );
+
+  // ── Public funnel pages (always allowed) ────────────────────────────────────
+  if (matchesAny(pathname, PUBLIC_PATHS)) return NextResponse.next();
 
   // ── Public auth pages ──────────────────────────────────────────────────────
   if (matchesAny(pathname, AUTH_PATHS)) {

@@ -1,7 +1,7 @@
-import { BookOpen } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 import { PageSubheader } from "@/components/ui/PageSubheader";
-import { AiProgrammeCatalogueTable } from "@/features/ai-programmes/components/AiProgrammeCatalogueTable";
+import { AiProgrammeCatalogue } from "@/features/ai-programmes/components/AiProgrammeCatalogue";
 import { createPageSeo } from "@/utils/metadata";
 
 export const { metadata } = createPageSeo({
@@ -15,12 +15,12 @@ export default function CoursesPage() {
   return (
     <div className="space-y-6">
       <PageSubheader
-        icon={BookOpen}
-        eyebrow="Programmes"
+        icon={Sparkles}
+        eyebrow="Talent"
         title="AI programme catalogue"
-        description="FlowPortal AI apprenticeship tracks available to your organisation."
+        description="Platform-curated AI apprenticeship tracks. Pick one to view its modules and enrol an apprentice."
       />
-      <AiProgrammeCatalogueTable />
+      <AiProgrammeCatalogue />
     </div>
   );
 }
