@@ -1,6 +1,9 @@
 export const ENROLMENT_PATHS = Object.freeze({
   BASE: "/api/v1/enrolments",
+  counterpartOrganisationLookup:
+    "/api/v1/enrolments/counterpart-organisations/lookup",
   byId: (id) => `/api/v1/enrolments/${id}`,
+  participantOptions: (id) => `/api/v1/enrolments/${id}/participant-options`,
   journey: (id) => `/api/v1/enrolments/${id}/journey`,
   participants: (id) => `/api/v1/enrolments/${id}/participants`,
   organisationLinks: (id) => `/api/v1/enrolments/${id}/organisation-links`,

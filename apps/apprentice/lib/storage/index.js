@@ -6,9 +6,11 @@ const STORAGE_PATHS = {
 };
 
 /** POST to the backend to get a presigned S3 upload URL. */
-export async function requestUploadUrl(payload) {
+export async function requestUploadUrl(payload, orgId) {
   try {
-    const result = await $apiClient.post(STORAGE_PATHS.UPLOAD_URL, payload);
+    const result = await $apiClient.post(STORAGE_PATHS.UPLOAD_URL, payload, {
+      headers: orgId ? { "X-Organisation-Id": orgId } : undefined,
+    });
     return result.data?.data ?? result.data;
   } catch (err) {
     throw normalizeApiClientError(err);

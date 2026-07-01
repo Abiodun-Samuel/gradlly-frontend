@@ -25,6 +25,8 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import TextBadge from "@/components/ui/TextBadge";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
+import { OTJ_PACE_LABELS } from "@/features/reporting/constants";
+import { useLearnerSummary } from "@/features/reporting/queries/reporting.query";
 import {
   capitalise,
   cn,
@@ -39,40 +41,40 @@ import {
 
 const STAT_CARDS = [
   {
-    id: "courses",
-    label: "Courses In Progress",
-    icon: BookOpen,
-    iconBg: "bg-primary-50",
-    iconColor: "text-primary-700",
-    accentBg: "bg-primary-600",
-    hint: "View my courses",
-  },
-  {
-    id: "assessments",
-    label: "Assessments Due",
-    icon: ClipboardList,
-    iconBg: "bg-warning-50",
-    iconColor: "text-warning-700",
-    accentBg: "bg-warning-600",
-    hint: "Check deadlines",
-  },
-  {
-    id: "progress",
-    label: "Overall Progress",
+    id: "otj",
+    label: "OTJ Progress",
     icon: TrendingUp,
     iconBg: "bg-success-50",
     iconColor: "text-success-700",
     accentBg: "bg-success-600",
-    hint: "View progress report",
+    hint: "Approved hours",
   },
   {
-    id: "reports",
-    label: "Reports Available",
+    id: "review",
+    label: "Next Review",
+    icon: ClipboardList,
+    iconBg: "bg-warning-50",
+    iconColor: "text-warning-700",
+    accentBg: "bg-warning-600",
+    hint: "Upcoming review",
+  },
+  {
+    id: "epa",
+    label: "Days to EPA",
+    icon: BookOpen,
+    iconBg: "bg-primary-50",
+    iconColor: "text-primary-700",
+    accentBg: "bg-primary-600",
+    hint: "End-point assessment",
+  },
+  {
+    id: "alert",
+    label: "OTJ Pace Alert",
     icon: BarChart3,
     iconBg: "bg-info-50",
     iconColor: "text-info-700",
     accentBg: "bg-info-600",
-    hint: "View analytics",
+    hint: "Pace status",
   },
 ];
 
@@ -441,8 +443,11 @@ function HeroSection({ user, activeOrganisation, greeting }) {
 
 // ─── Metrics row ──────────────────────────────────────────────────────────────
 
-function MetricCard({ stat }) {
+function MetricCard({ stat, value, isLoading }) {
   const { label, icon: Icon, iconBg, iconColor, accentBg, hint } = stat;
+  const display =
+    value !== null && value !== "" ? value : isLoading ? "…" : "N/A";
+
   return (
     <Card className="relative overflow-hidden transition-shadow duration-200 hover:shadow-md">
       <CardContent className="pb-5 pt-5">
@@ -461,8 +466,15 @@ function MetricCard({ stat }) {
         </div>
 
         <div className="mt-4">
-          <p className="text-3xl font-bold tracking-tight text-neutral-300">
-            N/A
+          <p
+            className={cn(
+              "text-3xl font-bold tracking-tight",
+              display === "N/A" || display === "…"
+                ? "text-neutral-300"
+                : "text-neutral-900",
+            )}
+          >
+            {display}
           </p>
           <p className="mt-1 text-sm font-medium text-neutral-500">{label}</p>
         </div>
@@ -740,8 +752,36 @@ function ProfileCard({ user, activeOrganisation, profileStatus }) {
 
 export function DashboardHome() {
   const { user, activeOrganisation } = useAuthUser();
+  const { data: summary, isLoading: summaryLoading } = useLearnerSummary();
   const greeting = getGreeting(user?.timezone);
   const profileStatus = getProfileStatus(user);
+
+  const getStatValue = (stat) => {
+    if (!summary) return null;
+    switch (stat.id) {
+      case "otj":
+        return summary.otjPace?.otjPercent !== null &&
+          summary.otjPace?.otjPercent !== undefined
+          ? `${Math.round(summary.otjPace.otjPercent)}%`
+          : null;
+      case "review":
+        return summary.nextReviewDate
+          ? formatDate(summary.nextReviewDate)
+          : null;
+      case "epa":
+        return summary.daysToEpa !== null && summary.daysToEpa !== undefined
+          ? `${summary.daysToEpa}d`
+          : null;
+      case "alert":
+        return (
+          OTJ_PACE_LABELS[summary.otjPace?.alertLevel] ??
+          summary.otjPace?.alertLevel ??
+          null
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <div
@@ -763,7 +803,11 @@ export function DashboardHome() {
               animationDelay: `${i * 50}ms`,
             }}
           >
-            <MetricCard stat={stat} />
+            <MetricCard
+              stat={stat}
+              value={getStatValue(stat)}
+              isLoading={summaryLoading}
+            />
           </div>
         ))}
       </div>

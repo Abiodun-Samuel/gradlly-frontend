@@ -51,6 +51,7 @@ export const InputField = forwardRef(function InputField(
         <input
           ref={ref}
           id={name}
+          name={name}
           type={inputType}
           autoComplete={autoComplete}
           disabled={disabled}

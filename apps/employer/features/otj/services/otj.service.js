@@ -10,6 +10,10 @@ function buildHeaders(orgId) {
   return { "x-organisation-id": orgId };
 }
 
+function unwrap(result) {
+  return result.data?.data ?? result.data;
+}
+
 export async function listOtjEntries({
   orgId,
   status,
@@ -21,7 +25,8 @@ export async function listOtjEntries({
   perPage = 20,
 } = {}) {
   const params = { page, perPage };
-  if (status) params.status = status;
+  if (status !== undefined && status !== null && status !== "")
+    params.status = status;
   if (apprenticeId) params.apprenticeId = apprenticeId;
   if (enrolmentId) params.enrolmentId = enrolmentId;
   if (from) params.from = from;
@@ -38,6 +43,10 @@ export async function listOtjEntries({
   }
 }
 
+export async function listOtjLogEntries(args) {
+  return listOtjEntries(args);
+}
+
 export async function bulkApproveOtj({ orgId, ids, reason = "" }) {
   try {
     const result = await $apiClient.post(
@@ -45,10 +54,14 @@ export async function bulkApproveOtj({ orgId, ids, reason = "" }) {
       { ids, reason },
       { headers: buildHeaders(orgId) },
     );
-    return result.data?.data ?? result.data;
+    return unwrap(result);
   } catch (e) {
     throw normalizeApiClientError(e);
   }
+}
+
+export async function bulkApproveOtjEntries(ids, orgId) {
+  return bulkApproveOtj({ orgId, ids, reason: "" });
 }
 
 export async function bulkRejectOtj({ orgId, ids, reason }) {
@@ -58,7 +71,7 @@ export async function bulkRejectOtj({ orgId, ids, reason }) {
       { ids, reason },
       { headers: buildHeaders(orgId) },
     );
-    return result.data?.data ?? result.data;
+    return unwrap(result);
   } catch (e) {
     throw normalizeApiClientError(e);
   }
@@ -69,7 +82,7 @@ export async function updateOtjEntry({ orgId, id, ...body }) {
     const result = await $apiClient.patch(OTJ_PATHS.detail(id), body, {
       headers: buildHeaders(orgId),
     });
-    return result.data?.data ?? result.data;
+    return unwrap(result);
   } catch (e) {
     throw normalizeApiClientError(e);
   }

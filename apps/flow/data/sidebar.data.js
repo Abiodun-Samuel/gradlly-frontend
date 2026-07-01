@@ -1,17 +1,18 @@
 import {
+  ArrowRightLeft,
+  BarChart3,
   Bell,
   Building2,
+  CheckCircle2,
+  Coins,
+  FileText,
+  Handshake,
   LayoutDashboard,
+  Link2,
   Settings,
+  Sparkles,
   UserCircle,
   UserPlus,
-  // ── Icons for not-yet-built sections (kept for when they are re-enabled) ──
-  // Activity,
-  // BarChart3,
-  // GitBranch,
-  // Link2,
-  // Wand2,
-  // Zap,
 } from "lucide-react";
 
 export const NAV_SECTIONS = [
@@ -19,32 +20,25 @@ export const NAV_SECTIONS = [
     title: "Workspace",
     items: [{ label: "Dashboard", href: "/", icon: LayoutDashboard }],
   },
-  // ── Integrations section: pages not yet built. Re-enable when ready. ──
-  // {
-  //   title: "Integrations",
-  //   items: [
-  //     { label: "My Flows", href: "/flows", icon: GitBranch },
-  //     { label: "Flow Builder", href: "/builder", icon: Wand2 },
-  //     { label: "Connections", href: "/connections", icon: Link2 },
-  //     {
-  //       label: "Automation",
-  //       href: "/webhooks",
-  //       icon: Zap,
-  //       children: [
-  //         { label: "Webhooks", href: "/webhooks" },
-  //         { label: "Activity Logs", href: "/logs" },
-  //       ],
-  //     },
-  //   ],
-  // },
-  // ── Analytics section: pages not yet built. Re-enable when ready. ──
-  // {
-  //   title: "Analytics",
-  //   items: [
-  //     { label: "Reports", href: "/reports", icon: BarChart3 },
-  //     { label: "Activity", href: "/logs", icon: Activity },
-  //   ],
-  // },
+  {
+    title: "Levy Exchange",
+    items: [
+      { label: "AI Programmes", href: "/courses", icon: Sparkles },
+      { label: "Levy Surplus", href: "/levy", icon: Coins },
+      { label: "Donor Matches", href: "/matches", icon: Handshake },
+      { label: "Transfers", href: "/transfers", icon: ArrowRightLeft },
+      { label: "Donor Links", href: "/donor-links", icon: Link2 },
+      { label: "Eligibility", href: "/eligibility", icon: CheckCircle2 },
+    ],
+  },
+  {
+    title: "Reporting",
+    items: [{ label: "SME Reports", href: "/reports", icon: BarChart3 }],
+  },
+  {
+    title: "Onboarding",
+    items: [{ label: "ESFA Registration", href: "/register", icon: FileText }],
+  },
   {
     title: "Account",
     items: [

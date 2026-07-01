@@ -57,3 +57,26 @@ export const resetPasswordDefaults = Object.freeze({
   newPassword: "",
   confirmPassword: "",
 });
+
+export const signupSchema = z.object({
+  firstName: z.string().trim().min(1, "First name is required").max(50),
+  lastName: z.string().trim().min(1, "Last name is required").max(50),
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .min(1, "Email is required")
+    .email("Enter a valid email address"),
+  password: passwordSchema,
+  acceptTerms: z
+    .boolean()
+    .refine((v) => v === true, "You must accept the Terms and Privacy Policy"),
+});
+
+export const signupDefaults = Object.freeze({
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  acceptTerms: false,
+});

@@ -675,6 +675,9 @@ function ProfileCard({ user, activeOrganisation, profileStatus }) {
 
 export function DashboardHome() {
   const { user, activeOrganisation } = useAuthUser();
+  // const { data: summary, isLoading: isDashboardLoading } =
+  // useProviderDashboard();
+  // const isMetricsLoading = isDashboardLoading && !summary;
   const greeting = getGreeting(user?.timezone);
   const profileStatus = getProfileStatus(user);
 

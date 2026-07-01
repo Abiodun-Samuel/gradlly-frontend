@@ -11,3 +11,12 @@ export const OTJ_STATUSES = Object.freeze({
   APPROVED: "approved",
   REJECTED: "rejected",
 });
+
+export const OTJ_STATUS = OTJ_STATUSES;
+
+export const OTJ_STATUS_LABELS = Object.freeze({
+  draft: "Draft",
+  submitted: "Submitted",
+  approved: "Approved",
+  rejected: "Rejected",
+});

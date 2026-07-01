@@ -11,6 +11,7 @@ import { Modal } from "@/components/ui/Modal";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import { useCreateOtjLog } from "@/features/otj/queries/otj.query";
 import { otjLogDefaults, otjLogSchema } from "@/features/otj/schemas";
+import { useLearnerSummary } from "@/features/reporting/queries/reporting.query";
 import { applyServerErrors } from "@/lib/errors";
 import { cn } from "@/utils/helper";
 
@@ -54,6 +55,10 @@ function StepBar({ step }) {
 export function OTJLogModal({ open, onClose }) {
   const [step, setStep] = useState(0);
   const { orgId, memberId } = useAuthUser();
+  const { data: summary } = useLearnerSummary({ enabled: open && !!orgId });
+
+  const enrolmentId = summary?.activeEnrolmentId ?? null;
+  const apprenticeId = summary?.activeApprenticeId ?? null;
 
   const {
     mutateAsync: submitLog,
@@ -89,6 +94,7 @@ export function OTJLogModal({ open, onClose }) {
   } = useFileUpload({
     category: "evidence",
     learnerId: memberId,
+    orgId,
     maxFiles: 5,
     maxSizeMb: 10,
   });
@@ -114,10 +120,14 @@ export function OTJLogModal({ open, onClose }) {
   }
 
   const onSubmit = async (values) => {
+    if (!enrolmentId || !apprenticeId) {
+      return;
+    }
+
     try {
       await submitLog({
-        enrolmentId: memberId ?? "",
-        apprenticeId: orgId ?? "",
+        enrolmentId,
+        apprenticeId,
         loggedDate: values.loggedDate,
         minutes: Math.round(Number(values.hours) * 60),
         activityName: values.activityName.trim(),
@@ -132,14 +142,9 @@ export function OTJLogModal({ open, onClose }) {
 
   const footer =
     step === 0 ? (
-      <>
-        <Button variant="outline" size="sm" onClick={handleClose}>
-          Cancel
-        </Button>
-        <Button size="sm" onClick={handleNext}>
-          Next step →
-        </Button>
-      </>
+      <Button size="sm" onClick={handleNext}>
+        Next step →
+      </Button>
     ) : step === 1 ? (
       <>
         <Button variant="outline" size="sm" onClick={() => setStep(0)}>
@@ -149,8 +154,16 @@ export function OTJLogModal({ open, onClose }) {
           size="sm"
           onClick={handleSubmit(onSubmit)}
           loading={isPending}
-          disabled={isUploading}
-          title={isUploading ? "Wait for files to finish uploading" : undefined}
+          disabled={isUploading || !enrolmentId || !apprenticeId || !orgId}
+          title={
+            !orgId
+              ? "Your training provider organisation is not loaded yet"
+              : !enrolmentId || !apprenticeId
+                ? "No active enrolment found"
+                : isUploading
+                  ? "Wait for files to finish uploading"
+                  : undefined
+          }
         >
           Log session
         </Button>
@@ -168,6 +181,7 @@ export function OTJLogModal({ open, onClose }) {
       size="lg"
       title={META[step].title}
       description={META[step].description}
+      hideCancel={step > 0}
       footer={footer}
     >
       <StepBar step={step} />

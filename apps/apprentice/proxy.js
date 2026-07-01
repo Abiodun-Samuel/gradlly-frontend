@@ -3,10 +3,15 @@ import { NextResponse } from "next/server";
 const REFRESH_TOKEN_COOKIE = "gradlly_rt";
 
 // Public auth pages. Authenticated users are bounced away from these.
-// The apprentice portal has no signup or verify-email routes.
 // NOTE: /accept-invitation is intentionally NOT here — accepting an invitation
 // requires an authenticated session, so it is treated as a protected route.
-const AUTH_PATHS = ["/login", "/forgot-password", "/reset-password"];
+const AUTH_PATHS = [
+  "/login",
+  "/signup",
+  "/verify-email",
+  "/forgot-password",
+  "/reset-password",
+];
 
 const HOME_PATH = "/";
 const LOGIN_PATH = "/login";

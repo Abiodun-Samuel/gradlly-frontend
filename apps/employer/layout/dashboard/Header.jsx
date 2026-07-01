@@ -14,11 +14,12 @@ import { UserMenu } from "./UserMenu";
 
 const BREADCRUMBS = {
   "/": { parent: "Overview", current: "Dashboard" },
-  "/analytics": { parent: "Overview", current: "Analytics" },
-  "/apprentices": { parent: "Talent", current: "Apprentices" },
+  "/apprentices": { parent: "Apprenticeships", current: "Apprentices" },
   "/jobs": { parent: "Talent", current: "Job Posts" },
   "/applications": { parent: "Talent", current: "Applications" },
-  "/onboarding": { parent: "Talent", current: "Onboarding" },
+  "/onboarding": { parent: "Apprenticeships", current: "Onboarding" },
+  "/analytics": { parent: "Apprenticeships", current: "Analytics" },
+  "/analytics/cost": { parent: "Analytics", current: "Levy ROI" },
   "/billing": { parent: "Account", current: "Billing" },
   "/profile": { parent: "Account", current: "Profile" },
   "/settings": { parent: "Account", current: "Settings" },

@@ -3,20 +3,37 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Users2 } from "lucide-react";
 import { useEffect, useMemo } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 
 import { ServerErrorAlert } from "@/components/error/ServerErrorAlert";
-import { InputField } from "@/components/form/InputField";
+import { SingleSelectField } from "@/components/form/SingleSelectField";
 import Button from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { applyServerErrors } from "@/lib/errors";
 
-import { useSetEnrolmentParticipants } from "../queries/enrolments.query";
+import {
+  useParticipantOptions,
+  useSetEnrolmentParticipants,
+} from "../queries/enrolments.query";
 import {
   participantsDefaultsFromRow,
   participantsSchema,
   toParticipantsPayload,
 } from "../schemas";
+
+function mergeSelectedOption(options, selectedId, selectedLabel) {
+  if (!selectedId || options.some((option) => option.value === selectedId)) {
+    return options;
+  }
+
+  return [
+    {
+      value: selectedId,
+      text: selectedLabel ?? `Assigned user (${selectedId.slice(0, 8)}…)`,
+    },
+    ...options,
+  ];
+}
 
 export function ParticipantsModal({ enrolment, open, onClose }) {
   const defaults = useMemo(
@@ -28,6 +45,8 @@ export function ParticipantsModal({ enrolment, open, onClose }) {
     register,
     handleSubmit,
     reset,
+    setValue,
+    control,
     setError,
     formState: { errors, isSubmitting },
   } = useForm({
@@ -35,6 +54,56 @@ export function ParticipantsModal({ enrolment, open, onClose }) {
     defaultValues: defaults,
     mode: "onBlur",
   });
+
+  const apprenticeUserId = useWatch({ control, name: "apprenticeUserId" });
+  const tutorUserId = useWatch({ control, name: "tutorUserId" });
+  const employerManagerUserId = useWatch({
+    control,
+    name: "employerManagerUserId",
+  });
+
+  const { data: participantOptions, isLoading: loadingOptions } =
+    useParticipantOptions(enrolment?.id, { enabled: open && !!enrolment?.id });
+
+  const apprenticeOptions = useMemo(
+    () =>
+      mergeSelectedOption(
+        participantOptions?.apprenticeOptions ?? [],
+        defaults.apprenticeUserId,
+        enrolment?.apprenticeUserDisplayName,
+      ),
+    [
+      participantOptions?.apprenticeOptions,
+      defaults.apprenticeUserId,
+      enrolment?.apprenticeUserDisplayName,
+    ],
+  );
+  const tutorOptions = useMemo(
+    () =>
+      mergeSelectedOption(
+        participantOptions?.tutorOptions ?? [],
+        defaults.tutorUserId,
+        enrolment?.tutorUserDisplayName,
+      ),
+    [
+      participantOptions?.tutorOptions,
+      defaults.tutorUserId,
+      enrolment?.tutorUserDisplayName,
+    ],
+  );
+  const employerManagerOptions = useMemo(
+    () =>
+      mergeSelectedOption(
+        participantOptions?.employerManagerOptions ?? [],
+        defaults.employerManagerUserId,
+        enrolment?.employerManagerUserDisplayName,
+      ),
+    [
+      participantOptions?.employerManagerOptions,
+      defaults.employerManagerUserId,
+      enrolment?.employerManagerUserDisplayName,
+    ],
+  );
 
   const {
     mutateAsync,
@@ -59,6 +128,9 @@ export function ParticipantsModal({ enrolment, open, onClose }) {
     }
   };
 
+  const noEmployerManagers =
+    !loadingOptions && employerManagerOptions.length === 0;
+
   return (
     <Modal
       open={open}
@@ -67,7 +139,7 @@ export function ParticipantsModal({ enrolment, open, onClose }) {
       size="lg"
       icon={<Users2 className="size-4.5" strokeWidth={1.85} aria-hidden />}
       title="Edit participants"
-      description="Platform user IDs used for direct messaging threads. Leave a field blank to keep its current value."
+      description="Assign platform users for messaging threads. Clear a selection to leave that role unchanged."
       footer={
         <Button
           type="submit"
@@ -89,29 +161,52 @@ export function ParticipantsModal({ enrolment, open, onClose }) {
       >
         <ServerErrorAlert error={serverError} />
 
-        <InputField
+        <SingleSelectField
           name="apprenticeUserId"
-          label="Apprentice user ID"
-          placeholder="UUID"
+          label="Apprentice user"
+          options={apprenticeOptions}
           register={register}
+          setValue={setValue}
+          value={apprenticeUserId ?? ""}
           error={errors.apprenticeUserId?.message}
-          disabled={disabled}
+          placeholder={
+            loadingOptions
+              ? "Loading learners…"
+              : apprenticeOptions.length > 0
+                ? "Select apprentice user"
+                : "No matching learner account yet"
+          }
+          disabled={disabled || loadingOptions}
         />
-        <InputField
+
+        <SingleSelectField
           name="tutorUserId"
-          label="Tutor user ID"
-          placeholder="UUID"
+          label="Tutor"
+          options={tutorOptions}
           register={register}
+          setValue={setValue}
+          value={tutorUserId ?? ""}
           error={errors.tutorUserId?.message}
-          disabled={disabled}
+          placeholder={loadingOptions ? "Loading tutors…" : "Select a tutor"}
+          disabled={disabled || loadingOptions}
         />
-        <InputField
+
+        <SingleSelectField
           name="employerManagerUserId"
-          label="Employer manager user ID"
-          placeholder="UUID"
+          label="Employer line manager"
+          options={employerManagerOptions}
           register={register}
+          setValue={setValue}
+          value={employerManagerUserId ?? ""}
           error={errors.employerManagerUserId?.message}
-          disabled={disabled}
+          placeholder={
+            loadingOptions
+              ? "Loading employer contacts…"
+              : noEmployerManagers
+                ? "Link an employer organisation first"
+                : "Select employer line manager"
+          }
+          disabled={disabled || loadingOptions || noEmployerManagers}
         />
       </form>
     </Modal>

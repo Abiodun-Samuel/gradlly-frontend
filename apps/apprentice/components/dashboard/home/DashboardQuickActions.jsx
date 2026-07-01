@@ -4,6 +4,7 @@ import {
   MessageSquare,
   PlusCircle,
   Timer,
+  TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -14,10 +15,17 @@ const ACTIONS = [
   {
     icon: Timer,
     label: "Log off-the-job",
-    sub: "Add OTJ hours",
+    sub: "Quick log with evidence",
     href: null,
     color: "primary",
     onClick: true,
+  },
+  {
+    icon: TrendingUp,
+    label: "OTJ log & submit",
+    sub: "Table view for approval",
+    href: "/progress",
+    color: "success",
   },
   {
     icon: PlusCircle,

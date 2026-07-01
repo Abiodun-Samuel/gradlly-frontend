@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 
 import { PORTAL } from "@/config/portal.config";
 import { useMe } from "@/features/auth/queries/auth.query";
@@ -29,10 +29,9 @@ export function useAuthUser() {
   );
   const canSwitchOrganisation = organisations.length > 1;
 
-  // Keep the active-org cookie in sync with the session so the API client always
-  // sends the correct X-Organisation-Id. Runs as an effect (a cookie write is a
-  // side-effect) and only when the id actually changes.
-  useEffect(() => {
+  // Keep the active-org cookie in sync before child queries fire (layout effect
+  // runs before paint; dashboard/reporting hooks read the cookie on first fetch).
+  useLayoutEffect(() => {
     setActiveOrgId(orgId);
   }, [orgId]);
 

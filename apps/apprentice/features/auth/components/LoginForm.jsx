@@ -15,6 +15,12 @@ import { applyServerErrors } from "@/lib/errors";
 export function LoginForm() {
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect");
+  const fromInvite = Boolean(
+    redirect && redirect.includes("/accept-invitation"),
+  );
+  const signupHref = redirect
+    ? `/signup?redirect=${encodeURIComponent(redirect)}`
+    : "/signup";
 
   const {
     register,
@@ -83,6 +89,23 @@ export function LoginForm() {
           Log in
         </Button>
       </fieldset>
+
+      {fromInvite ? (
+        <p className="text-center text-sm text-gray-500 pt-2 pb-4">
+          New here?{" "}
+          <Link href={signupHref} className="text-primary-700 font-semibold">
+            Create an account
+          </Link>{" "}
+          with the email you were invited on, then return here to accept.
+        </p>
+      ) : (
+        <p className="text-center text-sm text-gray-500 pt-2 pb-4">
+          Don&apos;t have an account?{" "}
+          <Link href={signupHref} className="text-primary-700 font-semibold">
+            Sign up
+          </Link>
+        </p>
+      )}
     </form>
   );
 }

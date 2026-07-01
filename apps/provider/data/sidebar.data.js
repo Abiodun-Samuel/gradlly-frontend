@@ -97,41 +97,6 @@ export const NAV_SECTIONS = [
     title: "Tools",
     items: [{ label: "E-Signature", href: "/esignature", icon: PenTool }],
   },
-  // ── Compliance section: pages not yet built. Re-enable when ready. ──
-  // {
-  //   title: "Compliance",
-  //   items: [
-  //     { label: "Ofsted Hub", href: "/ofsted-hub", icon: Shield },
-  //     { label: "QIP", href: "/qip", icon: ClipboardList },
-  //     { label: "ILR & DAS", href: "/ilr-das", icon: FileText },
-  //     { label: "Evidence Vault", href: "/evidence-vault", icon: Archive },
-  //   ],
-  // },
-  // ── Delivery section: pages not yet built. Re-enable when ready. ──
-  // {
-  //   title: "Delivery",
-  //   items: [
-  //     { label: "Reviews", href: "/reviews", icon: MessageSquare },
-  //     { label: "Tutors", href: "/tutors", icon: Users },
-  //     {
-  //       label: "Employers",
-  //       href: "/employers",
-  //       icon: Building2,
-  //       children: [
-  //         { label: "All Employers", href: "/employers" },
-  //         { label: "Commitment Statements", href: "/commitment-statements" },
-  //       ],
-  //     },
-  //   ],
-  // },
-  // ── Insights section: pages not yet built. Re-enable when ready. ──
-  // {
-  //   title: "Insights",
-  //   items: [
-  //     { label: "Reports", href: "/reports", icon: BarChart3 },
-  //     { label: "KSB Coverage", href: "/ksb-coverage", icon: BookOpen },
-  //   ],
-  // },
   {
     title: "Account",
     items: [

@@ -1,6 +1,11 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import { toastError, toastSuccess } from "@/hooks/useToast";
@@ -10,23 +15,39 @@ import {
   createEnrolment,
   getEnrolment,
   getEnrolmentJourney,
-  getEnrolments,
+  listApprentices,
+  listEnrolments,
 } from "../services/enrolments.service";
 
-export function useEnrolments() {
+export function useEnrolments({ page = 1, perPage = 20, ...options } = {}) {
   const { orgId } = useAuthUser();
 
   return useQuery({
-    queryKey: ENROLMENT_QUERY_KEYS.list(orgId),
-    queryFn: () => getEnrolments({ orgId }),
+    queryKey: ENROLMENT_QUERY_KEYS.list(orgId, { page, perPage }),
+    queryFn: () => listEnrolments({ page, perPage, orgId }),
     enabled: !!orgId,
-    staleTime: 2 * 60 * 1000,
-    meta: { skipAuthRedirect: true },
-    select: (r) => r?.data ?? [],
+    placeholderData: keepPreviousData,
+    select: (response) => ({
+      enrolments: response?.data ?? [],
+      meta: response?.meta ?? null,
+    }),
+    ...options,
   });
 }
 
-export function useEnrolment(id) {
+export function useApprentices(options = {}) {
+  const { orgId } = useAuthUser();
+
+  return useQuery({
+    queryKey: ENROLMENT_QUERY_KEYS.apprentices(orgId),
+    queryFn: () => listApprentices({ perPage: 100, orgId }),
+    enabled: !!orgId,
+    select: (response) => response?.data ?? [],
+    ...options,
+  });
+}
+
+export function useEnrolment(id, options = {}) {
   const { orgId } = useAuthUser();
   const enabled = !!orgId && !!id;
 
@@ -37,10 +58,11 @@ export function useEnrolment(id) {
     staleTime: 2 * 60 * 1000,
     meta: { skipAuthRedirect: true },
     select: (r) => r?.data ?? null,
+    ...options,
   });
 }
 
-export function useEnrolmentJourney(id) {
+export function useEnrolmentJourney(id, options = {}) {
   const { orgId } = useAuthUser();
   const enabled = !!orgId && !!id;
 
@@ -51,6 +73,7 @@ export function useEnrolmentJourney(id) {
     staleTime: 5 * 60 * 1000,
     meta: { skipAuthRedirect: true },
     select: (r) => r?.data ?? null,
+    ...options,
   });
 }
 

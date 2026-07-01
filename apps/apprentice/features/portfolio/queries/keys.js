@@ -1,5 +1,11 @@
 export const PORTFOLIO_QUERY_KEYS = {
   all: () => ["portfolio"],
-  evidence: () => [...PORTFOLIO_QUERY_KEYS.all(), "evidence"],
-  learnerDocument: () => [...PORTFOLIO_QUERY_KEYS.all(), "learner-document"],
+  evidence: (orgId, page, perPage) => [
+    "portfolio",
+    "evidence",
+    orgId,
+    { page, perPage },
+  ],
+  heatmap: (orgId, enrolmentId) => ["portfolio", "heatmap", orgId, enrolmentId],
+  learnerDocument: (orgId) => ["portfolio", "learner-document", orgId],
 };

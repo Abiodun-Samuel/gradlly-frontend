@@ -41,18 +41,48 @@ function money(value) {
   return Number.isNaN(n) ? "—" : GBP.format(n);
 }
 
-// Monospace ID row used in the Connections card. Shows "Not set" when empty.
-function IdRow({ label, value }) {
+// Display row for linked users and organisations.
+function ParticipantLinkRow({ label, displayName, userId }) {
+  const hasAssignment = !!userId;
+
   return (
     <div className="flex items-center justify-between gap-3 py-2">
       <span className="text-sm text-neutral-500">{label}</span>
       <span
         className={cn(
-          "truncate text-xs",
-          value ? "font-mono text-neutral-700" : "text-neutral-400",
+          "min-w-0 truncate text-sm",
+          displayName
+            ? "font-medium text-neutral-800"
+            : hasAssignment
+              ? "text-neutral-500"
+              : "text-neutral-400",
         )}
+        title={displayName ?? undefined}
       >
-        {value || "Not set"}
+        {displayName || (hasAssignment ? "—" : "Not set")}
+      </span>
+    </div>
+  );
+}
+
+function OrganisationLinkRow({ label, name, organisationId }) {
+  const hasLink = !!organisationId;
+
+  return (
+    <div className="flex items-center justify-between gap-3 py-2">
+      <span className="text-sm text-neutral-500">{label}</span>
+      <span
+        className={cn(
+          "min-w-0 truncate text-sm",
+          name
+            ? "font-medium text-neutral-800"
+            : hasLink
+              ? "text-neutral-500"
+              : "text-neutral-400",
+        )}
+        title={name ?? undefined}
+      >
+        {name || (hasLink ? "—" : "Not set")}
       </span>
     </div>
   );
@@ -247,14 +277,20 @@ export function EnrolmentDetailView({ enrolmentId }) {
               ) : null}
             </CardHeader>
             <CardContent className="divide-y divide-neutral-100 py-2">
-              <IdRow
+              <ParticipantLinkRow
                 label="Apprentice user"
-                value={enrolment.apprenticeUserId}
+                displayName={enrolment.apprenticeUserDisplayName}
+                userId={enrolment.apprenticeUserId}
               />
-              <IdRow label="Tutor user" value={enrolment.tutorUserId} />
-              <IdRow
+              <ParticipantLinkRow
+                label="Tutor"
+                displayName={enrolment.tutorUserDisplayName}
+                userId={enrolment.tutorUserId}
+              />
+              <ParticipantLinkRow
                 label="Employer manager"
-                value={enrolment.employerManagerUserId}
+                displayName={enrolment.employerManagerUserDisplayName}
+                userId={enrolment.employerManagerUserId}
               />
             </CardContent>
           </Card>
@@ -280,13 +316,15 @@ export function EnrolmentDetailView({ enrolmentId }) {
               ) : null}
             </CardHeader>
             <CardContent className="divide-y divide-neutral-100 py-2">
-              <IdRow
+              <OrganisationLinkRow
                 label="Employer organisation"
-                value={enrolment.employerOrganisationId}
+                name={enrolment.employerOrganisationName}
+                organisationId={enrolment.employerOrganisationId}
               />
-              <IdRow
+              <OrganisationLinkRow
                 label="Provider organisation"
-                value={enrolment.providerOrganisationId}
+                name={enrolment.providerOrganisationName}
+                organisationId={enrolment.providerOrganisationId}
               />
             </CardContent>
           </Card>

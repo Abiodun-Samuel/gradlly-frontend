@@ -1,11 +1,12 @@
 "use client";
 
-import { Bell, Building2, UserPlus } from "lucide-react";
+import { Bell, Building2, Shield, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 
 import { PageSubheader } from "@/components/ui/PageSubheader";
 import { TabNav } from "@/components/ui/TabNav";
+import { AuditExportPanel } from "@/features/audit/components/AuditExportPanel";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import { useRoleAccess } from "@/features/auth/hooks/useRoleAccess";
 import { InvitationsTable } from "@/features/invitations/components/InvitationsTable";
@@ -29,6 +30,11 @@ const TAB_META = {
     icon: Bell,
     description: "Your latest activity, alerts and updates.",
   },
+  compliance: {
+    label: "Compliance",
+    icon: Shield,
+    description: "Export audit logs for inspection readiness.",
+  },
 };
 
 export function SettingsView({ activeTab = "invitations" }) {
@@ -45,6 +51,7 @@ export function SettingsView({ activeTab = "invitations" }) {
     ];
     if (isOwner && hasOrg) {
       base.unshift({ value: "organisation", ...TAB_META.organisation });
+      base.push({ value: "compliance", ...TAB_META.compliance });
     }
     return base;
   }, [isOwner, hasOrg]);
@@ -90,6 +97,8 @@ export function SettingsView({ activeTab = "invitations" }) {
             <UpdateOrganizationForm />
           ) : resolvedTab === "invitations" ? (
             <InvitationsTable />
+          ) : resolvedTab === "compliance" ? (
+            <AuditExportPanel />
           ) : (
             <NotificationsPanel />
           )}

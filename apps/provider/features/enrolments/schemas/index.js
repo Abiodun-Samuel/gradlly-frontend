@@ -151,29 +151,33 @@ export function toParticipantsPayload(values) {
   return payload;
 }
 
-// ─── Organisation links (nullable UUIDs) ─────────────────────────────────────
+// ─── Organisation links (employer only on provider portal) ─────────────────────
 
-export const organisationLinksSchema = z.object({
+export const employerOrganisationLinkSchema = z.object({
   employerOrganisationId: optionalUuid,
-  providerOrganisationId: optionalUuid,
 });
 
-export function organisationLinksDefaultsFromRow(enrolment) {
+export function employerOrganisationLinkDefaultsFromRow(enrolment) {
   return {
     employerOrganisationId: enrolment?.employerOrganisationId ?? "",
-    providerOrganisationId: enrolment?.providerOrganisationId ?? "",
   };
 }
 
-// These fields are nullable on the backend, so an empty selection is sent as
-// null (an explicit "unlink"), unlike participants where empty means "leave".
-export function toOrganisationLinksPayload(values) {
+export function toEmployerOrganisationLinkPayload(values) {
   return {
     employerOrganisationId: isProvided(values.employerOrganisationId)
       ? values.employerOrganisationId
       : null,
-    providerOrganisationId: isProvided(values.providerOrganisationId)
-      ? values.providerOrganisationId
-      : null,
   };
+}
+
+// Legacy shape retained for API typings; provider portal UI only edits employer links.
+export const organisationLinksSchema = employerOrganisationLinkSchema;
+
+export function organisationLinksDefaultsFromRow(enrolment) {
+  return employerOrganisationLinkDefaultsFromRow(enrolment);
+}
+
+export function toOrganisationLinksPayload(values) {
+  return toEmployerOrganisationLinkPayload(values);
 }
