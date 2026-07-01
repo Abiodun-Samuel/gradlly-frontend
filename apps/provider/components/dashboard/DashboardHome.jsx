@@ -40,17 +40,17 @@ import {
 
 const QUICK_ACTIONS = [
   {
-    label: "Cohort",
+    label: "Caseload",
     description: "Manage your learners",
-    href: "/cohort",
+    href: "/learners",
     icon: Users,
     iconBg: "bg-primary-50 group-hover:bg-primary-100",
     iconColor: "text-primary-700",
   },
   {
-    label: "ILR & DAS",
+    label: "ILR / ESFA",
     description: "Submit ILR returns",
-    href: "/ilr-das",
+    href: "/ilr",
     icon: FileText,
     iconBg: "bg-warning-50 group-hover:bg-warning-100",
     iconColor: "text-warning-700",
@@ -72,17 +72,17 @@ const QUICK_ACTIONS = [
     iconColor: "text-info-700",
   },
   {
-    label: "Evidence Vault",
-    description: "Store documents",
-    href: "/evidence-vault",
+    label: "Evidence Review",
+    description: "Review portfolio evidence",
+    href: "/portfolio/evidence",
     icon: FolderLock,
     iconBg: "bg-danger-50 group-hover:bg-danger-100",
     iconColor: "text-danger-700",
   },
   {
-    label: "Reports",
-    description: "View analytics",
-    href: "/reports",
+    label: "Employers",
+    description: "Directory & engagement",
+    href: "/employers",
     icon: BarChart3,
     iconBg: "bg-neutral-100 group-hover:bg-neutral-200",
     iconColor: "text-neutral-700",
@@ -392,13 +392,13 @@ function GettingStartedCard({ user, activeOrganisation, profileStatus }) {
       id: "learner",
       label: "Add your first learner",
       done: false,
-      href: "/cohort",
+      href: "/apprentices",
     },
     {
       id: "ilr",
       label: "Connect your ILR data",
       done: false,
-      href: "/ilr-das",
+      href: "/ilr",
     },
   ];
 
@@ -675,9 +675,6 @@ function ProfileCard({ user, activeOrganisation, profileStatus }) {
 
 export function DashboardHome() {
   const { user, activeOrganisation } = useAuthUser();
-  // const { data: summary, isLoading: isDashboardLoading } =
-  // useProviderDashboard();
-  // const isMetricsLoading = isDashboardLoading && !summary;
   const greeting = getGreeting(user?.timezone);
   const profileStatus = getProfileStatus(user);
 
