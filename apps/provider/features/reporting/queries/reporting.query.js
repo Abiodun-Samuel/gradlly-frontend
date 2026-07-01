@@ -46,3 +46,23 @@ export function useEmployerDirectory(params = {}, options = {}) {
     ...options,
   });
 }
+
+// Linked employers as { value, text } options for select inputs (e.g. the
+// enrolment "link employer organisation" modal). Reuses the employer directory
+// endpoint and pulls a wide page so every linked employer is selectable.
+export function useLinkedEmployerOptions(options = {}) {
+  const { orgId } = useAuthUser();
+  const params = { page: 1, perPage: 200 };
+
+  return useQuery({
+    queryKey: REPORTING_QUERY_KEYS.employerDirectory(orgId, params),
+    queryFn: () => listEmployerDirectory(params),
+    enabled: !!orgId,
+    select: (response) =>
+      (response?.data ?? []).map((row) => ({
+        value: row.employerOrganisationId,
+        text: row.organisationName,
+      })),
+    ...options,
+  });
+}
