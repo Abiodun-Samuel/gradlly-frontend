@@ -20,3 +20,7 @@ A running list of features built in the provider portal. Updated as each new fea
 16. **E-Signature** — Sign a standalone PDF document.
 17. **Ofsted Hub (Quality / EIF)** — Inspection-readiness dashboard, quality improvement plan, safeguarding checklist, programme documents, and the inspector evidence pack.
 18. **Learners (Caseload)** — Cohort dashboard with filters and CSV export, an at-risk intervention queue with employer outreach, logging tutor interventions, and a 360° learner profile.
+19. **Compliance — ILR / ESFA** — Build ILR learner records from enrolments, set manual overrides, validate against ILR rules, submit and amend your statutory return to the ESFA (with live status tracking), plus manage the per-year mapping configs.
+20. **Funding (DAS)** — Levy balance with manual sync, a spend forecast and runway estimate, and a table of synced funding payments (with clawbacks flagged).
+21. **DAS Delivery Health** — Monitor failed DAS pushes across the enrolment, completion, and withdrawal pipelines, inspect a failure, and re-queue delivery.
+22. **Provider Reporting** — A KPI summary on the dashboard home (cohort, at-risk, EIF readiness, ILR pending — each linking into its feature) and a filterable employer directory with engagement metrics.

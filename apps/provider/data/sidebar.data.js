@@ -1,4 +1,6 @@
 import {
+  Activity,
+  Banknote,
   Bell,
   BookMarked,
   Building2,
@@ -6,6 +8,7 @@ import {
   ClipboardList,
   Clock,
   FileSignature,
+  FileSpreadsheet,
   FolderOpen,
   GraduationCap,
   LayoutDashboard,
@@ -74,7 +77,21 @@ export const NAV_SECTIONS = [
   },
   {
     title: "Compliance",
-    items: [{ label: "Ofsted Hub", href: "/ofsted-hub", icon: ShieldCheck }],
+    items: [
+      { label: "Ofsted Hub", href: "/ofsted-hub", icon: ShieldCheck },
+      { label: "ILR / ESFA", href: "/ilr", icon: FileSpreadsheet },
+    ],
+  },
+  {
+    title: "Funding",
+    items: [
+      { label: "Funding (DAS)", href: "/funding", icon: Banknote },
+      { label: "DAS Health", href: "/das-health", icon: Activity },
+    ],
+  },
+  {
+    title: "Reporting",
+    items: [{ label: "Employers", href: "/employers", icon: Building2 }],
   },
   {
     title: "Tools",

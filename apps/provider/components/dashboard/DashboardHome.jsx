@@ -25,6 +25,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import TextBadge from "@/components/ui/TextBadge";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
+import { ProviderDashboard } from "@/features/reporting/components/ProviderDashboard";
 import {
   capitalise,
   cn,
@@ -36,45 +37,6 @@ import {
 } from "@/utils/helper";
 
 // ─── Static config ────────────────────────────────────────────────────────────
-
-const STAT_CARDS = [
-  {
-    id: "learners",
-    label: "Active Learners",
-    icon: Users,
-    iconBg: "bg-primary-50",
-    iconColor: "text-primary-700",
-    accentBg: "bg-primary-600",
-    hint: "Connect cohort data",
-  },
-  {
-    id: "reviews",
-    label: "Reviews Due",
-    icon: CalendarCheck,
-    iconBg: "bg-info-50",
-    iconColor: "text-info-700",
-    accentBg: "bg-info-600",
-    hint: "Sync your schedule",
-  },
-  {
-    id: "ilr",
-    label: "ILR Readiness",
-    icon: FileText,
-    iconBg: "bg-warning-50",
-    iconColor: "text-warning-700",
-    accentBg: "bg-warning-600",
-    hint: "Upload ILR data",
-  },
-  {
-    id: "ofsted",
-    label: "Ofsted Score",
-    icon: ShieldCheck,
-    iconBg: "bg-success-50",
-    iconColor: "text-success-700",
-    accentBg: "bg-success-600",
-    hint: "Upload evidence",
-  },
-];
 
 const QUICK_ACTIONS = [
   {
@@ -349,43 +311,6 @@ function HeroSection({ user, activeOrganisation, greeting }) {
         )}
       </div>
     </div>
-  );
-}
-
-// ─── Metrics row ──────────────────────────────────────────────────────────────
-
-function MetricCard({ stat }) {
-  const { label, icon: Icon, iconBg, iconColor, accentBg, hint } = stat;
-  return (
-    <Card className="relative overflow-hidden transition-shadow duration-200 hover:shadow-md">
-      <CardContent className="pb-5 pt-5">
-        <div className="flex items-start justify-between gap-2">
-          <div
-            className={cn(
-              "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
-              iconBg,
-            )}
-          >
-            <Icon className={cn("h-5 w-5", iconColor)} aria-hidden />
-          </div>
-          <span className="mt-0.5 text-right text-[10px] leading-tight text-neutral-400">
-            {hint}
-          </span>
-        </div>
-
-        <div className="mt-4">
-          <p className="text-3xl font-bold tracking-tight text-neutral-300">
-            N/A
-          </p>
-          <p className="mt-1 text-sm font-medium text-neutral-500">{label}</p>
-        </div>
-      </CardContent>
-
-      {/* Coloured bottom accent */}
-      <div
-        className={cn("absolute inset-x-0 bottom-0 h-0.5 opacity-60", accentBg)}
-      />
-    </Card>
   );
 }
 
@@ -766,20 +691,8 @@ export function DashboardHome() {
           greeting={greeting}
         />
 
-        {/* Metrics row */}
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          {STAT_CARDS.map((stat, i) => (
-            <div
-              key={stat.id}
-              style={{
-                animation: "slide-up 320ms var(--ease-out) both",
-                animationDelay: `${i * 50}ms`,
-              }}
-            >
-              <MetricCard stat={stat} />
-            </div>
-          ))}
-        </div>
+        {/* Metrics row — live provider KPI aggregate */}
+        <ProviderDashboard />
 
         {/* Main grid */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
